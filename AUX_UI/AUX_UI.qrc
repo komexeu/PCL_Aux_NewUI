@@ -1,0 +1,18 @@
+<RCC>
+  <qresource prefix="AUX_UI">
+    <file>my_source/NonMode.png</file>
+    <file>my_source/images.png</file>
+    <file>my_source/UI_ColorChange.png</file>
+    <file>my_source/export-icon.png</file>
+    <file>my_source/Triangle4.png</file>
+    <file>my_source/Triangle5.png</file>
+    <file>my_source/Triangle3.png</file>
+    <file>my_source/AreaSelect.png</file>
+    <file>my_source/Triangle1.png</file>
+    <file>my_source/color.jpg</file>
+    <file>my_source/Triangle2.png</file>
+    <file>my_source/NewFile.png</file>
+    <file>my_source/cursor1-2.png</file>
+    <file>my_source/cursor1-1.png</file>
+  </qresource>
+</RCC>

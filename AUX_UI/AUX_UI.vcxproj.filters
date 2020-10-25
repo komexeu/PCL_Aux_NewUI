@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="myWidgets">
+      <UniqueIdentifier>{ceca6230-0e9e-4af2-a4b2-c81e3aead962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="myWidgets\src">
+      <UniqueIdentifier>{c67ad32d-b77e-48b7-9952-a6e9d4fbdc1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="myWidgets\include">
+      <UniqueIdentifier>{be7f40ad-d339-4b41-b7ad-621a730c4922}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QVTKWidget_controller">
+      <UniqueIdentifier>{84cf241e-3863-437e-bde3-fd1bb00653ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QVTKWidget_controller\include">
+      <UniqueIdentifier>{a8252036-736a-42fe-8225-044f591cc844}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QVTKWidget_controller\src">
+      <UniqueIdentifier>{0d81c371-6c63-49ba-ac6e-367fe4046292}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="AUX_UI.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+    <QtUic Include="AUX_UI.ui">
+      <Filter>Resource Files</Filter>
+    </QtUic>
+    <QtMoc Include="AUX_UI.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClCompile Include="AUX_UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Color_database.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="my_button.cpp">
+      <Filter>myWidgets\src</Filter>
+    </ClCompile>
+    <ClCompile Include="my_foldGroupBox.cpp">
+      <Filter>myWidgets\src</Filter>
+    </ClCompile>
+    <ClCompile Include="my_slider.cpp">
+      <Filter>myWidgets\src</Filter>
+    </ClCompile>
+    <ClCompile Include="my_spinBox.cpp">
+      <Filter>myWidgets\src</Filter>
+    </ClCompile>
+    <ClCompile Include="my_toolButton.cpp">
+      <Filter>myWidgets\src</Filter>
+    </ClCompile>
+    <ClCompile Include="CloudPoints_IO.cpp">
+      <Filter>QVTKWidget_controller\src</Filter>
+    </ClCompile>
+    <ClCompile Include="LayerControl.cpp">
+      <Filter>QVTKWidget_controller\src</Filter>
+    </ClCompile>
+    <ClCompile Include="CloudPoints_Tools.cpp">
+      <Filter>QVTKWidget_controller\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="my_toolButton.h">
+      <Filter>myWidgets\include</Filter>
+    </QtMoc>
+    <QtMoc Include="my_button.h">
+      <Filter>myWidgets\include</Filter>
+    </QtMoc>
+    <QtMoc Include="my_foldGroupBox.h">
+      <Filter>myWidgets\include</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="my_slider.h">
+      <Filter>myWidgets\include</Filter>
+    </ClInclude>
+    <ClInclude Include="my_spinBox.h">
+      <Filter>myWidgets\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CloudPoints_IO.h">
+      <Filter>QVTKWidget_controller\include</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerControl.h">
+      <Filter>QVTKWidget_controller\include</Filter>
+    </ClInclude>
+    <ClInclude Include="InteractorStyle_override.h">
+      <Filter>QVTKWidget_controller\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CloudPoints_Tools.h">
+      <Filter>QVTKWidget_controller\include</Filter>
+    </ClInclude>
+    <ClInclude Include="common_data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QT_KeyController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="override_src\vtkInteractorStyleRubberBandPick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
