@@ -1,4 +1,4 @@
-#include "my_spinBox.h"
+#include <my_spinBox.h>
 
 
 my_spinBox::my_spinBox(QWidget *parent, QString name) :QSpinBox(parent)

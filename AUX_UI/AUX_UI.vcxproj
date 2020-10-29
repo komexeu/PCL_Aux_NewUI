@@ -45,7 +45,9 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <IncludePath>.\QVTKWidget_controller\include;.\my_Widgets\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>msvc2017_64</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
@@ -86,7 +88,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="QVTKWidget_controller\src\Class.cpp" />
     <ClCompile Include="Color_database.cpp" />
     <ClCompile Include="my_Widgets\src\my_button.cpp" />
     <ClCompile Include="my_Widgets\src\my_foldGroupBox.cpp" />
@@ -103,7 +104,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="QVTKWidget_controller\include\Class.h" />
     <ClInclude Include="common_data.h" />
     <QtMoc Include="my_Widgets\include\my_button.h" />
     <QtMoc Include="my_Widgets\include\my_foldGroupBox.h" />

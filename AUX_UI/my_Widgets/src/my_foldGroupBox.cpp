@@ -1,4 +1,4 @@
-﻿#include "my_foldGroupBox.h"
+﻿#include <my_foldGroupBox.h>
 #include <qdebug.h>
 
 my_foldGroupBox::my_foldGroupBox(QWidget* parent, State state)

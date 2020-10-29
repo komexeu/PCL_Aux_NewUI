@@ -1,7 +1,7 @@
 #pragma once
 #include <qpushbutton.h>
 #include <qpropertyanimation.h>
-#include "common_data.h"
+#include "../../common_data.h"
 
 class my_button :public QPushButton
 {

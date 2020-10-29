@@ -1,6 +1,6 @@
 #pragma once
 #include <qslider.h>
-#include "common_data.h"
+#include "../../common_data.h"
 
 class my_slider :public QSlider
 {

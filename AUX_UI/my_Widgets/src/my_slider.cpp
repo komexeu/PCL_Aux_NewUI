@@ -1,4 +1,4 @@
-#include "my_slider.h"
+#include <my_slider.h>
 
 my_slider::my_slider(QWidget *parent) :QSlider(parent)
 {

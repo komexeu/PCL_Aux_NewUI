@@ -1,4 +1,4 @@
-#include "./my_Widgets/include/my_toolButton.h"
+#include <my_toolButton.h>
 
 my_toolButton::my_toolButton(QWidget *parent, QString name, QString icon_root)
 	:QToolButton(parent) {

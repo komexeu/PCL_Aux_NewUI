@@ -6,9 +6,9 @@
 
 //--------import pointcloud-------
 #include <qinputdialog.h>
-#include "LayerControl.h"
-#include "CloudPoints_IO.h"
-#include "CloudPoints_Tools.h"
+#include "QVTKWidget_controller/include/LayerControl.h"
+#include "QVTKWidget_controller/include/CloudPoints_IO.h"
+#include "QVTKWidget_controller/include/CloudPoints_Tools.h"
 
 //1000avg
 #include <pcl/kdtree/kdtree_flann.h>

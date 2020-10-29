@@ -1,4 +1,4 @@
-#include "LayerControl.h"
+#include <LayerControl.h>
 //this is for new pointcloud
 bool TreeLayerController::AddLayer(QString layerName, PointCloud<PointXYZRGB>::Ptr cloud) {
 	QIcon icon;

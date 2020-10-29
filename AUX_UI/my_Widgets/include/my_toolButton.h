@@ -1,7 +1,7 @@
 #pragma once
 #include <qpropertyanimation.h>
 #include <qtoolbutton.h>
-#include "common_data.h"
+#include "../../common_data.h"
 
 class my_toolButton :public QToolButton
 {

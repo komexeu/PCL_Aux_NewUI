@@ -71,9 +71,6 @@
     <ClCompile Include="my_Widgets\src\my_toolButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QVTKWidget_controller\src\Class.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_data.h">
@@ -101,9 +98,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QVTKWidget_controller\include\LayerControl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QVTKWidget_controller\include\Class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,11 +6,11 @@
 #include <QtWidgets/QMainWindow>
 #include <qstandarditemmodel.h>
 
-#include "my_foldGroupBox.h"
-#include "my_button.h"
-#include "my_toolButton.h"
-#include "my_slider.h"
-#include "my_spinBox.h"
+#include "my_Widgets/include/my_foldGroupBox.h"
+#include "my_Widgets/include/my_button.h"
+#include "my_Widgets/include/my_toolButton.h"
+#include "my_Widgets/include/my_slider.h"
+#include "my_Widgets/include/my_spinBox.h"
 
 #include <pcl/visualization/pcl_visualizer.h>
 #include "InteractorStyle_override.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "common_data.h"
+#include "../../common_data.h"
 //pcl
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

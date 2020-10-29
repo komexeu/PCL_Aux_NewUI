@@ -1,4 +1,4 @@
-#include "my_button.h"
+#include <my_button.h>
 
 my_button::my_button(QWidget *parent, QString name) :QPushButton(parent) {
 	this->setObjectName(name);
