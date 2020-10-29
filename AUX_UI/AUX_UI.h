@@ -1,9 +1,10 @@
 #pragma once
-#include <vtkSmartPointer.h>
+
 #include "common_data.h"
+#include "ui_AUX_UI.h" 
 
 #include <QtWidgets/QMainWindow>
-#include "ui_AUX_UI.h" 
+#include <qstandarditemmodel.h>
 
 #include "my_foldGroupBox.h"
 #include "my_button.h"
@@ -14,8 +15,8 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include "InteractorStyle_override.h"
 #include <vtkRenderWindow.h>
+#include <vtkSmartPointer.h>
 
-#include <qstandarditemmodel.h>
 
 
 using namespace pcl;
@@ -35,15 +36,16 @@ public:
 	static void KeyBoard_eventController(const pcl::visualization::KeyboardEvent& event);
 	//滑鼠事件
 	static void cursor_BrushSelector(const pcl::visualization::MouseEvent& event);
+	static void Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent& event);
 
 private:
-	Ui::AUX_UIClass ui;
+	static Ui::AUX_UIClass ui;
 	QLabel* message;
 
-	QToolBar* toolBar;
+	QToolBar* Top_toolBar;
 	static my_toolButton* Tool_Mode;
-	my_spinBox* brush_spinbox;
-	my_slider* brush_slider;
+	static my_spinBox* brush_spinbox;
+	static my_slider* brush_slider;
 	my_button* confirm_userSeg;
 	my_toolButton* UI_Color_Style;
 	my_toolButton* Viewer_Color_Style;
@@ -69,28 +71,55 @@ private:
 	//features for UI control PCL 
 public Q_SLOTS:
 	void Tree_importCloud();
-	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
+	void Tree_selectionChangedSlot(const QItemSelection& , const QItemSelection& );
 	void Tree_Smooth();
-	void Tree_Slider_PreSegCloud();
-	void Tree_confirmSegCloud();
+	void Slider_PreSegCloud();
+	void Slider_confirmSegCloud();
+	void Tree_UserSegmentation();
 	void Tree_deleteLayer();
 	void changeViewerColor(const QColor& c);
+	void  Brush_change();
 public:
-	void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
+	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
+	void RedSelectClear();
+	void initModes();
+
 	void Init_Basedata();
 	void Set_ToolConnect();
+	QModelIndex  searchParent( QModelIndex index);
 private:
 	//-----pcl viewer------
 	static boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
 	InteractorStyle_override* sty_ovr;
 	//----------Qt MVC------
-	QStandardItemModel* standardModel;
-	QItemSelectionModel* selectionModel;
-
+	static QStandardItemModel* standardModel;
+	static QItemSelectionModel* selectionModel;
+	//database
 private:
-	double nowCloud_avg_distance;
+	static double nowCloud_avg_distance;
 	std::vector<PointCloud<PointXYZRGB>::Ptr> SegClouds;
+	//已選點雲
+	static 	PointCloud<PointXYZRGB>::Ptr Selected_cloud;
+private:
+	static float brush_radius;
+	static bool keyBoard_ctrl;
+	static bool keyBoard_alt;
 };
+Ui::AUX_UIClass AUX_UI::ui;
+
+QStandardItemModel* AUX_UI::standardModel;
+QItemSelectionModel* AUX_UI::selectionModel;
 
 boost::shared_ptr<pcl::visualization::PCLVisualizer> AUX_UI::viewer;
 my_toolButton* AUX_UI::Tool_Mode;
+my_spinBox* AUX_UI::brush_spinbox;
+my_slider* AUX_UI::brush_slider;
+
+double AUX_UI::nowCloud_avg_distance;
+float AUX_UI::brush_radius;
+bool AUX_UI::keyBoard_ctrl;
+bool AUX_UI::keyBoard_alt;
+
+//已選點雲
+PointCloud<PointXYZRGB>::Ptr AUX_UI::Selected_cloud;
+static std::map<int, PointXYZRGB> select_map;

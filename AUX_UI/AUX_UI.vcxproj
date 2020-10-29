@@ -45,8 +45,7 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>msvc2017_64</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
@@ -87,15 +86,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CloudPoints_IO.cpp" />
-    <ClCompile Include="CloudPoints_Tools.cpp" />
+    <ClCompile Include="QVTKWidget_controller\src\Class.cpp" />
     <ClCompile Include="Color_database.cpp" />
-    <ClCompile Include="LayerControl.cpp" />
-    <ClCompile Include="my_button.cpp" />
-    <ClCompile Include="my_foldGroupBox.cpp" />
-    <ClCompile Include="my_slider.cpp" />
-    <ClCompile Include="my_spinBox.cpp" />
-    <ClCompile Include="my_toolButton.cpp" />
+    <ClCompile Include="my_Widgets\src\my_button.cpp" />
+    <ClCompile Include="my_Widgets\src\my_foldGroupBox.cpp" />
+    <ClCompile Include="my_Widgets\src\my_slider.cpp" />
+    <ClCompile Include="my_Widgets\src\my_spinBox.cpp" />
+    <ClCompile Include="my_Widgets\src\my_toolButton.cpp" />
+    <ClCompile Include="QVTKWidget_controller\src\CloudPoints_IO.cpp" />
+    <ClCompile Include="QVTKWidget_controller\src\CloudPoints_Tools.cpp" />
+    <ClCompile Include="QVTKWidget_controller\src\LayerControl.cpp" />
     <QtRcc Include="AUX_UI.qrc" />
     <QtUic Include="AUX_UI.ui" />
     <QtMoc Include="AUX_UI.h" />
@@ -103,24 +103,25 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="my_button.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="my_toolButton.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="my_foldGroupBox.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CloudPoints_IO.h" />
-    <ClInclude Include="CloudPoints_Tools.h" />
+    <ClInclude Include="QVTKWidget_controller\include\Class.h" />
     <ClInclude Include="common_data.h" />
-    <ClInclude Include="InteractorStyle_override.h" />
-    <ClInclude Include="LayerControl.h" />
-    <ClInclude Include="my_slider.h" />
-    <ClInclude Include="my_spinBox.h" />
+    <QtMoc Include="my_Widgets\include\my_button.h" />
+    <QtMoc Include="my_Widgets\include\my_foldGroupBox.h" />
+    <ClInclude Include="my_Widgets\include\my_slider.h" />
+    <ClInclude Include="my_Widgets\include\my_spinBox.h" />
+    <QtMoc Include="my_Widgets\include\my_toolButton.h" />
     <ClInclude Include="override_src\vtkInteractorStyleRubberBandPick.h" />
-    <ClInclude Include="QT_KeyController.h" />
+    <ClInclude Include="QVTKWidget_controller\include\CloudPoints_IO.h" />
+    <ClInclude Include="QVTKWidget_controller\include\CloudPoints_Tools.h" />
+    <ClInclude Include="QVTKWidget_controller\include\InteractorStyle_override.h" />
+    <ClInclude Include="QVTKWidget_controller\include\LayerControl.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AUX_UI.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
