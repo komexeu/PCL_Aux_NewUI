@@ -88,7 +88,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Color_database.cpp" />
     <ClCompile Include="my_Widgets\src\my_button.cpp" />
     <ClCompile Include="my_Widgets\src\my_foldGroupBox.cpp" />
     <ClCompile Include="my_Widgets\src\my_slider.cpp" />
@@ -119,9 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AUX_UI.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

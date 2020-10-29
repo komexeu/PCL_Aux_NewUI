@@ -44,9 +44,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Color_database.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QVTKWidget_controller\src\CloudPoints_IO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -105,11 +102,6 @@
     <ResourceCompile Include="AUX_UI.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="CMakeLists.txt">
-      <Filter>Cmake</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="my_Widgets\include\my_button.h">
