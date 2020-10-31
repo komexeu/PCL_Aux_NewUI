@@ -479,6 +479,8 @@ void AUX_UI::Tree_deleteLayer() {
 		standardModel->removeRow(index.row());
 	else
 		standardModel->itemFromIndex(index)->parent()->removeRow(index.row());
+
+	nowLayerCloud->clear();
 }
 
 //key
@@ -517,40 +519,7 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 			QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 			if (index.row() == -1)
 				return;
-
-			if (nowLayerCloud->size() > 0 )
-			{
-				vtkRenderWindowInteractor* viewer_interactor = viewer->getRenderWindow()->GetInteractor();
-				vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast(viewer_interactor->GetPicker());
-				float mouseX = (viewer_interactor->GetEventPosition()[0]);
-				float mouseY = (viewer_interactor->GetEventPosition()[1]);
-				viewer_interactor->StartPickCallback();
-				//-------check-^^^---------
-				vtkRenderer* ren = viewer_interactor->FindPokedRenderer(mouseX, mouseY);
-				point_picker->Pick(mouseX, mouseY, 0.0, ren);
-				double picked[3]; point_picker->GetPickPosition(picked);
-
-				PointCloud<PointXYZRGB>::Ptr cursor_premark(new PointCloud<PointXYZRGB>);
-				KdTreeFLANN<PointXYZRGB>::Ptr tree(new KdTreeFLANN<PointXYZRGB>);
-				std::vector<int> foundPointID;
-				std::vector<float> foundPointSquaredDistance;
-				tree->setInputCloud(nowLayerCloud);
-				PointXYZRGB pickPoint;
-				pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
-				pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
-
-				if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
-				{
-					for (int i = 0; i < foundPointID.size() - 1; ++i) {
-						cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);						
-					}
-				}
-
-				visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
-				viewer->removePointCloud("White_BrushCursorPoints");
-				viewer->addPointCloud(cursor_premark, white, "White_BrushCursorPoints");
-				ui.qvtkWidget->update();
-			}
+			WhiteCursorUpdate();
 		}
 		else
 		{
@@ -566,40 +535,7 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 
 		brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
 			std::ceil(brush_radius / nowCloud_avg_distance));
-		
-		if (nowLayerCloud->size() > 0)
-		{
-			vtkRenderWindowInteractor* viewer_interactor = viewer->getRenderWindow()->GetInteractor();
-			vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast(viewer_interactor->GetPicker());
-			float mouseX = (viewer_interactor->GetEventPosition()[0]);
-			float mouseY = (viewer_interactor->GetEventPosition()[1]);
-			viewer_interactor->StartPickCallback();
-			//-------check-^^^---------
-			vtkRenderer* ren = viewer_interactor->FindPokedRenderer(mouseX, mouseY);
-			point_picker->Pick(mouseX, mouseY, 0.0, ren);
-			double picked[3]; point_picker->GetPickPosition(picked);
-
-			PointCloud<PointXYZRGB>::Ptr cursor_premark(new PointCloud<PointXYZRGB>);
-			KdTreeFLANN<PointXYZRGB>::Ptr tree(new KdTreeFLANN<PointXYZRGB>);
-			std::vector<int> foundPointID;
-			std::vector<float> foundPointSquaredDistance;
-			tree->setInputCloud(nowLayerCloud);
-			PointXYZRGB pickPoint;
-			pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
-			pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
-
-			if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
-			{
-				for (int i = 0; i < foundPointID.size() - 1; ++i) {
-					cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);
-				}
-			}
-
-			visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
-			viewer->removePointCloud("White_BrushCursorPoints");
-			viewer->addPointCloud(cursor_premark, white, "White_BrushCursorPoints");
-			ui.qvtkWidget->update();
-		}
+		WhiteCursorUpdate();
 	}
 	if ((event.getKeySym() == "m" || event.getKeySym() == "M") && event.keyDown() &&
 		GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE) {
@@ -607,39 +543,7 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 		brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
 			std::ceil(brush_radius / nowCloud_avg_distance));
 
-		if (nowLayerCloud->size() > 0)
-		{
-			vtkRenderWindowInteractor* viewer_interactor = viewer->getRenderWindow()->GetInteractor();
-			vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast(viewer_interactor->GetPicker());
-			float mouseX = (viewer_interactor->GetEventPosition()[0]);
-			float mouseY = (viewer_interactor->GetEventPosition()[1]);
-			viewer_interactor->StartPickCallback();
-			//-------check-^^^---------
-			vtkRenderer* ren = viewer_interactor->FindPokedRenderer(mouseX, mouseY);
-			point_picker->Pick(mouseX, mouseY, 0.0, ren);
-			double picked[3]; point_picker->GetPickPosition(picked);
-
-			PointCloud<PointXYZRGB>::Ptr cursor_premark(new PointCloud<PointXYZRGB>);
-			KdTreeFLANN<PointXYZRGB>::Ptr tree(new KdTreeFLANN<PointXYZRGB>);
-			std::vector<int> foundPointID;
-			std::vector<float> foundPointSquaredDistance;
-			tree->setInputCloud(nowLayerCloud);
-			PointXYZRGB pickPoint;
-			pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
-			pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
-
-			if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
-			{
-				for (int i = 0; i < foundPointID.size() - 1; ++i) {
-					cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);
-				}
-			}
-
-			visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
-			viewer->removePointCloud("White_BrushCursorPoints");
-			viewer->addPointCloud(cursor_premark, white, "White_BrushCursorPoints");
-			ui.qvtkWidget->update();
-		}
+		WhiteCursorUpdate();
 	}
 }
 
@@ -756,8 +660,6 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 	//AREA PICK CLOUD
 	std::vector<int> foundPointID;
 	if (event.getPointsIndices(foundPointID) <= 0) {
-		//快速多次選取閃退(原因為更新點雲ViewCloudUpdate)
-		//改成viewer->updatePointcloud()
 		if (!select_map.empty()) {
 			select_map.clear();
 			Selected_cloud->clear();
@@ -811,6 +713,42 @@ void  AUX_UI::Brush_change() {
 	if (GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE)
 	{
 		brush_radius = nowCloud_avg_distance * brush_spinbox->value();
+		ui.qvtkWidget->update();
+	}
+}
+
+void AUX_UI::WhiteCursorUpdate() {
+	if (nowLayerCloud->size() > 0)
+	{
+		vtkRenderWindowInteractor* viewer_interactor = viewer->getRenderWindow()->GetInteractor();
+		vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast(viewer_interactor->GetPicker());
+		float mouseX = (viewer_interactor->GetEventPosition()[0]);
+		float mouseY = (viewer_interactor->GetEventPosition()[1]);
+		viewer_interactor->StartPickCallback();
+		//-------check-^^^---------
+		vtkRenderer* ren = viewer_interactor->FindPokedRenderer(mouseX, mouseY);
+		point_picker->Pick(mouseX, mouseY, 0.0, ren);
+		double picked[3]; point_picker->GetPickPosition(picked);
+
+		PointCloud<PointXYZRGB>::Ptr cursor_premark(new PointCloud<PointXYZRGB>);
+		KdTreeFLANN<PointXYZRGB>::Ptr tree(new KdTreeFLANN<PointXYZRGB>);
+		std::vector<int> foundPointID;
+		std::vector<float> foundPointSquaredDistance;
+		tree->setInputCloud(nowLayerCloud);
+		PointXYZRGB pickPoint;
+		pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
+		pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
+
+		if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
+		{
+			for (int i = 0; i < foundPointID.size() - 1; ++i) {
+				cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);
+			}
+		}
+
+		visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
+		viewer->removePointCloud("White_BrushCursorPoints");
+		viewer->addPointCloud(cursor_premark, white, "White_BrushCursorPoints");
 		ui.qvtkWidget->update();
 	}
 }

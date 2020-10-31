@@ -80,6 +80,7 @@ public Q_SLOTS:
 	void changeViewerColor(const QColor& c);
 	void  Brush_change();
 public:
+	static void WhiteCursorUpdate();
 	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
 	void RedSelectClear();
 	static void initModes();
