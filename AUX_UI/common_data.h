@@ -7,11 +7,6 @@
 
 using namespace pcl;
 
-struct complax_cloudInformation
-{
-	pcl::PointCloud<PointXYZRGB>::Ptr cloud_data;
-	std::vector<int> points_id;
-};
 
 enum class SelectMode :int
 {

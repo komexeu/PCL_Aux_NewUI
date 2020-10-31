@@ -14,7 +14,6 @@
 using namespace pcl;
 
 Q_DECLARE_METATYPE(pcl::PointCloud<PointXYZRGB>::Ptr)
-Q_DECLARE_METATYPE(complax_cloudInformation)
 
 
 //---------¹Ï¼h±±¨îÃþ----------
@@ -33,7 +32,6 @@ public:
 	}
 	bool AddLayer(QString layerName, PointCloud<PointXYZRGB>::Ptr cloud);
 	virtual bool AddLayer(QString layerName, PointCloud<PointXYZRGB>::Ptr cloud, QModelIndex selectId);
-	virtual bool TreeLayerController::AddLayer(QString layerName, complax_cloudInformation complaxInform, QModelIndex selectId);
 private:
 	QStandardItemModel* data_model_;
 };

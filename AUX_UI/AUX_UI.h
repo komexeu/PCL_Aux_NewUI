@@ -27,9 +27,9 @@ class AUX_UI : public QMainWindow
 		//features for control UI
 public 	Q_SLOTS:
 	void changeWindowsColor(const QColor& c);
-	void SetAreaMode();
-	void SetBrushMode();
-	void SetNoneMode();
+	static void SetAreaMode();
+	static void SetBrushMode();
+	static void SetNoneMode();
 public:
 	AUX_UI(QWidget* parent = Q_NULLPTR);
 	//鍵盤事件
@@ -71,7 +71,7 @@ private:
 	//features for UI control PCL 
 public Q_SLOTS:
 	void Tree_importCloud();
-	void Tree_selectionChangedSlot(const QItemSelection& , const QItemSelection& );
+	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
 	void Tree_Smooth();
 	void Slider_PreSegCloud();
 	void Slider_confirmSegCloud();
@@ -82,15 +82,15 @@ public Q_SLOTS:
 public:
 	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
 	void RedSelectClear();
-	void initModes();
+	static void initModes();
 
 	void Init_Basedata();
 	void Set_ToolConnect();
-	QModelIndex  searchParent( QModelIndex index);
+	QModelIndex  searchParent(QModelIndex index);
 private:
 	//-----pcl viewer------
 	static boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-	InteractorStyle_override* sty_ovr;
+	static InteractorStyle_override* my_interactorStyle;
 	//----------Qt MVC------
 	static QStandardItemModel* standardModel;
 	static QItemSelectionModel* selectionModel;
@@ -104,6 +104,8 @@ private:
 	static float brush_radius;
 	static bool keyBoard_ctrl;
 	static bool keyBoard_alt;
+
+	static PointCloud<PointXYZRGB>::Ptr nowLayerCloud;
 };
 Ui::AUX_UIClass AUX_UI::ui;
 
@@ -111,6 +113,7 @@ QStandardItemModel* AUX_UI::standardModel;
 QItemSelectionModel* AUX_UI::selectionModel;
 
 boost::shared_ptr<pcl::visualization::PCLVisualizer> AUX_UI::viewer;
+InteractorStyle_override* AUX_UI::my_interactorStyle;
 my_toolButton* AUX_UI::Tool_Mode;
 my_spinBox* AUX_UI::brush_spinbox;
 my_slider* AUX_UI::brush_slider;
@@ -119,6 +122,8 @@ double AUX_UI::nowCloud_avg_distance;
 float AUX_UI::brush_radius;
 bool AUX_UI::keyBoard_ctrl;
 bool AUX_UI::keyBoard_alt;
+
+PointCloud<PointXYZRGB>::Ptr AUX_UI::nowLayerCloud;
 
 //已選點雲
 PointCloud<PointXYZRGB>::Ptr AUX_UI::Selected_cloud;

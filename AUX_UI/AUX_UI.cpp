@@ -13,11 +13,12 @@
 //1000avg
 #include <pcl/kdtree/kdtree_flann.h>
 
- AUX_UI::AUX_UI(QWidget* parent)
+AUX_UI::AUX_UI(QWidget* parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
 	ui.treeView->setFocusPolicy(Qt::NoFocus);
+	nowLayerCloud.reset(new PointCloud<PointXYZRGB>);
 	//------init tree view------
 	standardModel = new QStandardItemModel(ui.treeView);
 	ui.treeView->setHeaderHidden(true);
@@ -25,8 +26,8 @@
 	ui.treeView->setModel(standardModel);
 	ui.treeView->expandAll();
 	//----------pcl visualizer----------
-	sty_ovr = InteractorStyle_override::New();
-	viewer.reset(new pcl::visualization::PCLVisualizer(__argc, __argv, "viewer", sty_ovr, false));
+	my_interactorStyle = InteractorStyle_override::New();
+	viewer.reset(new pcl::visualization::PCLVisualizer(__argc, __argv, "viewer", my_interactorStyle, false));
 	ui.qvtkWidget->SetRenderWindow(viewer->getRenderWindow());
 	viewer->setupInteractor(ui.qvtkWidget->GetInteractor(), ui.qvtkWidget->GetRenderWindow());
 	viewer->setBackgroundColor(0, 0, 0);
@@ -240,7 +241,7 @@ void AUX_UI::changeViewerColor(const QColor& c) {
 
 void AUX_UI::Tree_importCloud() {
 	RedSelectClear();
-	initModes();
+	SetNoneMode();
 
 	CloudPoints_IO IO_Tool;
 	if (!IO_Tool.CloudImport()) {
@@ -277,8 +278,7 @@ void AUX_UI::RedSelectClear() {
 void AUX_UI::initModes() {
 	SetNoneMode();
 	PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
-	viewer->removePointCloud("White_BrushCursorPoints");
-	viewer->addPointCloud(nullCloud, "White_BrushCursorPoints");
+	viewer->updatePointCloud(nullCloud, "White_BrushCursorPoints");
 }
 
 QModelIndex AUX_UI::searchParent(QModelIndex index) {
@@ -298,7 +298,7 @@ QModelIndex AUX_UI::searchParent(QModelIndex index) {
 void AUX_UI::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&) {
 	RedSelectClear();
 	SegClouds.clear();
-	initModes();
+	SetNoneMode();
 
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	if (index.row() == -1) {
@@ -307,27 +307,18 @@ void AUX_UI::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelecti
 		return;
 	}
 
-	int size = 0;
-	PointCloud<PointXYZRGB>::Ptr nowCloud(new PointCloud<PointXYZRGB>);
-	if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "complax_cloudInformation")
-	{
-		size = standardModel->itemFromIndex(index)->data().value<complax_cloudInformation>().cloud_data->size();
-		nowCloud = standardModel->itemFromIndex(index)->data().value<complax_cloudInformation>().cloud_data;
-	}
-	else if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "pcl::PointCloud<PointXYZRGB>::Ptr")
-	{
-		size = standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>()->size();
-		nowCloud = standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>();
-	}
+	int size = standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>()->size();
+	nowLayerCloud = standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>();
+
 	Selected_cloud->clear();
-	Selected_cloud = nowCloud->makeShared();
+	Selected_cloud = nowLayerCloud->makeShared();
 
 	QModelIndex TopParent = searchParent(index);
 	qDebug() << TopParent;
 	PointCloud<PointXYZRGB>::Ptr TopCloud(new PointCloud<PointXYZRGB>);
-	TopCloud=standardModel->itemFromIndex(TopParent)->data().value<PointCloud<PointXYZRGB>::Ptr>()->makeShared();
+	TopCloud = standardModel->itemFromIndex(TopParent)->data().value<PointCloud<PointXYZRGB>::Ptr>()->makeShared();
 	ViewCloudUpdate(TopCloud, true);
-	ViewCloudUpdate(nowCloud, false);
+	ViewCloudUpdate(nowLayerCloud, false);
 
 	QString selectedText = QString::fromStdString(std::to_string(size)) + " points.";
 	message->setText(selectedText);
@@ -339,9 +330,9 @@ void AUX_UI::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelecti
 	double norm = 0;
 	int searched_points = 0;
 	pcl::KdTreeFLANN<PointXYZRGB>::Ptr tree(new pcl::KdTreeFLANN<PointXYZRGB>);
-	tree->setInputCloud(nowCloud);
+	tree->setInputCloud(nowLayerCloud);
 
-	for (int i = 0; i < (nowCloud->size() >= 1000 ? 1000 : nowCloud->size()); ++i)
+	for (int i = 0; i < (nowLayerCloud->size() >= 1000 ? 1000 : nowLayerCloud->size()); ++i)
 	{
 		n = tree->nearestKSearch(i, 2, k_indices, k_sqr_distances);
 		if (n == 2)
@@ -356,7 +347,7 @@ void AUX_UI::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelecti
 
 	if (searched_points != 0) {
 		nowCloud_avg_distance = norm / searched_points;
-		brush_radius = nowCloud_avg_distance * 50;
+		brush_radius = nowCloud_avg_distance * 20;
 	}
 	else {
 		nowCloud_avg_distance = 0;
@@ -400,14 +391,8 @@ void AUX_UI::Slider_PreSegCloud() {
 
 	PointCloud<PointXYZRGB>::Ptr database_cloud(new PointCloud<PointXYZRGB>);
 	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
-	if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "complax_cloudInformation") {
-		copyPointCloud(*standardModel->itemFromIndex(index)->data().value<complax_cloudInformation>().cloud_data, *database_cloud);
-		copyPointCloud(*standardModel->itemFromIndex(index)->data().value<complax_cloudInformation>().cloud_data, *cld);
-	}
-	else if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "pcl::PointCloud<PointXYZRGB>::Ptr") {
-		copyPointCloud(*standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>(), *database_cloud);
-		copyPointCloud(*standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>(), *cld);
-	}
+	copyPointCloud(*nowLayerCloud, *database_cloud);
+	copyPointCloud(*nowLayerCloud, *cld);
 
 	std::vector<PointIndices> seg_cloud_2 = cpTools.CloudSegmentation(cld, preSeg_spinbox->value(), nowCloud_avg_distance);
 	for (int i = 0; i < cld->size(); i++)
@@ -440,7 +425,7 @@ void AUX_UI::Slider_confirmSegCloud() {
 		return;
 	for (int i = 0; i < SegClouds.size(); ++i)
 	{
-		QString segLayer ="child_" + QString::fromStdString(std::to_string(i));
+		QString segLayer = "child_" + QString::fromStdString(std::to_string(i));
 		TreeLayerController ly(standardModel);
 
 		QModelIndex index = ui.treeView->selectionModel()->currentIndex();
@@ -458,11 +443,6 @@ void AUX_UI::Tree_UserSegmentation() {
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	if (index.row() == -1)
 		return;
-	PointCloud<PointXYZRGB>::Ptr LayerCloud;
-	if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "complax_cloudInformation")
-		LayerCloud = standardModel->itemFromIndex(index)->data().value <complax_cloudInformation>().cloud_data;
-	else if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "pcl::PointCloud<PointXYZRGB>::Ptr")
-		LayerCloud = standardModel->itemFromIndex(index)->data().value <PointCloud<PointXYZRGB>::Ptr>();
 
 	if (select_map.size() > 0)
 	{
@@ -476,7 +456,7 @@ void AUX_UI::Tree_UserSegmentation() {
 			PointCloud<PointXYZRGB>::Ptr newCloud(new PointCloud<PointXYZRGB>);
 
 			for (map<int, PointXYZRGB>::iterator iter = select_map.begin(); iter != select_map.end(); ++iter)
-				newCloud->push_back(LayerCloud->points.at(iter->first));
+				newCloud->push_back(nowLayerCloud->points.at(iter->first));
 
 			if (!ly.AddLayer(text, newCloud->makeShared(), index))
 				return;
@@ -518,51 +498,63 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 	if ((event.getKeySym() == "x" || event.getKeySym() == "X") && event.keyDown()) {
 		if (GLOBAL_SELECTMODE != SelectMode::AREA_SELECT_MODE)
 		{
-			GLOBAL_SELECTMODE = SelectMode::AREA_SELECT_MODE;
-			brush_spinbox->setValue(1);
-
-			brush_slider->setVisible(false);
-			brush_spinbox->setVisible(false);
-			QIcon the_icon;
-			the_icon.addFile("./my_source/AreaSelect.png", QSize(), QIcon::Normal, QIcon::Off);
-			Tool_Mode->setIcon(the_icon);
+			SetAreaMode();
 		}
 		else
 		{
-			GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
-			brush_spinbox->setValue(1);
-
-			brush_slider->setVisible(false);
-			brush_spinbox->setVisible(false);
-			QIcon the_icon;
-			the_icon.addFile("./my_source/NonMode.png", QSize(), QIcon::Normal, QIcon::Off);
-			Tool_Mode->setIcon(the_icon);
+			SetNoneMode();
 		}
 	}
 
 	if ((event.getKeySym() == "b" || event.getKeySym() == "B") && event.keyDown()) {
 		if (GLOBAL_SELECTMODE != SelectMode::BRUSH_SELECT_MODE)
 		{
-			GLOBAL_SELECTMODE = SelectMode::BRUSH_SELECT_MODE;
+			SetBrushMode();
+			brush_radius = nowCloud_avg_distance * 20;
 			brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
 				std::ceil(brush_radius / nowCloud_avg_distance));
 
-			brush_slider->setVisible(true);
-			brush_spinbox->setVisible(true);
-			QIcon the_icon;
-			the_icon.addFile("./my_source/cursor1-2.png", QSize(), QIcon::Normal, QIcon::Off);
-			Tool_Mode->setIcon(the_icon);
+			QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+			if (index.row() == -1)
+				return;
+
+			if (nowLayerCloud->size() > 0 )
+			{
+				vtkRenderWindowInteractor* viewer_interactor = viewer->getRenderWindow()->GetInteractor();
+				vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast(viewer_interactor->GetPicker());
+				float mouseX = (viewer_interactor->GetEventPosition()[0]);
+				float mouseY = (viewer_interactor->GetEventPosition()[1]);
+				viewer_interactor->StartPickCallback();
+				//-------check-^^^---------
+				vtkRenderer* ren = viewer_interactor->FindPokedRenderer(mouseX, mouseY);
+				point_picker->Pick(mouseX, mouseY, 0.0, ren);
+				double picked[3]; point_picker->GetPickPosition(picked);
+
+				PointCloud<PointXYZRGB>::Ptr cursor_premark(new PointCloud<PointXYZRGB>);
+				KdTreeFLANN<PointXYZRGB>::Ptr tree(new KdTreeFLANN<PointXYZRGB>);
+				std::vector<int> foundPointID;
+				std::vector<float> foundPointSquaredDistance;
+				tree->setInputCloud(nowLayerCloud);
+				PointXYZRGB pickPoint;
+				pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
+				pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
+
+				if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
+				{
+					for (int i = 0; i < foundPointID.size() - 1; ++i) {
+						cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);						
+					}
+				}
+
+				visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
+				viewer->removePointCloud("White_BrushCursorPoints");
+				viewer->addPointCloud(cursor_premark, white, "White_BrushCursorPoints");
+				ui.qvtkWidget->update();
+			}
 		}
 		else
 		{
-			GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
-			brush_spinbox->setValue(1);
-
-			brush_slider->setVisible(false);
-			brush_spinbox->setVisible(false);
-			QIcon the_icon;
-			the_icon.addFile("./my_source/NonMode.png", QSize(), QIcon::Normal, QIcon::Off);
-			Tool_Mode->setIcon(the_icon);
+			SetNoneMode();
 		}
 	}
 
@@ -574,14 +566,80 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 
 		brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
 			std::ceil(brush_radius / nowCloud_avg_distance));
-		ui.qvtkWidget->update();
+		
+		if (nowLayerCloud->size() > 0)
+		{
+			vtkRenderWindowInteractor* viewer_interactor = viewer->getRenderWindow()->GetInteractor();
+			vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast(viewer_interactor->GetPicker());
+			float mouseX = (viewer_interactor->GetEventPosition()[0]);
+			float mouseY = (viewer_interactor->GetEventPosition()[1]);
+			viewer_interactor->StartPickCallback();
+			//-------check-^^^---------
+			vtkRenderer* ren = viewer_interactor->FindPokedRenderer(mouseX, mouseY);
+			point_picker->Pick(mouseX, mouseY, 0.0, ren);
+			double picked[3]; point_picker->GetPickPosition(picked);
+
+			PointCloud<PointXYZRGB>::Ptr cursor_premark(new PointCloud<PointXYZRGB>);
+			KdTreeFLANN<PointXYZRGB>::Ptr tree(new KdTreeFLANN<PointXYZRGB>);
+			std::vector<int> foundPointID;
+			std::vector<float> foundPointSquaredDistance;
+			tree->setInputCloud(nowLayerCloud);
+			PointXYZRGB pickPoint;
+			pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
+			pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
+
+			if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
+			{
+				for (int i = 0; i < foundPointID.size() - 1; ++i) {
+					cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);
+				}
+			}
+
+			visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
+			viewer->removePointCloud("White_BrushCursorPoints");
+			viewer->addPointCloud(cursor_premark, white, "White_BrushCursorPoints");
+			ui.qvtkWidget->update();
+		}
 	}
 	if ((event.getKeySym() == "m" || event.getKeySym() == "M") && event.keyDown() &&
 		GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE) {
 		brush_radius += nowCloud_avg_distance;
 		brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
 			std::ceil(brush_radius / nowCloud_avg_distance));
-		ui.qvtkWidget->update();
+
+		if (nowLayerCloud->size() > 0)
+		{
+			vtkRenderWindowInteractor* viewer_interactor = viewer->getRenderWindow()->GetInteractor();
+			vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast(viewer_interactor->GetPicker());
+			float mouseX = (viewer_interactor->GetEventPosition()[0]);
+			float mouseY = (viewer_interactor->GetEventPosition()[1]);
+			viewer_interactor->StartPickCallback();
+			//-------check-^^^---------
+			vtkRenderer* ren = viewer_interactor->FindPokedRenderer(mouseX, mouseY);
+			point_picker->Pick(mouseX, mouseY, 0.0, ren);
+			double picked[3]; point_picker->GetPickPosition(picked);
+
+			PointCloud<PointXYZRGB>::Ptr cursor_premark(new PointCloud<PointXYZRGB>);
+			KdTreeFLANN<PointXYZRGB>::Ptr tree(new KdTreeFLANN<PointXYZRGB>);
+			std::vector<int> foundPointID;
+			std::vector<float> foundPointSquaredDistance;
+			tree->setInputCloud(nowLayerCloud);
+			PointXYZRGB pickPoint;
+			pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
+			pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
+
+			if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
+			{
+				for (int i = 0; i < foundPointID.size() - 1; ++i) {
+					cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);
+				}
+			}
+
+			visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
+			viewer->removePointCloud("White_BrushCursorPoints");
+			viewer->addPointCloud(cursor_premark, white, "White_BrushCursorPoints");
+			ui.qvtkWidget->update();
+		}
 	}
 }
 
@@ -595,7 +653,7 @@ void AUX_UI::SetBrushMode() {
 	the_icon.addFile("./my_source/cursor1-2.png", QSize(), QIcon::Normal, QIcon::Off);
 	Tool_Mode->setIcon(the_icon);
 	GLOBAL_SELECTMODE = SelectMode::BRUSH_SELECT_MODE;
-	sty_ovr->SetCurrentMode_AreaPick(0);
+	my_interactorStyle->SetCurrentMode_AreaPick(0);
 }
 void AUX_UI::SetAreaMode() {
 	brush_spinbox->setValue(1);
@@ -606,7 +664,10 @@ void AUX_UI::SetAreaMode() {
 	the_icon.addFile("./my_source/AreaSelect.png", QSize(), QIcon::Normal, QIcon::Off);
 	Tool_Mode->setIcon(the_icon);
 	GLOBAL_SELECTMODE = SelectMode::AREA_SELECT_MODE;
-	sty_ovr->SetCurrentMode_AreaPick(1);
+	my_interactorStyle->SetCurrentMode_AreaPick(1);
+
+	PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
+	viewer->updatePointCloud(nullCloud, "White_BrushCursorPoints");
 }
 void AUX_UI::SetNoneMode() {
 	brush_spinbox->setValue(1);
@@ -617,7 +678,10 @@ void AUX_UI::SetNoneMode() {
 	the_icon.addFile("./my_source/NonMode.png", QSize(), QIcon::Normal, QIcon::Off);
 	Tool_Mode->setIcon(the_icon);
 	GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
-	sty_ovr->SetCurrentMode_AreaPick(0);
+	my_interactorStyle->SetCurrentMode_AreaPick(0);
+
+	PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
+	viewer->updatePointCloud(nullCloud, "White_BrushCursorPoints");
 }
 
 //selector 
@@ -625,13 +689,8 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	if (index.row() == -1)
 		return;
-	PointCloud<PointXYZRGB>::Ptr LayerCloud;
-	if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "complax_cloudInformation")
-		LayerCloud = standardModel->itemFromIndex(index)->data().value <complax_cloudInformation>().cloud_data;
-	else if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "pcl::PointCloud<PointXYZRGB>::Ptr")
-		LayerCloud = standardModel->itemFromIndex(index)->data().value <PointCloud<PointXYZRGB>::Ptr>();
 
-	if (LayerCloud->size() > 0 && GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE)
+	if (nowLayerCloud->size() > 0 && GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE)
 	{
 		if (event.getType() == event.MouseMove)
 		{
@@ -649,7 +708,7 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 			KdTreeFLANN<PointXYZRGB>::Ptr tree(new KdTreeFLANN<PointXYZRGB>);
 			std::vector<int> foundPointID;
 			std::vector<float> foundPointSquaredDistance;
-			tree->setInputCloud(LayerCloud);
+			tree->setInputCloud(nowLayerCloud);
 			PointXYZRGB pickPoint;
 			pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
 			pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
@@ -657,22 +716,22 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 			if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
 			{
 				for (int i = 0; i < foundPointID.size() - 1; ++i) {
-					cursor_premark->push_back(LayerCloud->points[foundPointID[i]]);
+					cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);
 					int nowLayer_selectedID = foundPointID[i];
 					if (keyBoard_ctrl && select_map.find(nowLayer_selectedID) == select_map.end())
 					{
-						Selected_cloud->points.at(nowLayer_selectedID) = LayerCloud->points.at(nowLayer_selectedID);
+						Selected_cloud->points.at(nowLayer_selectedID) = nowLayerCloud->points.at(nowLayer_selectedID);
 						Selected_cloud->points.at(nowLayer_selectedID).r = 255;
 						Selected_cloud->points.at(nowLayer_selectedID).g = 0;
 						Selected_cloud->points.at(nowLayer_selectedID).b = 0;
-						select_map.insert(pair<int, PointXYZRGB>(nowLayer_selectedID, LayerCloud->points.at(nowLayer_selectedID)));
+						select_map.insert(pair<int, PointXYZRGB>(nowLayer_selectedID, nowLayerCloud->points.at(nowLayer_selectedID)));
 					}
 
 					else if (keyBoard_alt && select_map.find(nowLayer_selectedID) != select_map.end())
 					{
-						Selected_cloud->points.at(nowLayer_selectedID).r = LayerCloud->points.at(nowLayer_selectedID).r;
-						Selected_cloud->points.at(nowLayer_selectedID).g = LayerCloud->points.at(nowLayer_selectedID).g;
-						Selected_cloud->points.at(nowLayer_selectedID).b = LayerCloud->points.at(nowLayer_selectedID).b;
+						Selected_cloud->points.at(nowLayer_selectedID).r = nowLayerCloud->points.at(nowLayer_selectedID).r;
+						Selected_cloud->points.at(nowLayer_selectedID).g = nowLayerCloud->points.at(nowLayer_selectedID).g;
+						Selected_cloud->points.at(nowLayer_selectedID).b = nowLayerCloud->points.at(nowLayer_selectedID).b;
 						select_map.erase(nowLayer_selectedID);
 					}
 				}
@@ -694,13 +753,6 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	if (index.row() == -1)
 		return;
-
-	PointCloud<PointXYZRGB>::Ptr LayerCloud;
-	if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "complax_cloudInformation")
-		LayerCloud = standardModel->itemFromIndex(index)->data().value <complax_cloudInformation>().cloud_data;
-	else if (std::string(standardModel->itemFromIndex(index)->data().typeName()) == "pcl::PointCloud<PointXYZRGB>::Ptr")
-		LayerCloud = standardModel->itemFromIndex(index)->data().value <PointCloud<PointXYZRGB>::Ptr>();
-
 	//AREA PICK CLOUD
 	std::vector<int> foundPointID;
 	if (event.getPointsIndices(foundPointID) <= 0) {
@@ -709,7 +761,7 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 		if (!select_map.empty()) {
 			select_map.clear();
 			Selected_cloud->clear();
-			ViewCloudUpdate(LayerCloud->makeShared(), false);
+			ViewCloudUpdate(nowLayerCloud->makeShared(), false);
 		}
 		return;
 	}
@@ -719,7 +771,7 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 			int nowLayer_selectedID = foundPointID[i];
 			if (select_map.find(nowLayer_selectedID) == select_map.end())
 			{
-				select_map.insert(pair<int, PointXYZRGB>(nowLayer_selectedID, LayerCloud->points.at(nowLayer_selectedID)));
+				select_map.insert(pair<int, PointXYZRGB>(nowLayer_selectedID, nowLayerCloud->points.at(nowLayer_selectedID)));
 			}
 		}
 	}
@@ -737,15 +789,15 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 	{
 		select_map.clear();
 		Selected_cloud->clear();
-		Selected_cloud->resize(LayerCloud->size());
+		Selected_cloud->resize(nowLayerCloud->size());
 		for (int i = 0; i < foundPointID.size(); ++i) {
 			int nowLayer_selectedID = foundPointID[i];
 			if (select_map.find(nowLayer_selectedID) == select_map.end()) {
-				select_map.insert(pair<int, PointXYZRGB>(nowLayer_selectedID, LayerCloud->points.at(nowLayer_selectedID)));
+				select_map.insert(pair<int, PointXYZRGB>(nowLayer_selectedID, nowLayerCloud->points.at(nowLayer_selectedID)));
 			}
 		}
 	}
-	Selected_cloud = LayerCloud->makeShared();
+	Selected_cloud = nowLayerCloud->makeShared();
 	for (map<int, PointXYZRGB>::iterator iter = select_map.begin(); iter != select_map.end(); ++iter)
 	{
 		Selected_cloud->points.at(iter->first).r = 255;
