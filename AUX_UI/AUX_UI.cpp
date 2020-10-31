@@ -663,6 +663,7 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 		if (!select_map.empty()) {
 			select_map.clear();
 			Selected_cloud->clear();
+			Selected_cloud = nowLayerCloud->makeShared();
 			ViewCloudUpdate(nowLayerCloud->makeShared(), false);
 		}
 		return;
