@@ -47,7 +47,7 @@ AUX_UI::AUX_UI(QWidget* parent)
 
 	brush_spinbox = new my_spinBox(Top_toolBar, "brush_spinbox");
 	brush_spinbox->setRange(1, 100);
-	Top_toolBar->addWidget(brush_spinbox);
+	brush_spinBoxAction =Top_toolBar->addWidget(brush_spinbox);
 
 	QLabel* sapceLable = new QLabel(NULL);
 	Top_toolBar->addWidget(sapceLable);
@@ -55,7 +55,7 @@ AUX_UI::AUX_UI(QWidget* parent)
 	brush_slider = new my_slider(Top_toolBar);
 	brush_slider->setRange(1, 100);
 	brush_slider->setMaximumWidth(80);
-	Top_toolBar->addWidget(brush_slider);
+	brush_sliderAction =Top_toolBar->addWidget(brush_slider);
 
 	QLabel* sapceLable_1 = new QLabel(NULL);
 	Top_toolBar->addWidget(sapceLable_1);
@@ -546,10 +546,11 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 		WhiteCursorUpdate();
 	}
 }
+#include <qaction.h>
+void AUX_UI::SetBrushMode() {	
+	brush_sliderAction->setVisible(true);
+	brush_spinBoxAction->setVisible(true);
 
-void AUX_UI::SetBrushMode() {
-	brush_slider->setVisible(true);
-	brush_spinbox->setVisible(true);
 	brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
 		std::ceil(brush_radius / nowCloud_avg_distance));
 
@@ -560,9 +561,8 @@ void AUX_UI::SetBrushMode() {
 	my_interactorStyle->SetCurrentMode_AreaPick(0);
 }
 void AUX_UI::SetAreaMode() {
-	brush_spinbox->setValue(1);
-	brush_slider->setVisible(false);
-	brush_spinbox->setVisible(false);
+	brush_sliderAction->setVisible(false);
+	brush_spinBoxAction->setVisible(false);
 
 	QIcon the_icon;
 	the_icon.addFile("./my_source/AreaSelect.png", QSize(), QIcon::Normal, QIcon::Off);
@@ -574,9 +574,8 @@ void AUX_UI::SetAreaMode() {
 	viewer->updatePointCloud(nullCloud, "White_BrushCursorPoints");
 }
 void AUX_UI::SetNoneMode() {
-	brush_spinbox->setValue(1);
-	brush_slider->setVisible(false);
-	brush_spinbox->setVisible(false);
+	brush_sliderAction->setVisible(false);
+	brush_spinBoxAction->setVisible(false);
 
 	QIcon the_icon;
 	the_icon.addFile("./my_source/NonMode.png", QSize(), QIcon::Normal, QIcon::Off);

@@ -42,7 +42,7 @@ private:
 	static Ui::AUX_UIClass ui;
 	QLabel* message;
 
-	QToolBar* Top_toolBar;
+	static QToolBar* Top_toolBar;
 	static my_toolButton* Tool_Mode;
 	static my_spinBox* brush_spinbox;
 	static my_slider* brush_slider;
@@ -107,6 +107,9 @@ private:
 	static bool keyBoard_alt;
 
 	static PointCloud<PointXYZRGB>::Ptr nowLayerCloud;
+
+	static QAction* brush_spinBoxAction;
+	static QAction* brush_sliderAction;
 };
 Ui::AUX_UIClass AUX_UI::ui;
 
@@ -116,6 +119,8 @@ QItemSelectionModel* AUX_UI::selectionModel;
 boost::shared_ptr<pcl::visualization::PCLVisualizer> AUX_UI::viewer;
 InteractorStyle_override* AUX_UI::my_interactorStyle;
 my_toolButton* AUX_UI::Tool_Mode;
+
+QToolBar* AUX_UI::Top_toolBar;
 my_spinBox* AUX_UI::brush_spinbox;
 my_slider* AUX_UI::brush_slider;
 
@@ -129,3 +134,6 @@ PointCloud<PointXYZRGB>::Ptr AUX_UI::nowLayerCloud;
 //¤w¿ïÂI¶³
 PointCloud<PointXYZRGB>::Ptr AUX_UI::Selected_cloud;
 static std::map<int, PointXYZRGB> select_map;
+
+ QAction* AUX_UI::brush_spinBoxAction;
+ QAction* AUX_UI::brush_sliderAction;
