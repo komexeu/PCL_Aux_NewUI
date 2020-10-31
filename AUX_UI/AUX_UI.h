@@ -78,7 +78,7 @@ public Q_SLOTS:
 	void Tree_UserSegmentation();
 	void Tree_deleteLayer();
 	void changeViewerColor(const QColor& c);
-	void  Brush_change();
+	void  Brush_SizeChange();
 public:
 	//if true only delete white cursor,false for update position of white cursor.
 	static void WhiteCursorUpdate(bool whiteCursor_clear);

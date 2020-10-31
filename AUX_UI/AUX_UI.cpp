@@ -46,16 +46,16 @@ AUX_UI::AUX_UI(QWidget* parent)
 	Top_toolBar->addWidget(Tool_Mode);
 
 	brush_spinbox = new my_spinBox(Top_toolBar, "brush_spinbox");
-	brush_spinbox->setRange(1, 100);
-	brush_spinBoxAction =Top_toolBar->addWidget(brush_spinbox);
+	brush_spinbox->setRange(1, 300);
+	brush_spinBoxAction = Top_toolBar->addWidget(brush_spinbox);
 
 	QLabel* sapceLable = new QLabel(NULL);
 	Top_toolBar->addWidget(sapceLable);
 
 	brush_slider = new my_slider(Top_toolBar);
-	brush_slider->setRange(1, 100);
+	brush_slider->setRange(1, 300);
 	brush_slider->setMaximumWidth(80);
-	brush_sliderAction =Top_toolBar->addWidget(brush_slider);
+	brush_sliderAction = Top_toolBar->addWidget(brush_slider);
 
 	QLabel* sapceLable_1 = new QLabel(NULL);
 	Top_toolBar->addWidget(sapceLable_1);
@@ -147,6 +147,8 @@ AUX_UI::AUX_UI(QWidget* parent)
 	message->clear();
 	ui.statusBar->addPermanentWidget(message);
 	//------^ UI Setting ^--------
+	//-----init data-----
+	brush_radius = 20;
 	//------v ToolConnect v-------
 	Init_Basedata();
 	Set_ToolConnect();
@@ -227,7 +229,7 @@ void AUX_UI::Set_ToolConnect() {
 	//-------delete layer------
 	QObject::connect(TrashCan, SIGNAL(clicked()), this, SLOT(Tree_deleteLayer()));
 	//---------set brush----
-	QObject::connect(brush_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Brush_change()));
+	QObject::connect(brush_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Brush_SizeChange()));
 	//-------viewer color change----
 	QColorDialog* Viewer_Qcolordia = new QColorDialog();
 	connect(Viewer_Color_Style, SIGNAL(clicked()), Viewer_Qcolordia, SLOT(open()));
@@ -273,7 +275,7 @@ void AUX_UI::ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool rese
 }
 void AUX_UI::RedSelectClear() {
 	select_map.clear();
-	Selected_cloud=nowLayerCloud->makeShared();
+	Selected_cloud = nowLayerCloud->makeShared();
 }
 void AUX_UI::initModes() {
 	SetNoneMode();
@@ -347,11 +349,9 @@ void AUX_UI::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelecti
 
 	if (searched_points != 0) {
 		nowCloud_avg_distance = norm / searched_points;
-		brush_radius = nowCloud_avg_distance * 20;
 	}
 	else {
 		nowCloud_avg_distance = 0;
-		brush_radius = 0;
 	}
 }
 
@@ -515,9 +515,7 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 		if (GLOBAL_SELECTMODE != SelectMode::BRUSH_SELECT_MODE)
 		{
 			SetBrushMode();
-			brush_radius = nowCloud_avg_distance * 20;
-			brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
-				std::ceil(brush_radius / nowCloud_avg_distance));
+			brush_spinbox->setValue(brush_radius);
 
 			QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 			if (index.row() == -1)
@@ -531,29 +529,23 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 
 	if ((event.getKeySym() == "n" || event.getKeySym() == "N") && event.keyDown() &&
 		GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE) {
-		brush_radius <= nowCloud_avg_distance ?
-			brush_radius = nowCloud_avg_distance :
-			brush_radius -= nowCloud_avg_distance;
-
-		brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
-			std::ceil(brush_radius / nowCloud_avg_distance));
+		brush_radius - 1 < 1 ? brush_radius = 1 : --brush_radius;
+		brush_spinbox->setValue(brush_radius);
 		WhiteCursorUpdate(false);
 	}
 	if ((event.getKeySym() == "m" || event.getKeySym() == "M") && event.keyDown() &&
 		GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE) {
-		brush_radius += nowCloud_avg_distance;
-		brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
-			std::ceil(brush_radius / nowCloud_avg_distance));
+		++brush_radius;
+		brush_spinbox->setValue(brush_radius);
 		WhiteCursorUpdate(false);
 	}
 }
 #include <qaction.h>
-void AUX_UI::SetBrushMode() {	
+void AUX_UI::SetBrushMode() {
 	brush_sliderAction->setVisible(true);
 	brush_spinBoxAction->setVisible(true);
 
-	brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
-		std::ceil(brush_radius / nowCloud_avg_distance));
+	brush_spinbox->setValue(brush_radius);
 
 	QIcon the_icon;
 	the_icon.addFile("./my_source/cursor1-2.png", QSize(), QIcon::Normal, QIcon::Off);
@@ -617,7 +609,7 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 			pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
 			pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
 
-			if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
+			if (tree->radiusSearch(pickPoint, nowCloud_avg_distance * brush_radius, foundPointID, foundPointSquaredDistance) > 0)
 			{
 				for (int i = 0; i < foundPointID.size() - 1; ++i) {
 					cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);
@@ -710,11 +702,10 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 	ViewCloudUpdate(Selected_cloud, false);
 }
 //-------brush-----
-void  AUX_UI::Brush_change() {
+void  AUX_UI::Brush_SizeChange() {
 	if (GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE)
 	{
-		brush_radius = nowCloud_avg_distance * brush_spinbox->value();
-		ui.qvtkWidget->update();
+		brush_radius = brush_spinbox->value();
 	}
 }
 
@@ -740,7 +731,7 @@ void AUX_UI::WhiteCursorUpdate(bool whiteCursor_clear) {
 		pickPoint.x = (float)picked[0]; (float)pickPoint.y = picked[1]; (float)pickPoint.z = picked[2];
 		pickPoint.r = 255, pickPoint.g = 255, pickPoint.b = 255;
 
-		if (tree->radiusSearch(pickPoint, brush_radius, foundPointID, foundPointSquaredDistance) > 0)
+		if (tree->radiusSearch(pickPoint, nowCloud_avg_distance * brush_radius, foundPointID, foundPointSquaredDistance) > 0)
 		{
 			for (int i = 0; i < foundPointID.size() - 1; ++i) {
 				cursor_premark->push_back(nowLayerCloud->points[foundPointID[i]]);
