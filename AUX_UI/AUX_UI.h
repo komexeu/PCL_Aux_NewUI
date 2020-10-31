@@ -80,7 +80,8 @@ public Q_SLOTS:
 	void changeViewerColor(const QColor& c);
 	void  Brush_change();
 public:
-	static void WhiteCursorUpdate();
+	//if true only delete white cursor,false for update position of white cursor.
+	static void WhiteCursorUpdate(bool whiteCursor_clear);
 	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
 	void RedSelectClear();
 	static void initModes();

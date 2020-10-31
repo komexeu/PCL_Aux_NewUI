@@ -273,7 +273,7 @@ void AUX_UI::ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool rese
 }
 void AUX_UI::RedSelectClear() {
 	select_map.clear();
-	Selected_cloud->clear();
+	Selected_cloud=nowLayerCloud->makeShared();
 }
 void AUX_UI::initModes() {
 	SetNoneMode();
@@ -372,6 +372,10 @@ void AUX_UI::Tree_Smooth() {
 		QVariant itemCloud;
 		itemCloud.setValue(smooth_cld);
 		standardModel->itemFromIndex(index)->setData(itemCloud);
+
+		nowLayerCloud = smooth_cld;
+		Selected_cloud->clear();
+		Selected_cloud = nowLayerCloud->makeShared();
 		//view update
 		ViewCloudUpdate(smooth_cld, false);
 	}
@@ -417,7 +421,6 @@ void AUX_UI::Slider_PreSegCloud() {
 		SegClouds.push_back(tmp);
 	}
 	ViewCloudUpdate(cld, false);
-
 	RedSelectClear();
 }
 void AUX_UI::Slider_confirmSegCloud() {
@@ -519,7 +522,6 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 			QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 			if (index.row() == -1)
 				return;
-			WhiteCursorUpdate();
 		}
 		else
 		{
@@ -535,15 +537,14 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 
 		brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
 			std::ceil(brush_radius / nowCloud_avg_distance));
-		WhiteCursorUpdate();
+		WhiteCursorUpdate(false);
 	}
 	if ((event.getKeySym() == "m" || event.getKeySym() == "M") && event.keyDown() &&
 		GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE) {
 		brush_radius += nowCloud_avg_distance;
 		brush_spinbox->setValue(std::ceil(brush_radius / nowCloud_avg_distance) < 1 ? 1 :
 			std::ceil(brush_radius / nowCloud_avg_distance));
-
-		WhiteCursorUpdate();
+		WhiteCursorUpdate(false);
 	}
 }
 #include <qaction.h>
@@ -559,6 +560,8 @@ void AUX_UI::SetBrushMode() {
 	Tool_Mode->setIcon(the_icon);
 	GLOBAL_SELECTMODE = SelectMode::BRUSH_SELECT_MODE;
 	my_interactorStyle->SetCurrentMode_AreaPick(0);
+
+	WhiteCursorUpdate(false);
 }
 void AUX_UI::SetAreaMode() {
 	brush_sliderAction->setVisible(false);
@@ -570,8 +573,7 @@ void AUX_UI::SetAreaMode() {
 	GLOBAL_SELECTMODE = SelectMode::AREA_SELECT_MODE;
 	my_interactorStyle->SetCurrentMode_AreaPick(1);
 
-	PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
-	viewer->updatePointCloud(nullCloud, "White_BrushCursorPoints");
+	WhiteCursorUpdate(true);
 }
 void AUX_UI::SetNoneMode() {
 	brush_sliderAction->setVisible(false);
@@ -583,8 +585,7 @@ void AUX_UI::SetNoneMode() {
 	GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
 	my_interactorStyle->SetCurrentMode_AreaPick(0);
 
-	PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
-	viewer->updatePointCloud(nullCloud, "White_BrushCursorPoints");
+	WhiteCursorUpdate(true);
 }
 
 //selector 
@@ -716,8 +717,8 @@ void  AUX_UI::Brush_change() {
 	}
 }
 
-void AUX_UI::WhiteCursorUpdate() {
-	if (nowLayerCloud->size() > 0)
+void AUX_UI::WhiteCursorUpdate(bool whiteCursor_clear) {
+	if (nowLayerCloud->size() > 0 && !whiteCursor_clear)
 	{
 		vtkRenderWindowInteractor* viewer_interactor = viewer->getRenderWindow()->GetInteractor();
 		vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast(viewer_interactor->GetPicker());
@@ -748,6 +749,12 @@ void AUX_UI::WhiteCursorUpdate() {
 		visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
 		viewer->removePointCloud("White_BrushCursorPoints");
 		viewer->addPointCloud(cursor_premark, white, "White_BrushCursorPoints");
+		ui.qvtkWidget->update();
+	}
+	else if (whiteCursor_clear)
+	{
+		PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
+		viewer->updatePointCloud(nullCloud, "White_BrushCursorPoints");
 		ui.qvtkWidget->update();
 	}
 }
