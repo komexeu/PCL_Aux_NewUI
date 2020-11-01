@@ -69,7 +69,6 @@ private:
 	my_spinBox* preSeg_spinbox;
 	my_slider* preSeg_slider;
 	my_button* preSeg_confirm;
-	QStandardItem* item;
 
 	//features for UI control PCL 
 public Q_SLOTS:

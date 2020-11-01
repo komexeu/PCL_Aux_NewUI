@@ -7,6 +7,11 @@
 
 using namespace pcl;
 
+//struct Layer_Data {
+//	PointCloud<PointXYZRGB>::Ptr cloud;
+//	std::map<int, int> ID_groupID;
+//};
+
 enum class SelectMode :int
 {
 	NO_SELECT_MODE,

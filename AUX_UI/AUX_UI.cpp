@@ -22,7 +22,6 @@ AUX_UI::AUX_UI(QWidget* parent)
 	//------init tree view------
 	standardModel = new QStandardItemModel(ui.treeView);
 	ui.treeView->setHeaderHidden(true);
-	item = standardModel->invisibleRootItem();
 	ui.treeView->setModel(standardModel);
 	ui.treeView->expandAll();
 	//----------pcl visualizer----------
@@ -48,6 +47,7 @@ AUX_UI::AUX_UI(QWidget* parent)
 	brush_spinbox = new my_spinBox(Top_toolBar, "brush_spinbox");
 	brush_spinbox->setRange(1, 300);
 	brush_spinBoxAction = Top_toolBar->addWidget(brush_spinbox);
+	brush_spinBoxAction->setVisible(false);
 
 	QLabel* sapceLable = new QLabel(NULL);
 	Top_toolBar->addWidget(sapceLable);
@@ -56,11 +56,12 @@ AUX_UI::AUX_UI(QWidget* parent)
 	brush_slider->setRange(1, 300);
 	brush_slider->setMaximumWidth(80);
 	brush_sliderAction = Top_toolBar->addWidget(brush_slider);
+	brush_sliderAction->setVisible(false);
 
 	QLabel* sapceLable_1 = new QLabel(NULL);
 	Top_toolBar->addWidget(sapceLable_1);
 
-	confirm_userSeg = new my_button(Top_toolBar, QString::fromUtf8("confirm"));
+	confirm_userSeg = new my_button(Top_toolBar, QString::fromUtf8("Mark segment confirm"));
 	confirm_userSeg->set_font_color(QColor(255, 255, 255));
 	confirm_userSeg->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	Top_toolBar->addWidget(confirm_userSeg);
@@ -121,9 +122,11 @@ AUX_UI::AUX_UI(QWidget* parent)
 	preSeg_groupbox->addWidget(0, QFormLayout::SpanningRole, SegMode_button);
 	//----
 	preSeg_spinbox = new my_spinBox(smooth_groupbox, "preSeg_spinBox");
+	preSeg_spinbox->setRange(0, 500);
 	preSeg_groupbox->addWidget(1, QFormLayout::LabelRole, preSeg_spinbox);
 
 	preSeg_slider = new my_slider(preSeg_groupbox);
+	preSeg_slider->setRange(0, 500);
 	preSeg_groupbox->addWidget(1, QFormLayout::FieldRole, preSeg_slider);
 
 	preSeg_confirm = new my_button(preSeg_groupbox, QString::fromUtf8("confirm"));
@@ -295,10 +298,16 @@ void AUX_UI::SegMode_Change() {
 	if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING) {
 		GLOBAL_SEGMENTMODE = SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION;
 		SegMode_button->setText("Euclidean");
+		preSeg_slider->setRange(0, 500);
+		preSeg_spinbox->setRange(0, 500);
+		preSeg_spinbox->setValue(0);
 	}
 	else if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION) {
 		GLOBAL_SEGMENTMODE = SegmentMode::REGION_GROWING;
 		SegMode_button->setText("Region Growing");
+		preSeg_slider->setRange(0, 200);
+		preSeg_spinbox->setRange(0, 200);
+		preSeg_spinbox->setValue(0);
 	}
 }
 
@@ -489,6 +498,7 @@ void AUX_UI::Tree_UserSegmentation() {
 				return;
 
 			RedSelectClear();
+			ViewCloudUpdate(nowLayerCloud, false);
 		}
 	}
 }
