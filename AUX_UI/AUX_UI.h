@@ -30,6 +30,8 @@ public 	Q_SLOTS:
 	static void SetAreaMode();
 	static void SetBrushMode();
 	static void SetNoneMode();
+
+	void SegMode_Change();
 public:
 	AUX_UI(QWidget* parent = Q_NULLPTR);
 	//¡‰ΩL®∆•Û
@@ -63,6 +65,7 @@ private:
 	my_button* smooth_confirm;
 
 	my_foldGroupBox* preSeg_groupbox;
+	my_button* SegMode_button;
 	my_spinBox* preSeg_spinbox;
 	my_slider* preSeg_slider;
 	my_button* preSeg_confirm;

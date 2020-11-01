@@ -2,6 +2,8 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/surface/mls.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/segmentation/region_growing.h>
 
 vector<PointIndices> CloudPoints_Tools::CloudSegmentation(PointCloud<PointXYZRGB>::Ptr nowLayerCloud
 	, int sliderValue, float nowCloud_avg_distance) {
@@ -31,8 +33,28 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation(PointCloud<PointXYZRGB
 	return cluster_indice;
 }
 
-void CloudPoints_Tools::CloudColorChange(PointCloud<PointXYZRGB>::Ptr nowLayerCloud) {
+vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowing(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int sliderValue, float nowCloud_avg_distance) {
+	search::KdTree<PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
+	pcl::PointCloud <pcl::Normal>::Ptr normals(new pcl::PointCloud <pcl::Normal>);
+	pcl::NormalEstimation<pcl::PointXYZRGB, pcl::Normal> normal_estimator;
+	normal_estimator.setSearchMethod(tree);
+	normal_estimator.setInputCloud(nowLayerCloud);
+	normal_estimator.setKSearch(50);
+	normal_estimator.compute(*normals);
 
+	pcl::RegionGrowing<pcl::PointXYZRGB, pcl::Normal> region;
+	region.setMinClusterSize(300);
+	region.setSearchMethod(tree);
+	region.setNumberOfNeighbours(sliderValue);
+	region.setInputCloud(nowLayerCloud);
+	region.setInputNormals(normals);
+	region.setSmoothnessThreshold(20.0 / 180.0 * M_PI);
+	region.setCurvatureThreshold(1.0);
+
+	std::vector <pcl::PointIndices> cluster_indice;
+	region.extract(cluster_indice);
+
+	return cluster_indice;
 }
 
 PointCloud<PointXYZRGB>::Ptr CloudPoints_Tools::CloudSmooth(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, float smooth_strength) {

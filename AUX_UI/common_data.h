@@ -7,7 +7,6 @@
 
 using namespace pcl;
 
-
 enum class SelectMode :int
 {
 	NO_SELECT_MODE,
@@ -15,6 +14,13 @@ enum class SelectMode :int
 	AREA_SELECT_MODE
 };
 static SelectMode GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
+
+enum class SegmentMode :int
+{
+	EUCLIDEAN_CLUSTER_EXTRACTION,
+	REGION_GROWING
+};
+static SegmentMode GLOBAL_SEGMENTMODE = SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION;
 
 namespace ColorScale {
 	struct Color_5Level {

@@ -1,6 +1,6 @@
 #include <my_button.h>
 
-my_button::my_button(QWidget *parent, QString name) :QPushButton(parent) {
+my_button::my_button(QWidget* parent, QString name) :QPushButton(parent) {
 	this->setObjectName(name);
 	this->setFocusPolicy(Qt::NoFocus);
 	this->setText(name);
@@ -16,7 +16,8 @@ void my_button::setColor(QColor color) {
 		"background-color: rgb(%1, %2, %3);"
 		"font-size: 16px;"
 		"border-radius: 3px;"
-		"border:0px;").arg(color.red()).arg(color.green()).arg(color.blue()));
+		"border:0px;"
+		"padding:3px 3px 3px 3px;").arg(color.red()).arg(color.green()).arg(color.blue()));
 	b_color = color;
 	update();
 }
@@ -24,10 +25,10 @@ QColor my_button::readColor() {
 	return b_color;
 }
 
-void my_button::enterEvent(QEvent *) {
+void my_button::enterEvent(QEvent*) {
 	b_ani->start();
 }
-void my_button::leaveEvent(QEvent *) {
+void my_button::leaveEvent(QEvent*) {
 	e_ani->start();
 }
 
@@ -39,7 +40,8 @@ void my_button::set_styleSheet_color(QColor color_mouseIn, QColor color_mouseOut
 		"background-color: rgb(%1, %2, %3);"
 		"font-size: 16px;"
 		"border-radius: 3px;"
-		"border:0px;").arg(mouseOut_color_.red()).arg(mouseOut_color_.green()).arg(mouseOut_color_.blue()));
+		"border:0px;"
+		"padding:3px 3px 3px 3px;").arg(mouseOut_color_.red()).arg(mouseOut_color_.green()).arg(mouseOut_color_.blue()));
 }
 
 void my_button::set_font_color(QColor color) {

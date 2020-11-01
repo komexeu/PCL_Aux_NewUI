@@ -115,15 +115,20 @@ AUX_UI::AUX_UI(QWidget* parent)
 	//-----groupbox(preSegmentation)----
 	preSeg_groupbox = new my_foldGroupBox("PreSegment", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
 
+	//EuclideanClusterExtraction
+	SegMode_button = new my_button(preSeg_groupbox, QString::fromUtf8("Euclidean"));
+	SegMode_button->set_font_color(QColor(255, 255, 255));
+	preSeg_groupbox->addWidget(0, QFormLayout::SpanningRole, SegMode_button);
+	//----
 	preSeg_spinbox = new my_spinBox(smooth_groupbox, "preSeg_spinBox");
-	preSeg_groupbox->addWidget(0, QFormLayout::LabelRole, preSeg_spinbox);
+	preSeg_groupbox->addWidget(1, QFormLayout::LabelRole, preSeg_spinbox);
 
 	preSeg_slider = new my_slider(preSeg_groupbox);
-	preSeg_groupbox->addWidget(0, QFormLayout::FieldRole, preSeg_slider);
+	preSeg_groupbox->addWidget(1, QFormLayout::FieldRole, preSeg_slider);
 
 	preSeg_confirm = new my_button(preSeg_groupbox, QString::fromUtf8("confirm"));
 	preSeg_confirm->set_font_color(QColor(255, 255, 255));
-	preSeg_groupbox->addWidget(1, QFormLayout::SpanningRole, preSeg_confirm);
+	preSeg_groupbox->addWidget(2, QFormLayout::SpanningRole, preSeg_confirm);
 	//---------
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, smooth_groupbox);
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, preSeg_groupbox);
@@ -187,12 +192,14 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 	Default->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
 	TrashCan->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
 
+	smooth_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
 	smooth_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
+
+	SegMode_button->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorC);
+	preSeg_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
 	preSeg_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
-	smooth_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
-	preSeg_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
 
 	message->setText("Color changed!");
 	ui.statusBar->addPermanentWidget(message);
@@ -228,8 +235,10 @@ void AUX_UI::Set_ToolConnect() {
 	QObject::connect(confirm_userSeg, SIGNAL(clicked()), this, SLOT(Tree_UserSegmentation()));
 	//-------delete layer------
 	QObject::connect(TrashCan, SIGNAL(clicked()), this, SLOT(Tree_deleteLayer()));
-	//---------set brush----
+	//---------slider/spinbox set brush size----
 	QObject::connect(brush_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Brush_SizeChange()));
+	//------segmode change-------
+	QObject::connect(SegMode_button, SIGNAL(clicked()), this, SLOT(SegMode_Change()));
 	//-------viewer color change----
 	QColorDialog* Viewer_Qcolordia = new QColorDialog();
 	connect(Viewer_Color_Style, SIGNAL(clicked()), Viewer_Qcolordia, SLOT(open()));
@@ -281,6 +290,16 @@ void AUX_UI::initModes() {
 	SetNoneMode();
 	PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
 	viewer->updatePointCloud(nullCloud, "White_BrushCursorPoints");
+}
+void AUX_UI::SegMode_Change() {
+	if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING) {
+		GLOBAL_SEGMENTMODE = SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION;
+		SegMode_button->setText("Euclidean");
+	}
+	else if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION) {
+		GLOBAL_SEGMENTMODE = SegmentMode::REGION_GROWING;
+		SegMode_button->setText("Region Growing");
+	}
 }
 
 QModelIndex AUX_UI::searchParent(QModelIndex index) {
@@ -398,7 +417,12 @@ void AUX_UI::Slider_PreSegCloud() {
 	copyPointCloud(*nowLayerCloud, *database_cloud);
 	copyPointCloud(*nowLayerCloud, *cld);
 
-	std::vector<PointIndices> seg_cloud_2 = cpTools.CloudSegmentation(cld, preSeg_spinbox->value(), nowCloud_avg_distance);
+	std::vector<PointIndices> seg_cloud_2;
+	if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION)
+		seg_cloud_2 = cpTools.CloudSegmentation(cld, preSeg_spinbox->value(), nowCloud_avg_distance);
+	else if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING)
+		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowing(cld, preSeg_spinbox->value(), nowCloud_avg_distance);
+
 	for (int i = 0; i < cld->size(); i++)
 	{
 		cld->points[i].r = 255;
@@ -482,8 +506,6 @@ void AUX_UI::Tree_deleteLayer() {
 		standardModel->removeRow(index.row());
 	else
 		standardModel->itemFromIndex(index)->parent()->removeRow(index.row());
-
-	nowLayerCloud->clear();
 }
 
 //key
