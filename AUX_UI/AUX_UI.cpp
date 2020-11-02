@@ -509,6 +509,9 @@ void AUX_UI::Tree_UserSegmentation() {
 					return;
 			}
 
+			if (index.parent().row() != -1)
+				Tree_deleteLayer();
+
 			RedSelectClear();
 			ViewCloudUpdate(nowLayerCloud, false);
 		}
