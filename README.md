@@ -13,6 +13,16 @@
 ### [Select(Brush/Area)](#user-selectbrusharea)
 ### [Segment pointcloud](#slider-segment-pointcloud)
 
+ ## Hot Key
+|key|features
+|-----|----
+|X|Area select mode
+|B|Brush select mode
+|Ctrl|Add pointcloud|
+|Alt|Minus pointcloud|
+|N|Zoom in brush|
+|M|Zoom out brush|
+
 # UI Features
 * ### [Change UI color](#menu)
   ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_UI_ColorChange_0.png)
@@ -59,5 +69,5 @@
 * ### [Slider segment pointcloud](#menu)
   __Drag slider to show segment__
   
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/Slider_segment_0.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/Slider_segment_1.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/euclidean_region.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/slider_preseg.png)
