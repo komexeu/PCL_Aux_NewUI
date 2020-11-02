@@ -459,15 +459,18 @@ void AUX_UI::Slider_PreSegCloud() {
 void AUX_UI::Slider_confirmSegCloud() {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	for (int i = 0; i < SegClouds.size(); ++i)
 	{
 		QString segLayer = "child_" + QString::fromStdString(std::to_string(i));
 		TreeLayerController ly(standardModel);
 
-		QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 		if (!ly.AddLayer(segLayer, SegClouds[i], searchParent(index)))
 			return;
 	}
+	if (index.parent().row() != -1)
+		Tree_deleteLayer();
+
 	QString children_message = SegClouds.size() <= 1 ?
 		QString::fromStdString("Segment " + std::to_string(SegClouds.size()) + " child") :
 		QString::fromStdString("Segment " + std::to_string(SegClouds.size()) + " children");
@@ -513,7 +516,6 @@ void AUX_UI::Tree_UserSegmentation() {
 				Tree_deleteLayer();
 
 			RedSelectClear();
-			ViewCloudUpdate(nowLayerCloud, false);
 		}
 	}
 }
