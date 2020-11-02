@@ -13,8 +13,8 @@
 ### [Select(Brush/Area)](#user-selectbrusharea)
 ### [Segment pointcloud](#slider-segment-pointcloud)
 
- ## 工具快捷鍵
-|hot key|features
+ ## Hot Key
+|key|features
 |-----|----
 |X|Area select mode
 |B|Brush select mode
