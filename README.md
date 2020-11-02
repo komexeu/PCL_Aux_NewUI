@@ -59,5 +59,5 @@
 * ### [Slider segment pointcloud](#menu)
   __Drag slider to show segment__
   
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/Slider_segment_0.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/Slider_segment_1.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/euclidean_region.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/slider_preseg.png)
