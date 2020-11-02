@@ -465,7 +465,7 @@ void AUX_UI::Slider_confirmSegCloud() {
 		TreeLayerController ly(standardModel);
 
 		QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-		if (!ly.AddLayer(segLayer, SegClouds[i], index))
+		if (!ly.AddLayer(segLayer, SegClouds[i], searchParent(index)))
 			return;
 	}
 	QString children_message = SegClouds.size() <= 1 ?
@@ -490,12 +490,24 @@ void AUX_UI::Tree_UserSegmentation() {
 		{
 			TreeLayerController ly(standardModel);
 			PointCloud<PointXYZRGB>::Ptr newCloud(new PointCloud<PointXYZRGB>);
+			PointCloud<PointXYZRGB>::Ptr newCloud2(new PointCloud<PointXYZRGB>);
 
-			for (map<int, PointXYZRGB>::iterator iter = select_map.begin(); iter != select_map.end(); ++iter)
-				newCloud->push_back(nowLayerCloud->points.at(iter->first));
+			for (int i = 0; i < nowLayerCloud->size(); ++i)
+			{
+				if (select_map.find(i) != select_map.end())
+					newCloud->push_back(nowLayerCloud->points.at(i));
+				else
+					newCloud2->push_back(nowLayerCloud->points.at(i));
+			}
 
-			if (!ly.AddLayer(text, newCloud->makeShared(), index))
+			//改為全部只有一層子類			 
+			if (!ly.AddLayer(text, newCloud->makeShared(), searchParent(index)))
 				return;
+			if (newCloud2->size() > 0)
+			{
+				if (!ly.AddLayer(text, newCloud2->makeShared(), searchParent(index)))
+					return;
+			}
 
 			RedSelectClear();
 			ViewCloudUpdate(nowLayerCloud, false);
