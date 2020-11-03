@@ -328,7 +328,6 @@ QModelIndex AUX_UI::searchParent(QModelIndex index) {
 void AUX_UI::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&) {
 	RedSelectClear();
 	SegClouds.clear();
-	SetNoneMode();
 
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	if (index.row() == -1) {
@@ -462,7 +461,7 @@ void AUX_UI::Slider_confirmSegCloud() {
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	for (int i = 0; i < SegClouds.size(); ++i)
 	{
-		QString segLayer = "child_" + QString::fromStdString(std::to_string(i));
+		QString segLayer = QString::fromStdString(std::to_string(i));
 		TreeLayerController ly(standardModel);
 
 		if (!ly.AddLayer(segLayer, SegClouds[i], searchParent(index)))
@@ -684,6 +683,7 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 
 			if (keyBoard_ctrl || keyBoard_alt)
 			{
+				SegClouds.clear();
 				ViewCloudUpdate(Selected_cloud->makeShared(), false);
 			}
 			visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
@@ -748,6 +748,7 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 		Selected_cloud->points.at(iter->first).g = 0;
 		Selected_cloud->points.at(iter->first).b = 0;
 	}
+	SegClouds.clear();
 	ViewCloudUpdate(Selected_cloud, false);
 }
 //-------brush-----

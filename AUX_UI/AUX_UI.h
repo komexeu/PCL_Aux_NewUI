@@ -101,7 +101,7 @@ private:
 	//database
 private:
 	static double nowCloud_avg_distance;
-	std::vector<PointCloud<PointXYZRGB>::Ptr> SegClouds;
+	static std::vector<PointCloud<PointXYZRGB>::Ptr> SegClouds;
 	//已選點雲
 	static 	PointCloud<PointXYZRGB>::Ptr Selected_cloud;
 private:
@@ -133,10 +133,11 @@ bool AUX_UI::keyBoard_ctrl;
 bool AUX_UI::keyBoard_alt;
 
 PointCloud<PointXYZRGB>::Ptr AUX_UI::nowLayerCloud;
+std::vector<PointCloud<PointXYZRGB>::Ptr>  AUX_UI::SegClouds;
 
 //已選點雲
 PointCloud<PointXYZRGB>::Ptr AUX_UI::Selected_cloud;
 static std::map<int, PointXYZRGB> select_map;
 
- QAction* AUX_UI::brush_spinBoxAction;
- QAction* AUX_UI::brush_sliderAction;
+QAction* AUX_UI::brush_spinBoxAction;
+QAction* AUX_UI::brush_sliderAction;
