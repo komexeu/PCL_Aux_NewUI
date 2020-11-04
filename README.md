@@ -3,7 +3,7 @@
    * Refactor PCL_Aux features and source code
 
 ## Now Appearance
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_nowApprance.png) 
+  ![main pic](./asset/nowApprance.png) 
 
 ## MENU
 ### [Change UI color](#change-ui-color-1)
@@ -25,49 +25,49 @@
 
 # UI Features
 * ### [Change UI color](#menu)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_UI_ColorChange_0.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_UI_ColorChange_1.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_UI_ColorChange_2.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_UI_ColorChange_3.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/UI_ColorChange_0.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/UI_ColorChange_1.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/UI_ColorChange_2.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/UI_ColorChange_3.png)
 
 * ### [Change Viewer color](#menu)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_Viewer_ColorChange_0.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_Viewer_ColorChange_1.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_Viewer_ColorChange_2.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_Viewer_ColorChange_3.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Viewer_ColorChange_0.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Viewer_ColorChange_1.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Viewer_ColorChange_2.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Viewer_ColorChange_3.png)
 
 # Tool buttons Features
 * ### [Import pointcloud](#menu)
   __Add pointcloud data to QStandardItemModel and TreeView__
    
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_AddPointCloud.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_AddPointCloud_result.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/AddPointCloud.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/AddPointCloud_result.png)
   
 * ### [Smooth pointcloud](#menu)
   __Smooth the pointcloud which is selected on TreeView__
   
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_Smooth.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/20201024_Smooth_result.png) 
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Smooth.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Smooth_result.png) 
  
 * ### [User Select(Brush/Area)](#menu)
   __Brush select__
   
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/Brush_select0.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/Brush_select1.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Brush_select0.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Brush_select1.png)
   
   __Area select__
   
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/AreaSelect_0.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/AreaSelect_1.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/AreaSelect_0.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/AreaSelect_1.png)
   
   __Use Ctrl add cloud,Alt minus cloud__
   
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/Brush_select2.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/Brush_select2_seg.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/AreaSelect_2.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Brush_select2.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/Brush_select2_seg.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/AreaSelect_2.png)
   
 * ### [Slider segment pointcloud](#menu)
   __Drag slider to show segment__
   
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/euclidean_region.png)
-  ![main pic](https://github.com/komexeu/PCL_Aux_UI/blob/readme_pic/slider_preseg.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/euclidean_region.png)
+  ![main pic](https://github.com/komexeu/PCL_Aux_NewUI/tree/master/asset/slider_preseg.png)
