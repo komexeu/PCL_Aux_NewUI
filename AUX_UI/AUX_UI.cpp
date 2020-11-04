@@ -24,6 +24,7 @@ AUX_UI::AUX_UI(QWidget* parent)
 	ui.treeView->setHeaderHidden(true);
 	ui.treeView->setModel(standardModel);
 	ui.treeView->expandAll();
+	ui.treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	//----------pcl visualizer----------
 	my_interactorStyle = InteractorStyle_override::New();
 	viewer.reset(new pcl::visualization::PCLVisualizer(__argc, __argv, "viewer", my_interactorStyle, false));
@@ -343,7 +344,6 @@ void AUX_UI::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelecti
 	Selected_cloud = nowLayerCloud->makeShared();
 
 	QModelIndex TopParent = searchParent(index);
-	qDebug() << TopParent;
 	PointCloud<PointXYZRGB>::Ptr TopCloud(new PointCloud<PointXYZRGB>);
 	TopCloud = standardModel->itemFromIndex(TopParent)->data().value<PointCloud<PointXYZRGB>::Ptr>()->makeShared();
 	ViewCloudUpdate(TopCloud, true);
@@ -532,20 +532,29 @@ void AUX_UI::Tree_deleteLayer() {
 		standardModel->removeRow(index.row());
 	else
 		standardModel->itemFromIndex(index)->parent()->removeRow(index.row());
+
+	PointCloud<PointXYZRGB>::Ptr null(new PointCloud<PointXYZRGB>);
+	ViewCloudUpdate(null,false);
 }
 
 //key
 #include <vtkInteractorStyleRubberBandPick.h>
 void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& event)
 {
-	if (event.isCtrlPressed())
+	if (event.isCtrlPressed()) {
+		//ui.treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 		keyBoard_ctrl = true;
+	}
 	else if (event.isAltPressed())
 		keyBoard_alt = true;
+	else if (event.isShiftPressed()) {
+		
+	}
 
 	if (event.keyUp()) {
 		keyBoard_ctrl = false;
 		keyBoard_alt = false;
+		//ui.treeView->setSelectionMode(QAbstractItemView::SingleSelection);
 	}
 
 	if ((event.getKeySym() == "x" || event.getKeySym() == "X") && event.keyDown()) {
