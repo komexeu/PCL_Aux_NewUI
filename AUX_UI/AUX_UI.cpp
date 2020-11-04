@@ -502,12 +502,12 @@ void AUX_UI::Tree_UserSegmentation() {
 					newCloud2->push_back(nowLayerCloud->points.at(i));
 			}
 
-			//改為全部只有一層子類			 
+			//改為全部只有一層子類
 			if (!ly.AddLayer(text, newCloud->makeShared(), searchParent(index)))
 				return;
 			if (newCloud2->size() > 0)
 			{
-				if (!ly.AddLayer(text, newCloud2->makeShared(), searchParent(index)))
+				if (!ly.AddLayer("base", newCloud2->makeShared(), searchParent(index)))
 					return;
 			}
 
