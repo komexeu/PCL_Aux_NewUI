@@ -268,15 +268,18 @@ void AUX_UI::mergeLayer() {
 	QModelIndex parentIndex = ui.treeView->selectionModel()->currentIndex().parent();
 	if (parentIndex.row() == -1)
 		return;
+	qSort(indexes.begin(), indexes.end(), qGreater<QModelIndex>());
 	PointCloud<PointXYZRGB>::Ptr mergedCloud(new PointCloud<PointXYZRGB>);
 	for (int i = 0; i < indexes.size(); ++i)
 		*mergedCloud += *standardModel->itemFromIndex(indexes[i])->data().value<PointCloud<PointXYZRGB>::Ptr>();
-	for (int i = indexes.size() - 1; i >= 0; --i)
+	for (int i = 0; i < indexes.size(); ++i)
 		standardModel->itemFromIndex(parentIndex)->removeRow(indexes[i].row());
 
 	TreeLayerController ly(standardModel);
 	if (!ly.AddLayer("merge_layer", mergedCloud, searchParent(parentIndex)))
 		return;
+
+	ui.treeView->selectionModel()->clearCurrentIndex();
 	PointCloud<PointXYZRGB>::Ptr nullcloud(new PointCloud<PointXYZRGB>);
 	ViewCloudUpdate(nullcloud, false);
 }
@@ -488,6 +491,9 @@ void AUX_UI::Slider_PreSegCloud() {
 void AUX_UI::Slider_confirmSegCloud() {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
+	if (SegClouds.size() == 0)
+		return;
+
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	for (int i = 0; i < SegClouds.size(); ++i)
 	{
