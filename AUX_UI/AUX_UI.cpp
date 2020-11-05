@@ -265,20 +265,24 @@ void AUX_UI::onCustomContextMenu(const QPoint& point)
 
 void AUX_UI::mergeLayer() {
 	QModelIndexList indexes = ui.treeView->selectionModel()->selectedIndexes();
+	QModelIndex parentIndex = ui.treeView->selectionModel()->currentIndex().parent();
+	if (parentIndex.row() == -1)
+		return;
 	PointCloud<PointXYZRGB>::Ptr mergedCloud(new PointCloud<PointXYZRGB>);
-	for (int i = 0; i < indexes.size(); i++)
-	{
+	for (int i = 0; i < indexes.size(); ++i)
 		*mergedCloud += *standardModel->itemFromIndex(indexes[i])->data().value<PointCloud<PointXYZRGB>::Ptr>();
-		standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
-	}
+	for (int i = indexes.size() - 1; i >= 0; --i)
+		standardModel->itemFromIndex(parentIndex)->removeRow(indexes[i].row());
+
 	TreeLayerController ly(standardModel);
-	ly.AddLayer("merge_layer", mergedCloud->makeShared(), searchParent(indexes[0].parent()));
-	ViewCloudUpdate(mergedCloud, false);
+	if (!ly.AddLayer("merge_layer", mergedCloud, searchParent(parentIndex)))
+		return;
+	PointCloud<PointXYZRGB>::Ptr nullcloud(new PointCloud<PointXYZRGB>);
+	ViewCloudUpdate(nullcloud, false);
 }
 
 void AUX_UI::changeViewerColor(const QColor& c) {
 	viewer->setBackgroundColor((float)c.red() / 255, (float)c.green() / 255, (float)c.blue() / 255);
-	qDebug() << c.red() << "," << c.green() << "," << c.blue();
 }
 
 void AUX_UI::Tree_importCloud() {
@@ -345,7 +349,6 @@ QModelIndex AUX_UI::searchParent(QModelIndex index) {
 	}
 	else {
 		QModelIndex parentItem = index.parent();
-		qDebug() << parentItem;
 		while (parentItem.parent().row() != -1)
 			parentItem = parentItem.parent();
 
