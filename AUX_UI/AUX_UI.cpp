@@ -247,6 +247,33 @@ void AUX_UI::Set_ToolConnect() {
 	QColorDialog* Viewer_Qcolordia = new QColorDialog();
 	connect(Viewer_Color_Style, SIGNAL(clicked()), Viewer_Qcolordia, SLOT(open()));
 	connect(Viewer_Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeViewerColor(const QColor&)));
+
+
+	ui.treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onCustomContextMenu(const QPoint&)));
+
+}
+
+void AUX_UI::onCustomContextMenu(const QPoint& point)
+{
+	QModelIndex index = ui.treeView->indexAt(point);
+	QMenu menu;
+	menu.addAction(QStringLiteral("merge"), this, SLOT(mergeLayer()));
+	menu.addSeparator();
+	menu.exec(ui.treeView->viewport()->mapToGlobal(point));
+}
+
+void AUX_UI::mergeLayer() {
+	QModelIndexList indexes = ui.treeView->selectionModel()->selectedIndexes();
+	PointCloud<PointXYZRGB>::Ptr mergedCloud(new PointCloud<PointXYZRGB>);
+	for (int i = 0; i < indexes.size(); i++)
+	{
+		*mergedCloud += *standardModel->itemFromIndex(indexes[i])->data().value<PointCloud<PointXYZRGB>::Ptr>();
+		standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
+	}
+	TreeLayerController ly(standardModel);
+	ly.AddLayer("merge_layer", mergedCloud->makeShared(), searchParent(indexes[0].parent()));
+	ViewCloudUpdate(mergedCloud, false);
 }
 
 void AUX_UI::changeViewerColor(const QColor& c) {
@@ -534,7 +561,7 @@ void AUX_UI::Tree_deleteLayer() {
 		standardModel->itemFromIndex(index)->parent()->removeRow(index.row());
 
 	PointCloud<PointXYZRGB>::Ptr null(new PointCloud<PointXYZRGB>);
-	ViewCloudUpdate(null,false);
+	ViewCloudUpdate(null, false);
 }
 
 //key
@@ -548,7 +575,7 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 	else if (event.isAltPressed())
 		keyBoard_alt = true;
 	else if (event.isShiftPressed()) {
-		
+
 	}
 
 	if (event.keyUp()) {
