@@ -2,6 +2,7 @@
 
 #include "common_data.h"
 #include "ui_AUX_UI.h" 
+#include "Obj_UI.h"
 
 #include <QtWidgets/QMainWindow>
 #include <qstandarditemmodel.h>
@@ -42,7 +43,8 @@ public:
 
 private:
 	static Ui::AUX_UIClass ui;
-	QLabel* message;
+	static my_UI::Obj_UIClass my_ui;
+	/*QLabel* message;
 
 	static QToolBar* Top_toolBar;
 	static my_toolButton* Tool_Mode;
@@ -68,7 +70,7 @@ private:
 	my_button* SegMode_button;
 	my_spinBox* preSeg_spinbox;
 	my_slider* preSeg_slider;
-	my_button* preSeg_confirm;
+	my_button* preSeg_confirm;*/
 
 	//features for UI control PCL 
 public Q_SLOTS:
@@ -118,17 +120,18 @@ private:
 	static QAction* brush_sliderAction;
 };
 Ui::AUX_UIClass AUX_UI::ui;
+my_UI::Obj_UIClass AUX_UI::my_ui;
 
 QStandardItemModel* AUX_UI::standardModel;
 QItemSelectionModel* AUX_UI::selectionModel;
 
 boost::shared_ptr<pcl::visualization::PCLVisualizer> AUX_UI::viewer;
 InteractorStyle_override* AUX_UI::my_interactorStyle;
-my_toolButton* AUX_UI::Tool_Mode;
 
-QToolBar* AUX_UI::Top_toolBar;
-my_spinBox* AUX_UI::brush_spinbox;
-my_slider* AUX_UI::brush_slider;
+//my_toolButton* AUX_UI::Tool_Mode;
+//QToolBar* AUX_UI::Top_toolBar;
+//my_spinBox* AUX_UI::brush_spinbox;
+//my_slider* AUX_UI::brush_slider;
 
 double AUX_UI::nowCloud_avg_distance;
 float AUX_UI::brush_radius;

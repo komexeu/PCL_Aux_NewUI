@@ -33,128 +33,128 @@ AUX_UI::AUX_UI(QWidget* parent)
 	viewer->setBackgroundColor(0, 0, 0);
 	//---------------------------------
 	ColorScale::SetBaseColor(QColor(100, 100, 100));
-	message = new QLabel(ui.statusBar);
+	my_ui.message = new QLabel(ui.statusBar);
 	ui.treeView->setStyleSheet(QString::fromUtf8(" background-color:  rgb(255,255,255);"));
 	//--------top tool bar--------------
-	Top_toolBar = new QToolBar(this);
-	Top_toolBar->setMovable(false);
-	Top_toolBar->setObjectName(QString::fromUtf8("ToolBar"));
-	Top_toolBar->setAutoFillBackground(true);
-	this->addToolBar(Qt::TopToolBarArea, Top_toolBar);
+	my_ui.Top_toolBar = new QToolBar(this);
+	my_ui.Top_toolBar->setMovable(false);
+	my_ui.Top_toolBar->setObjectName(QString::fromUtf8("ToolBar"));
+	my_ui.Top_toolBar->setAutoFillBackground(true);
+	this->addToolBar(Qt::TopToolBarArea, my_ui.Top_toolBar);
 
-	Tool_Mode = new my_toolButton(Top_toolBar, "Tool_Mode", "./my_source/NonMode.png");
-	Top_toolBar->addWidget(Tool_Mode);
+	my_ui.Tool_Mode = new my_toolButton(my_ui.Top_toolBar, "Tool_Mode", "./my_source/NonMode.png");
+	my_ui.Top_toolBar->addWidget(my_ui.Tool_Mode);
 
-	brush_spinbox = new my_spinBox(Top_toolBar, "brush_spinbox");
-	brush_spinbox->setRange(1, 300);
-	brush_spinBoxAction = Top_toolBar->addWidget(brush_spinbox);
+	my_ui.brush_spinbox = new my_spinBox(my_ui.Top_toolBar, "brush_spinbox");
+	my_ui.brush_spinbox->setRange(1, 300);
+	brush_spinBoxAction = my_ui.Top_toolBar->addWidget(my_ui.brush_spinbox);
 	brush_spinBoxAction->setVisible(false);
 
 	QLabel* sapceLable = new QLabel(NULL);
-	Top_toolBar->addWidget(sapceLable);
+	my_ui.Top_toolBar->addWidget(sapceLable);
 
-	brush_slider = new my_slider(Top_toolBar);
-	brush_slider->setRange(1, 300);
-	brush_slider->setMaximumWidth(80);
-	brush_sliderAction = Top_toolBar->addWidget(brush_slider);
+	my_ui.brush_slider = new my_slider(my_ui.Top_toolBar);
+	my_ui.brush_slider->setRange(1, 300);
+	my_ui.brush_slider->setMaximumWidth(80);
+	brush_sliderAction = my_ui.Top_toolBar->addWidget(my_ui.brush_slider);
 	brush_sliderAction->setVisible(false);
 
 	QLabel* sapceLable_1 = new QLabel(NULL);
-	Top_toolBar->addWidget(sapceLable_1);
+	my_ui.Top_toolBar->addWidget(sapceLable_1);
 
-	confirm_userSeg = new my_button(Top_toolBar, QString::fromUtf8("Mark segment confirm"));
-	confirm_userSeg->set_font_color(QColor(255, 255, 255));
-	confirm_userSeg->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-	Top_toolBar->addWidget(confirm_userSeg);
+	my_ui.confirm_userSeg = new my_button(my_ui.Top_toolBar, QString::fromUtf8("Mark segment confirm"));
+	my_ui.confirm_userSeg->set_font_color(QColor(255, 255, 255));
+	my_ui.confirm_userSeg->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	my_ui.Top_toolBar->addWidget(my_ui.confirm_userSeg);
 
-	QWidget* SpaceExpand = new QWidget(Top_toolBar);
+	QWidget* SpaceExpand = new QWidget(my_ui.Top_toolBar);
 	SpaceExpand->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	Top_toolBar->addWidget(SpaceExpand);
+	my_ui.Top_toolBar->addWidget(SpaceExpand);
 
-	UI_Color_Style = new my_toolButton(Top_toolBar, "Color Style", "./my_source/UI_ColorChange.png");
-	Top_toolBar->addWidget(UI_Color_Style);
+	my_ui.UI_Color_Style = new my_toolButton(my_ui.Top_toolBar, "Color Style", "./my_source/UI_ColorChange.png");
+	my_ui.Top_toolBar->addWidget(my_ui.UI_Color_Style);
 
-	Viewer_Color_Style = new my_toolButton(Top_toolBar, "Viewer Color Style", "./my_source/color.jpg");
-	Top_toolBar->addWidget(Viewer_Color_Style);
+	my_ui.Viewer_Color_Style = new my_toolButton(my_ui.Top_toolBar, "Viewer Color Style", "./my_source/color.jpg");
+	my_ui.Top_toolBar->addWidget(my_ui.Viewer_Color_Style);
 	//---------left tool bar---------
-	New_Pointcloud = new my_toolButton(ui.mainToolBar, "New Pointcloud", "./my_source/NewFile.png");
-	ui.mainToolBar->addWidget(New_Pointcloud);
+	my_ui.New_Pointcloud = new my_toolButton(ui.mainToolBar, "New Pointcloud", "./my_source/NewFile.png");
+	ui.mainToolBar->addWidget(my_ui.New_Pointcloud);
 
-	Exprot_Pointcloud = new my_toolButton(ui.mainToolBar, "Pointcloud Export", "./my_source/export-icon.png");
-	ui.mainToolBar->addWidget(Exprot_Pointcloud);
+	my_ui.Exprot_Pointcloud = new my_toolButton(ui.mainToolBar, "Pointcloud Export", "./my_source/export-icon.png");
+	ui.mainToolBar->addWidget(my_ui.Exprot_Pointcloud);
 
 	ui.mainToolBar->addSeparator();
 
-	Area = new my_toolButton(ui.mainToolBar, "Area", "./my_source/AreaSelect.png");
-	ui.mainToolBar->addWidget(Area);
+	my_ui.Area = new my_toolButton(ui.mainToolBar, "Area", "./my_source/AreaSelect.png");
+	ui.mainToolBar->addWidget(my_ui.Area);
 
-	Brush = new my_toolButton(ui.mainToolBar, "Brush", "./my_source/cursor1-2.png");
-	ui.mainToolBar->addWidget(Brush);
+	my_ui.Brush = new my_toolButton(ui.mainToolBar, "Brush", "./my_source/cursor1-2.png");
+	ui.mainToolBar->addWidget(my_ui.Brush);
 
-	Default = new my_toolButton(ui.mainToolBar, "Default", "./my_source/NonMode.png");
-	ui.mainToolBar->addWidget(Default);
+	my_ui.Default = new my_toolButton(ui.mainToolBar, "Default", "./my_source/NonMode.png");
+	ui.mainToolBar->addWidget(my_ui.Default);
 
-	QWidget* SpaceExpand_2 = new QWidget(Top_toolBar);
+	QWidget* SpaceExpand_2 = new QWidget(my_ui.Top_toolBar);
 	SpaceExpand_2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	ui.mainToolBar->addWidget(SpaceExpand_2);
 
-	TrashCan = new my_toolButton(ui.mainToolBar, "TrashCan", "./my_source/images.png");
-	ui.mainToolBar->addWidget(TrashCan);
+	my_ui.TrashCan = new my_toolButton(ui.mainToolBar, "TrashCan", "./my_source/images.png");
+	ui.mainToolBar->addWidget(my_ui.TrashCan);
 	//----groupbox(smooth)----
-	smooth_groupbox = new my_foldGroupBox("Smooth", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
+	my_ui.smooth_groupbox = new my_foldGroupBox("Smooth", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
 
-	smooth_spinbox = new my_spinBox(smooth_groupbox, "smooth_spinbox");
-	smooth_spinbox->setRange(1, 70);
-	smooth_groupbox->addWidget(0, QFormLayout::LabelRole, smooth_spinbox);
+	my_ui.smooth_spinbox = new my_spinBox(my_ui.smooth_groupbox, "smooth_spinbox");
+	my_ui.smooth_spinbox->setRange(1, 70);
+	my_ui.smooth_groupbox->addWidget(0, QFormLayout::LabelRole, my_ui.smooth_spinbox);
 
-	smooth_slider = new my_slider(smooth_groupbox);
-	smooth_slider->setRange(1, 70);
-	smooth_groupbox->addWidget(0, QFormLayout::FieldRole, smooth_slider);
+	my_ui.smooth_slider = new my_slider(my_ui.smooth_groupbox);
+	my_ui.smooth_slider->setRange(1, 70);
+	my_ui.smooth_groupbox->addWidget(0, QFormLayout::FieldRole, my_ui.smooth_slider);
 
-	smooth_confirm = new my_button(smooth_groupbox, QString::fromUtf8("confirm"));
-	smooth_confirm->set_font_color(QColor(255, 255, 255));
-	smooth_groupbox->addWidget(1, QFormLayout::SpanningRole, smooth_confirm);
+	my_ui.smooth_confirm = new my_button(my_ui.smooth_groupbox, QString::fromUtf8("confirm"));
+	my_ui.smooth_confirm->set_font_color(QColor(255, 255, 255));
+	my_ui.smooth_groupbox->addWidget(1, QFormLayout::SpanningRole, my_ui.smooth_confirm);
 	//-----groupbox(preSegmentation)----
-	preSeg_groupbox = new my_foldGroupBox("PreSegment", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
+	my_ui.preSeg_groupbox = new my_foldGroupBox("PreSegment", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
 
 	//EuclideanClusterExtraction
-	SegMode_button = new my_button(preSeg_groupbox, QString::fromUtf8("Euclidean"));
-	SegMode_button->set_font_color(QColor(255, 255, 255));
-	preSeg_groupbox->addWidget(0, QFormLayout::SpanningRole, SegMode_button);
+	my_ui.SegMode_button = new my_button(my_ui.preSeg_groupbox, QString::fromUtf8("Euclidean"));
+	my_ui.SegMode_button->set_font_color(QColor(255, 255, 255));
+	my_ui.preSeg_groupbox->addWidget(0, QFormLayout::SpanningRole, my_ui.SegMode_button);
 	//----
-	preSeg_spinbox = new my_spinBox(smooth_groupbox, "preSeg_spinBox");
-	preSeg_spinbox->setRange(0, 500);
-	preSeg_groupbox->addWidget(1, QFormLayout::LabelRole, preSeg_spinbox);
+	my_ui.preSeg_spinbox = new my_spinBox(my_ui.smooth_groupbox, "preSeg_spinBox");
+	my_ui.preSeg_spinbox->setRange(0, 500);
+	my_ui.preSeg_groupbox->addWidget(1, QFormLayout::LabelRole, my_ui.preSeg_spinbox);
 
-	preSeg_slider = new my_slider(preSeg_groupbox);
-	preSeg_slider->setRange(0, 500);
-	preSeg_groupbox->addWidget(1, QFormLayout::FieldRole, preSeg_slider);
+	my_ui.preSeg_slider = new my_slider(my_ui.preSeg_groupbox);
+	my_ui.preSeg_slider->setRange(0, 500);
+	my_ui.preSeg_groupbox->addWidget(1, QFormLayout::FieldRole, my_ui.preSeg_slider);
 
-	preSeg_confirm = new my_button(preSeg_groupbox, QString::fromUtf8("confirm"));
-	preSeg_confirm->set_font_color(QColor(255, 255, 255));
-	preSeg_groupbox->addWidget(2, QFormLayout::SpanningRole, preSeg_confirm);
+	my_ui.preSeg_confirm = new my_button(my_ui.preSeg_groupbox, QString::fromUtf8("confirm"));
+	my_ui.preSeg_confirm->set_font_color(QColor(255, 255, 255));
+	my_ui.preSeg_groupbox->addWidget(2, QFormLayout::SpanningRole, my_ui.preSeg_confirm);
 	//---------
-	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, smooth_groupbox);
-	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, preSeg_groupbox);
+	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.smooth_groupbox);
+	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.preSeg_groupbox);
 	//------colordialog-----------
 	QColorDialog* Qcolordia = new QColorDialog();
 	connect(Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeWindowsColor(const QColor&)));
-	connect(UI_Color_Style, SIGNAL(clicked()), Qcolordia, SLOT(open()));
+	connect(my_ui.UI_Color_Style, SIGNAL(clicked()), Qcolordia, SLOT(open()));
 	//-----------spinbox & slider connect------------
-	connect(brush_slider, SIGNAL(valueChanged(int)), brush_spinbox, SLOT(setValue(int)));
-	connect(brush_spinbox, SIGNAL(valueChanged(int)), brush_slider, SLOT(setValue(int)));
-	connect(smooth_slider, SIGNAL(valueChanged(int)), smooth_spinbox, SLOT(setValue(int)));
-	connect(smooth_spinbox, SIGNAL(valueChanged(int)), smooth_slider, SLOT(setValue(int)));
-	connect(preSeg_slider, SIGNAL(valueChanged(int)), preSeg_spinbox, SLOT(setValue(int)));
-	connect(preSeg_spinbox, SIGNAL(valueChanged(int)), preSeg_slider, SLOT(setValue(int)));
+	connect(my_ui.brush_slider, SIGNAL(valueChanged(int)), my_ui.brush_spinbox, SLOT(setValue(int)));
+	connect(my_ui.brush_spinbox, SIGNAL(valueChanged(int)), my_ui.brush_slider, SLOT(setValue(int)));
+	connect(my_ui.smooth_slider, SIGNAL(valueChanged(int)), my_ui.smooth_spinbox, SLOT(setValue(int)));
+	connect(my_ui.smooth_spinbox, SIGNAL(valueChanged(int)), my_ui.smooth_slider, SLOT(setValue(int)));
+	connect(my_ui.preSeg_slider, SIGNAL(valueChanged(int)), my_ui.preSeg_spinbox, SLOT(setValue(int)));
+	connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), my_ui.preSeg_slider, SLOT(setValue(int)));
 	//----------Mode Change------
-	connect(Brush, SIGNAL(clicked()), this, SLOT(SetBrushMode()));
-	connect(Area, SIGNAL(clicked()), this, SLOT(SetAreaMode()));
-	connect(Default, SIGNAL(clicked()), this, SLOT(SetNoneMode()));
+	connect(my_ui.Brush, SIGNAL(clicked()), this, SLOT(SetBrushMode()));
+	connect(my_ui.Area, SIGNAL(clicked()), this, SLOT(SetAreaMode()));
+	connect(my_ui.Default, SIGNAL(clicked()), this, SLOT(SetNoneMode()));
 	//--------------
 	changeWindowsColor(ColorScale::Color_struct.colorC);
-	message->clear();
-	ui.statusBar->addPermanentWidget(message);
+	my_ui.message->clear();
+	ui.statusBar->addPermanentWidget(my_ui.message);
 	//------^ UI Setting ^--------
 	//-----init data-----
 	brush_radius = 20;
@@ -166,47 +166,47 @@ AUX_UI::AUX_UI(QWidget* parent)
 void AUX_UI::changeWindowsColor(const QColor& c) {
 	ColorScale::SetBaseColor(c);
 
-	Top_toolBar->setStyleSheet(QString("background-color: rgb(%1, %2, %3);")
+	my_ui.Top_toolBar->setStyleSheet(QString("background-color: rgb(%1, %2, %3);")
 		.arg(ColorScale::Color_struct.colorE.red())
 		.arg(ColorScale::Color_struct.colorE.green())
 		.arg(ColorScale::Color_struct.colorE.blue()));
-	Tool_Mode->set_styleSheet_color(ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorE);
-	brush_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
-	brush_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
+	my_ui.Tool_Mode->set_styleSheet_color(ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorE);
+	my_ui.brush_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
+	my_ui.brush_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		QColor(255, 255, 255), ColorScale::Color_struct.colorA);
-	confirm_userSeg->set_styleSheet_color(ColorScale::Color_struct.colorC, ColorScale::Color_struct.colorB);
-	UI_Color_Style->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
-	Viewer_Color_Style->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
+	my_ui.confirm_userSeg->set_styleSheet_color(ColorScale::Color_struct.colorC, ColorScale::Color_struct.colorB);
+	my_ui.UI_Color_Style->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
+	my_ui.Viewer_Color_Style->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
 
 	QPalette pal_widget;
 	pal_widget.setColor(QPalette::Window, ColorScale::Color_struct.colorC);
 	ui.dockWidget->setPalette(pal_widget);
 	ui.dockWidget_2->setPalette(pal_widget);
-	smooth_confirm->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
-	preSeg_confirm->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
+	my_ui.smooth_confirm->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
+	my_ui.preSeg_confirm->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
 
 	ui.mainToolBar->setStyleSheet(QString("background-color: rgb(%1, %2, %3);")
 		.arg(ColorScale::Color_struct.colorE.red())
 		.arg(ColorScale::Color_struct.colorE.green())
 		.arg(ColorScale::Color_struct.colorE.blue()));
-	New_Pointcloud->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
-	Exprot_Pointcloud->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
-	Area->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
-	Brush->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
-	Default->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
-	TrashCan->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
+	my_ui.New_Pointcloud->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
+	my_ui.Exprot_Pointcloud->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
+	my_ui.Area->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
+	my_ui.Brush->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
+	my_ui.Default->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
+	my_ui.TrashCan->set_styleSheet_color(ColorScale::Color_struct.colorB, ColorScale::Color_struct.colorE);
 
-	smooth_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
-	smooth_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
+	my_ui.smooth_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
+	my_ui.smooth_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
 
-	SegMode_button->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorC);
-	preSeg_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
-	preSeg_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
+	my_ui.SegMode_button->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorC);
+	my_ui.preSeg_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
+	my_ui.preSeg_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
 
-	message->setText("Color changed!");
-	ui.statusBar->addPermanentWidget(message);
+	my_ui.message->setText("Color changed!");
+	ui.statusBar->addPermanentWidget(my_ui.message);
 }
 
 void AUX_UI::Init_Basedata() {
@@ -225,27 +225,27 @@ void AUX_UI::Init_Basedata() {
 
 void AUX_UI::Set_ToolConnect() {
 	//-------button tool control-------
-	connect(New_Pointcloud, SIGNAL(clicked()), this, SLOT(Tree_importCloud()));
+	connect(my_ui.New_Pointcloud, SIGNAL(clicked()), this, SLOT(Tree_importCloud()));
 	//-------click layer------
 	connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this,
 		SLOT(Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&)));
 	//------smooth------
-	QObject::connect(smooth_confirm, SIGNAL(clicked()), this, SLOT(Tree_Smooth()));
+	QObject::connect(my_ui.smooth_confirm, SIGNAL(clicked()), this, SLOT(Tree_Smooth()));
 	//------slider pre segmentation----
-	QObject::connect(preSeg_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Slider_PreSegCloud()));
+	QObject::connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Slider_PreSegCloud()));
 	//confirm
-	QObject::connect(preSeg_confirm, SIGNAL(clicked()), this, SLOT(Slider_confirmSegCloud()));
+	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(Slider_confirmSegCloud()));
 	//USER confirm
-	QObject::connect(confirm_userSeg, SIGNAL(clicked()), this, SLOT(Tree_UserSegmentation()));
+	QObject::connect(my_ui.confirm_userSeg, SIGNAL(clicked()), this, SLOT(Tree_UserSegmentation()));
 	//-------delete layer------
-	QObject::connect(TrashCan, SIGNAL(clicked()), this, SLOT(Tree_deleteLayer()));
+	QObject::connect(my_ui.TrashCan, SIGNAL(clicked()), this, SLOT(Tree_deleteLayer()));
 	//---------slider/spinbox set brush size----
-	QObject::connect(brush_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Brush_SizeChange()));
+	QObject::connect(my_ui.brush_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Brush_SizeChange()));
 	//------segmode change-------
-	QObject::connect(SegMode_button, SIGNAL(clicked()), this, SLOT(SegMode_Change()));
+	QObject::connect(my_ui.SegMode_button, SIGNAL(clicked()), this, SLOT(SegMode_Change()));
 	//-------viewer color change----
 	QColorDialog* Viewer_Qcolordia = new QColorDialog();
-	connect(Viewer_Color_Style, SIGNAL(clicked()), Viewer_Qcolordia, SLOT(open()));
+	connect(my_ui.Viewer_Color_Style, SIGNAL(clicked()), Viewer_Qcolordia, SLOT(open()));
 	connect(Viewer_Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeViewerColor(const QColor&)));
 
 
@@ -295,7 +295,7 @@ void AUX_UI::Tree_importCloud() {
 	CloudPoints_IO IO_Tool;
 	if (!IO_Tool.CloudImport()) {
 		QString selectedText = "Import fail.";
-		message->setText(selectedText);
+		my_ui.message->setText(selectedText);
 		return;
 	}
 
@@ -310,7 +310,7 @@ void AUX_UI::Tree_importCloud() {
 		if (!tree_layerController->AddLayer(text, IO_Tool.import_cloud_->makeShared()))
 			return;
 		QString selectedText = "Import success.";
-		message->setText(selectedText);
+		my_ui.message->setText(selectedText);
 	}
 }
 
@@ -332,17 +332,17 @@ void AUX_UI::initModes() {
 void AUX_UI::SegMode_Change() {
 	if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING) {
 		GLOBAL_SEGMENTMODE = SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION;
-		SegMode_button->setText("Euclidean");
-		preSeg_slider->setRange(0, 500);
-		preSeg_spinbox->setRange(0, 500);
-		preSeg_spinbox->setValue(0);
+		my_ui.SegMode_button->setText("Euclidean");
+		my_ui.preSeg_slider->setRange(0, 500);
+		my_ui.preSeg_spinbox->setRange(0, 500);
+		my_ui.preSeg_spinbox->setValue(0);
 	}
 	else if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION) {
 		GLOBAL_SEGMENTMODE = SegmentMode::REGION_GROWING;
-		SegMode_button->setText("Region Growing");
-		preSeg_slider->setRange(0, 200);
-		preSeg_spinbox->setRange(0, 200);
-		preSeg_spinbox->setValue(0);
+		my_ui.SegMode_button->setText("Region Growing");
+		my_ui.preSeg_slider->setRange(0, 200);
+		my_ui.preSeg_spinbox->setRange(0, 200);
+		my_ui.preSeg_spinbox->setValue(0);
 	}
 }
 
@@ -383,7 +383,7 @@ void AUX_UI::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelecti
 	ViewCloudUpdate(nowLayerCloud, false);
 
 	QString selectedText = QString::fromStdString(std::to_string(size)) + " points.";
-	message->setText(selectedText);
+	my_ui.message->setText(selectedText);
 
 	//¨ú1000ÂI°µ¥­§¡¨ú¶ZÂ÷
 	std::vector<int> k_indices;
@@ -424,7 +424,7 @@ void AUX_UI::Tree_Smooth() {
 	PointCloud<PointXYZRGB>::Ptr cld = standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>();
 
 	//30¬°·j´M½d³ò¡A*0.5·j´M¥b®|
-	PointCloud<PointXYZRGB>::Ptr smooth_cld = cpTools.CloudSmooth(cld, nowCloud_avg_distance * smooth_spinbox->value() * 0.5);
+	PointCloud<PointXYZRGB>::Ptr smooth_cld = cpTools.CloudSmooth(cld, nowCloud_avg_distance * my_ui.smooth_spinbox->value() * 0.5);
 
 	if (smooth_cld->size() > 0)
 	{
@@ -441,7 +441,7 @@ void AUX_UI::Tree_Smooth() {
 	}
 	else
 	{
-		message->setText("NO DATA AFTER SMOOTH,Please set a bigger value.");
+		my_ui.message->setText("NO DATA AFTER SMOOTH,Please set a bigger value.");
 	}
 }
 
@@ -460,9 +460,9 @@ void AUX_UI::Slider_PreSegCloud() {
 
 	std::vector<PointIndices> seg_cloud_2;
 	if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION)
-		seg_cloud_2 = cpTools.CloudSegmentation(cld, preSeg_spinbox->value(), nowCloud_avg_distance);
+		seg_cloud_2 = cpTools.CloudSegmentation(cld, my_ui.preSeg_spinbox->value(), nowCloud_avg_distance);
 	else if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING)
-		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowing(cld, preSeg_spinbox->value(), nowCloud_avg_distance);
+		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowing(cld, my_ui.preSeg_spinbox->value(), nowCloud_avg_distance);
 
 	for (int i = 0; i < cld->size(); i++)
 	{
@@ -509,7 +509,7 @@ void AUX_UI::Slider_confirmSegCloud() {
 	QString children_message = SegClouds.size() <= 1 ?
 		QString::fromStdString("Segment " + std::to_string(SegClouds.size()) + " child") :
 		QString::fromStdString("Segment " + std::to_string(SegClouds.size()) + " children");
-	message->setText(children_message);
+	my_ui.message->setText(children_message);
 	SegClouds.clear();
 }
 //USER segment
@@ -550,6 +550,7 @@ void AUX_UI::Tree_UserSegmentation() {
 			if (index.parent().row() != -1)
 				Tree_deleteLayer();
 
+			ui.treeView->selectionModel()->clear();
 			RedSelectClear();
 		}
 	}
@@ -569,6 +570,7 @@ void AUX_UI::Tree_deleteLayer() {
 	else
 		standardModel->itemFromIndex(index)->parent()->removeRow(index.row());
 
+	ui.treeView->selectionModel()->clear();
 	PointCloud<PointXYZRGB>::Ptr null(new PointCloud<PointXYZRGB>);
 	ViewCloudUpdate(null, false);
 }
@@ -608,7 +610,7 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 		if (GLOBAL_SELECTMODE != SelectMode::BRUSH_SELECT_MODE)
 		{
 			SetBrushMode();
-			brush_spinbox->setValue(brush_radius);
+			my_ui.brush_spinbox->setValue(brush_radius);
 
 			QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 			if (index.row() == -1)
@@ -623,13 +625,13 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 	if ((event.getKeySym() == "n" || event.getKeySym() == "N") && event.keyDown() &&
 		GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE) {
 		brush_radius - 1 < 1 ? brush_radius = 1 : --brush_radius;
-		brush_spinbox->setValue(brush_radius);
+		my_ui.brush_spinbox->setValue(brush_radius);
 		WhiteCursorUpdate(false);
 	}
 	if ((event.getKeySym() == "m" || event.getKeySym() == "M") && event.keyDown() &&
 		GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE) {
 		++brush_radius;
-		brush_spinbox->setValue(brush_radius);
+		my_ui.brush_spinbox->setValue(brush_radius);
 		WhiteCursorUpdate(false);
 	}
 }
@@ -638,11 +640,11 @@ void AUX_UI::SetBrushMode() {
 	brush_sliderAction->setVisible(true);
 	brush_spinBoxAction->setVisible(true);
 
-	brush_spinbox->setValue(brush_radius);
+	my_ui.brush_spinbox->setValue(brush_radius);
 
 	QIcon the_icon;
 	the_icon.addFile("./my_source/cursor1-2.png", QSize(), QIcon::Normal, QIcon::Off);
-	Tool_Mode->setIcon(the_icon);
+	my_ui.Tool_Mode->setIcon(the_icon);
 	GLOBAL_SELECTMODE = SelectMode::BRUSH_SELECT_MODE;
 	my_interactorStyle->SetCurrentMode_AreaPick(0);
 
@@ -654,7 +656,7 @@ void AUX_UI::SetAreaMode() {
 
 	QIcon the_icon;
 	the_icon.addFile("./my_source/AreaSelect.png", QSize(), QIcon::Normal, QIcon::Off);
-	Tool_Mode->setIcon(the_icon);
+	my_ui.Tool_Mode->setIcon(the_icon);
 	GLOBAL_SELECTMODE = SelectMode::AREA_SELECT_MODE;
 	my_interactorStyle->SetCurrentMode_AreaPick(1);
 
@@ -666,7 +668,7 @@ void AUX_UI::SetNoneMode() {
 
 	QIcon the_icon;
 	the_icon.addFile("./my_source/NonMode.png", QSize(), QIcon::Normal, QIcon::Off);
-	Tool_Mode->setIcon(the_icon);
+	my_ui.Tool_Mode->setIcon(the_icon);
 	GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
 	my_interactorStyle->SetCurrentMode_AreaPick(0);
 
@@ -800,7 +802,7 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 void  AUX_UI::Brush_SizeChange() {
 	if (GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE)
 	{
-		brush_radius = brush_spinbox->value();
+		brush_radius = my_ui.brush_spinbox->value();
 	}
 }
 
