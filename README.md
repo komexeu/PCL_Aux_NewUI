@@ -6,12 +6,12 @@
   ![main pic](./asset/nowApprance.png) 
 
 ## MENU
-### [Change UI color](#change-ui-color-1)
-### [Change Viewer color](#change-viewer-color-1)
-### [Import pointcloud](#import-pointcloud-1)
-### [Smooth pointcloud](#smooth-pointcloud-1)
-### [Select(Brush/Area)](#user-selectbrusharea)
-### [Segment pointcloud](#slider-segment-pointcloud)
+* ### [Change UI color](#change-ui-color-1)
+* ### [Change Viewer color](#change-viewer-color-1)
+* ### [Import pointcloud](#import-pointcloud-1)
+* ### [Smooth pointcloud](#smooth-pointcloud-1)
+* ### [Select(Brush/Area)](#user-selectbrusharea)
+* ### [Segment pointcloud](#slider-segment-pointcloud)
 
  ## Hot Key
 |key|features
