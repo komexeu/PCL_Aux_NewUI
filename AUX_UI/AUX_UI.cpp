@@ -312,6 +312,7 @@ void AUX_UI::Tree_importCloud() {
 		QString selectedText = "Import success.";
 		my_ui.message->setText(selectedText);
 	}
+	ui.treeView->selectionModel()->clear();
 }
 
 void AUX_UI::ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera) {
@@ -443,6 +444,8 @@ void AUX_UI::Tree_Smooth() {
 	{
 		my_ui.message->setText("NO DATA AFTER SMOOTH,Please set a bigger value.");
 	}
+
+	ui.treeView->selectionModel()->clear();
 }
 
 //segment
@@ -511,6 +514,8 @@ void AUX_UI::Slider_confirmSegCloud() {
 		QString::fromStdString("Segment " + std::to_string(SegClouds.size()) + " children");
 	my_ui.message->setText(children_message);
 	SegClouds.clear();
+
+	ui.treeView->selectionModel()->clear();
 }
 //USER segment
 void AUX_UI::Tree_UserSegmentation() {
