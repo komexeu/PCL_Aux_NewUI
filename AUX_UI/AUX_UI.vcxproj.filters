@@ -97,6 +97,9 @@
     <ClInclude Include="QVTKWidget_controller\include\LayerControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Obj_UI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AUX_UI.rc">

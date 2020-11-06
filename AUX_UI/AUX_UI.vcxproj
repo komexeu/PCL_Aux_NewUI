@@ -114,6 +114,7 @@
     <ClInclude Include="QVTKWidget_controller\include\CloudPoints_Tools.h" />
     <ClInclude Include="QVTKWidget_controller\include\InteractorStyle_override.h" />
     <ClInclude Include="QVTKWidget_controller\include\LayerControl.h" />
+    <ClInclude Include="Obj_UI.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

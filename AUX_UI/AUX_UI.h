@@ -2,22 +2,11 @@
 
 #include "common_data.h"
 #include "ui_AUX_UI.h" 
+#include "Obj_UI.h"
 
 #include <QtWidgets/QMainWindow>
-#include <qstandarditemmodel.h>
-
-#include "my_Widgets/include/my_foldGroupBox.h"
-#include "my_Widgets/include/my_button.h"
-#include "my_Widgets/include/my_toolButton.h"
-#include "my_Widgets/include/my_slider.h"
-#include "my_Widgets/include/my_spinBox.h"
-
-#include <pcl/visualization/pcl_visualizer.h>
-#include "InteractorStyle_override.h"
 #include <vtkRenderWindow.h>
 #include <vtkSmartPointer.h>
-
-
 
 using namespace pcl;
 
@@ -42,35 +31,12 @@ public:
 
 private:
 	static Ui::AUX_UIClass ui;
-	QLabel* message;
+	static my_UI::Obj_UIClass my_ui;
+	static Data_Class::General_Data general_data;
+	static Data_Class::Key_Data key_data;
+	static Data_Class::PCL_Data pcl_data;
+	static Data_Class::QT_Data qt_data;
 
-	static QToolBar* Top_toolBar;
-	static my_toolButton* Tool_Mode;
-	static my_spinBox* brush_spinbox;
-	static my_slider* brush_slider;
-	my_button* confirm_userSeg;
-	my_toolButton* UI_Color_Style;
-	my_toolButton* Viewer_Color_Style;
-
-	my_toolButton* New_Pointcloud;
-	my_toolButton* Exprot_Pointcloud;
-	my_toolButton* Area;
-	my_toolButton* Brush;
-	my_toolButton* Default;
-	my_toolButton* TrashCan;
-
-	my_foldGroupBox* smooth_groupbox;
-	my_spinBox* smooth_spinbox;
-	my_slider* smooth_slider;
-	my_button* smooth_confirm;
-
-	my_foldGroupBox* preSeg_groupbox;
-	my_button* SegMode_button;
-	my_spinBox* preSeg_spinbox;
-	my_slider* preSeg_slider;
-	my_button* preSeg_confirm;
-
-	//features for UI control PCL 
 public Q_SLOTS:
 	void Tree_importCloud();
 	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
@@ -81,6 +47,9 @@ public Q_SLOTS:
 	void Tree_deleteLayer();
 	void changeViewerColor(const QColor& c);
 	void  Brush_SizeChange();
+
+	void onCustomContextMenu(const QPoint& point);
+	void mergeLayer();
 public:
 	//if true only delete white cursor,false for update position of white cursor.
 	static void WhiteCursorUpdate(bool whiteCursor_clear);
@@ -91,53 +60,12 @@ public:
 	void Init_Basedata();
 	void Set_ToolConnect();
 	QModelIndex  searchParent(QModelIndex index);
-private:
-	//-----pcl viewer------
-	static boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-	static InteractorStyle_override* my_interactorStyle;
-	//----------Qt MVC------
-	static QStandardItemModel* standardModel;
-	static QItemSelectionModel* selectionModel;
-	//database
-private:
-	static double nowCloud_avg_distance;
-	static std::vector<PointCloud<PointXYZRGB>::Ptr> SegClouds;
-	//已選點雲
-	static 	PointCloud<PointXYZRGB>::Ptr Selected_cloud;
-private:
-	static float brush_radius;
-	static bool keyBoard_ctrl;
-	static bool keyBoard_alt;
-
-	static PointCloud<PointXYZRGB>::Ptr nowLayerCloud;
-
-	static QAction* brush_spinBoxAction;
-	static QAction* brush_sliderAction;
 };
 Ui::AUX_UIClass AUX_UI::ui;
+my_UI::Obj_UIClass AUX_UI::my_ui;
+Data_Class::General_Data AUX_UI::general_data;
+Data_Class::Key_Data AUX_UI::key_data;
+Data_Class::PCL_Data AUX_UI::pcl_data;
+Data_Class::QT_Data AUX_UI::qt_data;
 
-QStandardItemModel* AUX_UI::standardModel;
-QItemSelectionModel* AUX_UI::selectionModel;
-
-boost::shared_ptr<pcl::visualization::PCLVisualizer> AUX_UI::viewer;
-InteractorStyle_override* AUX_UI::my_interactorStyle;
-my_toolButton* AUX_UI::Tool_Mode;
-
-QToolBar* AUX_UI::Top_toolBar;
-my_spinBox* AUX_UI::brush_spinbox;
-my_slider* AUX_UI::brush_slider;
-
-double AUX_UI::nowCloud_avg_distance;
-float AUX_UI::brush_radius;
-bool AUX_UI::keyBoard_ctrl;
-bool AUX_UI::keyBoard_alt;
-
-PointCloud<PointXYZRGB>::Ptr AUX_UI::nowLayerCloud;
-std::vector<PointCloud<PointXYZRGB>::Ptr>  AUX_UI::SegClouds;
-
-//已選點雲
-PointCloud<PointXYZRGB>::Ptr AUX_UI::Selected_cloud;
 static std::map<int, PointXYZRGB> select_map;
-
-QAction* AUX_UI::brush_spinBoxAction;
-QAction* AUX_UI::brush_sliderAction;
