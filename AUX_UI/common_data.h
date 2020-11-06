@@ -7,11 +7,6 @@
 
 using namespace pcl;
 
-//struct Layer_Data {
-//	PointCloud<PointXYZRGB>::Ptr cloud;
-//	std::map<int, int> ID_groupID;
-//};
-
 enum class SelectMode :int
 {
 	NO_SELECT_MODE,
@@ -61,4 +56,42 @@ namespace ColorScale {
 			(baseG - baseIG * 2) < 0 ? 0 : (baseG - baseIG * 2),
 			(baseB - baseIB * 2) < 0 ? 0 : (baseB - baseIB * 2));
 	}
+}
+
+#include <qstandarditemmodel.h>
+#include <qitemselectionmodel.h>
+#include <qaction.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include "InteractorStyle_override.h"
+class QT_DataClass {
+public:
+	QAction* brush_spinBoxAction;
+	QAction* brush_sliderAction;
+
+	QStandardItemModel* standardModel;
+	QItemSelectionModel* selectionModel;
+};
+class Key_DataClass {
+public:
+	bool keyBoard_ctrl;
+	bool keyBoard_alt;
+};
+class PCL_DataClass {
+public:
+	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+	InteractorStyle_override* my_interactorStyle;
+};
+class General_DataClass {
+public:
+	double nowCloud_avg_distance;
+	float brush_radius;
+	PointCloud<PointXYZRGB>::Ptr nowLayerCloud;
+	std::vector<PointCloud<PointXYZRGB>::Ptr> SegClouds;
+	PointCloud<PointXYZRGB>::Ptr Selected_cloud;
+};
+namespace Data_Class {
+	class QT_Data :public QT_DataClass {};
+	class Key_Data :public Key_DataClass {};
+	class PCL_Data :public PCL_DataClass {};
+	class General_Data :public General_DataClass {};
 }
