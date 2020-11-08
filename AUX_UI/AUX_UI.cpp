@@ -17,9 +17,9 @@ AUX_UI::AUX_UI(QWidget* parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-	ui.treeView->setFocusPolicy(Qt::NoFocus);
-	general_data.nowLayerCloud.reset(new PointCloud<PointXYZRGB>);
 	//------init tree view------
+	ui.treeView->setFocusPolicy(Qt::NoFocus);
+	ui.treeView->setContextMenuPolicy(Qt::CustomContextMenu);
 	qt_data.standardModel = new QStandardItemModel(ui.treeView);
 	ui.treeView->setHeaderHidden(true);
 	ui.treeView->setModel(qt_data.standardModel);
@@ -155,9 +155,7 @@ AUX_UI::AUX_UI(QWidget* parent)
 	changeWindowsColor(ColorScale::Color_struct.colorC);
 	my_ui.message->clear();
 	ui.statusBar->addPermanentWidget(my_ui.message);
-	//------^ UI Setting ^--------
-	//-----init data-----
-	general_data.brush_radius = 20;
+	//------^ UI Setting ^--------	
 	//------v ToolConnect v-------
 	Init_Basedata();
 	Set_ToolConnect();
@@ -210,17 +208,19 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 }
 
 void AUX_UI::Init_Basedata() {
+	general_data.nowLayerCloud.reset(new PointCloud<PointXYZRGB>);
+	general_data.brush_radius = 20;
+	general_data.Selected_cloud.reset(new PointCloud<PointXYZRGB>);
+
+	qt_data.selectionModel = ui.treeView->selectionModel();
+
 	pcl_data.viewer->registerKeyboardCallback(&KeyBoard_eventController);
 	pcl_data.viewer->registerMouseCallback(&cursor_BrushSelector);
 	pcl_data.viewer->registerAreaPickingCallback(&Area_PointCloud_Selector);
 
-	general_data.Selected_cloud.reset(new PointCloud<PointXYZRGB>);
-
 	PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
 	pcl_data.viewer->addPointCloud(nullCloud, "cld");
 	pcl_data.viewer->addPointCloud(nullCloud, "White_BrushCursorPoints");
-
-	qt_data.selectionModel = ui.treeView->selectionModel();
 }
 
 void AUX_UI::Set_ToolConnect() {
@@ -247,11 +247,8 @@ void AUX_UI::Set_ToolConnect() {
 	QColorDialog* Viewer_Qcolordia = new QColorDialog();
 	connect(my_ui.Viewer_Color_Style, SIGNAL(clicked()), Viewer_Qcolordia, SLOT(open()));
 	connect(Viewer_Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeViewerColor(const QColor&)));
-
-
-	ui.treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+	//-------layer merge------
 	connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onCustomContextMenu(const QPoint&)));
-
 }
 
 void AUX_UI::onCustomContextMenu(const QPoint& point)
@@ -265,21 +262,25 @@ void AUX_UI::onCustomContextMenu(const QPoint& point)
 
 void AUX_UI::mergeLayer() {
 	QModelIndexList indexes = ui.treeView->selectionModel()->selectedIndexes();
-	QModelIndex parentIndex = ui.treeView->selectionModel()->currentIndex().parent();
-	if (parentIndex.row() == -1)
+	if (indexes.size() <= 0)
 		return;
+	for (int i = 0; i < indexes.size(); ++i)
+		if (qt_data.standardModel->itemFromIndex(indexes[i])->parent() == NULL)
+			return;
+
 	qSort(indexes.begin(), indexes.end(), qGreater<QModelIndex>());
 	PointCloud<PointXYZRGB>::Ptr mergedCloud(new PointCloud<PointXYZRGB>);
 	for (int i = 0; i < indexes.size(); ++i)
 		*mergedCloud += *qt_data.standardModel->itemFromIndex(indexes[i])->data().value<PointCloud<PointXYZRGB>::Ptr>();
 	for (int i = 0; i < indexes.size(); ++i)
-		qt_data.standardModel->itemFromIndex(parentIndex)->removeRow(indexes[i].row());
+		qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
 
 	TreeLayerController ly(qt_data.standardModel);
-	if (!ly.AddLayer("merge_layer", mergedCloud, searchParent(parentIndex)))
+	if (!ly.AddLayer("merge_layer", mergedCloud, searchParent(ui.treeView->selectionModel()->currentIndex().parent())))
 		return;
 
 	ui.treeView->selectionModel()->clearCurrentIndex();
+	my_ui.message->setText("");
 	PointCloud<PointXYZRGB>::Ptr nullcloud(new PointCloud<PointXYZRGB>);
 	ViewCloudUpdate(nullcloud, false);
 }
@@ -562,20 +563,28 @@ void AUX_UI::Tree_UserSegmentation() {
 }
 
 void AUX_UI::Tree_deleteLayer() {
-	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
-		return;
+	QModelIndexList indexes = ui.treeView->selectionModel()->selectedIndexes();
 	RedSelectClear();
-	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-	//多層刪除
-	if (qt_data.standardModel->itemFromIndex(index)->hasChildren())
-		qt_data.standardModel->itemFromIndex(index)->removeRows(0, qt_data.standardModel->itemFromIndex(index)->rowCount());
-	//沒有(上層)父類
-	if (index.parent().row() == -1)
-		qt_data.standardModel->removeRow(index.row());
-	else
-		qt_data.standardModel->itemFromIndex(index)->parent()->removeRow(index.row());
+	if (indexes.size() <= 0)
+		return;
+	qSort(indexes.begin(), indexes.end(), qGreater<QModelIndex>());
+	vector<QModelIndex> parent_index;
+	for (int i = 0; i < indexes.size(); ++i) {
+		qDebug() << i;
+		if (qt_data.standardModel->itemFromIndex(indexes[i])->parent() == NULL) {
+			qDebug() << "PARENT";
+			parent_index.push_back(indexes[i]);
+		}
+		else {
+			qDebug() << "CHILD";
+			qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
+		}
+	}
+	for (int i = 0; i < parent_index.size(); ++i)
+		qt_data.standardModel->removeRow(parent_index[i].row());
 
-	ui.treeView->selectionModel()->clear();
+	ui.treeView->selectionModel()->clearCurrentIndex();
+	my_ui.message->setText("");
 	PointCloud<PointXYZRGB>::Ptr null(new PointCloud<PointXYZRGB>);
 	ViewCloudUpdate(null, false);
 }
@@ -585,7 +594,6 @@ void AUX_UI::Tree_deleteLayer() {
 void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& event)
 {
 	if (event.isCtrlPressed()) {
-		//ui.treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 		key_data.keyBoard_ctrl = true;
 	}
 	else if (event.isAltPressed())
@@ -597,7 +605,6 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 	if (event.keyUp()) {
 		key_data.keyBoard_ctrl = false;
 		key_data.keyBoard_alt = false;
-		//ui.treeView->setSelectionMode(QAbstractItemView::SingleSelection);
 	}
 
 	if ((event.getKeySym() == "x" || event.getKeySym() == "X") && event.keyDown()) {
@@ -695,7 +702,6 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 			float mouseX = (viewer_interactor->GetEventPosition()[0]);
 			float mouseY = (viewer_interactor->GetEventPosition()[1]);
 			viewer_interactor->StartPickCallback();
-			//-------check-^^^---------
 			vtkRenderer* ren = viewer_interactor->FindPokedRenderer(mouseX, mouseY);
 			point_picker->Pick(mouseX, mouseY, 0.0, ren);
 			double picked[3]; point_picker->GetPickPosition(picked);
@@ -819,7 +825,6 @@ void AUX_UI::WhiteCursorUpdate(bool whiteCursor_clear) {
 		float mouseX = (viewer_interactor->GetEventPosition()[0]);
 		float mouseY = (viewer_interactor->GetEventPosition()[1]);
 		viewer_interactor->StartPickCallback();
-		//-------check-^^^---------
 		vtkRenderer* ren = viewer_interactor->FindPokedRenderer(mouseX, mouseY);
 		point_picker->Pick(mouseX, mouseY, 0.0, ren);
 		double picked[3]; point_picker->GetPickPosition(picked);
