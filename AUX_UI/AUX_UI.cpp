@@ -272,12 +272,11 @@ void AUX_UI::mergeLayer() {
 	PointCloud<PointXYZRGB>::Ptr mergedCloud(new PointCloud<PointXYZRGB>);
 	for (int i = 0; i < indexes.size(); ++i)
 		*mergedCloud += *qt_data.standardModel->itemFromIndex(indexes[i])->data().value<PointCloud<PointXYZRGB>::Ptr>();
-	for (int i = 0; i < indexes.size(); ++i)
-		qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
-
 	TreeLayerController ly(qt_data.standardModel);
 	if (!ly.AddLayer("merge_layer", mergedCloud, searchParent(ui.treeView->selectionModel()->currentIndex().parent())))
-		return;
+		return;	
+	for (int i = 0; i < indexes.size(); ++i)
+		qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
 
 	ui.treeView->selectionModel()->clearCurrentIndex();
 	my_ui.message->setText("");
