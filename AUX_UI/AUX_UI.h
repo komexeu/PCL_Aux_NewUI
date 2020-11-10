@@ -39,6 +39,7 @@ private:
 
 public Q_SLOTS:
 	void Tree_importCloud();
+	void ExportCloud();
 	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
 	void Tree_Smooth();
 	void Slider_PreSegCloud();

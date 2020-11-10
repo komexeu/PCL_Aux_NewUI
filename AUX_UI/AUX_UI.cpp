@@ -224,8 +224,10 @@ void AUX_UI::Init_Basedata() {
 }
 
 void AUX_UI::Set_ToolConnect() {
-	//-------button tool control-------
+	//-------import-------
 	connect(my_ui.New_Pointcloud, SIGNAL(clicked()), this, SLOT(Tree_importCloud()));
+	//-------export------
+	connect(my_ui.Exprot_Pointcloud, SIGNAL(clicked()), this, SLOT(ExportCloud()));
 	//-------click layer------
 	connect(qt_data.selectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this,
 		SLOT(Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&)));
@@ -243,7 +245,7 @@ void AUX_UI::Set_ToolConnect() {
 	QObject::connect(my_ui.brush_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Brush_SizeChange()));
 	//------segmode change-------
 	QObject::connect(my_ui.SegMode_button, SIGNAL(clicked()), this, SLOT(SegMode_Change()));
-	//-------pcl_data.viewer color change----
+	//-------pcl_data.viewer/color change----
 	QColorDialog* Viewer_Qcolordia = new QColorDialog();
 	connect(my_ui.Viewer_Color_Style, SIGNAL(clicked()), Viewer_Qcolordia, SLOT(open()));
 	connect(Viewer_Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeViewerColor(const QColor&)));
@@ -316,6 +318,37 @@ void AUX_UI::Tree_importCloud() {
 		}
 	}
 	ui.treeView->selectionModel()->clear();
+}
+
+void AUX_UI::ExportCloud() {
+	auto indexes = ui.treeView->selectionModel()->selectedIndexes();
+	if (indexes.size()<=0)
+	{
+		my_ui.message->setText("No layer selected.");
+		return;
+	}
+
+	CloudPoints_IO IO_Tool;
+	vector<PointCloud<PointXYZRGB>::Ptr> children_cloud_data;
+	vector<QModelIndex> parentIndexes;
+	for (int i = 0; i < indexes.size(); ++i)
+	{
+		QModelIndex parent_index = searchParent(indexes[i]);
+		vector<QModelIndex>::iterator it_result =
+			std::find(parentIndexes.begin(), parentIndexes.end(), parent_index);
+		if (it_result != parentIndexes.end())
+			continue;
+		parentIndexes.push_back(parent_index);
+		for (int j = 0; j < qt_data.standardModel->itemFromIndex(parent_index)->rowCount(); ++j)
+		{
+			children_cloud_data.push_back(qt_data.standardModel->itemFromIndex(parent_index)->child(j)
+				->data().value<PointCloud<PointXYZRGB>::Ptr>()->makeShared());
+		}
+	}
+	if (IO_Tool.CloudExport(children_cloud_data))
+		my_ui.message->setText("Export success.");
+	else
+		my_ui.message->setText("Export fail.");
 }
 
 void AUX_UI::ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera) {
