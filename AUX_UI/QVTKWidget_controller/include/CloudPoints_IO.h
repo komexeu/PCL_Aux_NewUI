@@ -65,9 +65,6 @@ public:
 protected:
 	//ÀÉ®×¸ô®|
 	QStringList q_file_path_;
-	QStringList file_path_;
-	//°ÆÀÉ¦W
-	QStringList suffix_;
 private:
 	bool RootSelector();
 	bool csv2pointCloud(QString filepath);
