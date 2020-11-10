@@ -77,18 +77,14 @@ bool CloudPoints_IO::CloudImport() {
 	{
 		QFileInfo qfi(q_file_path_[i]);
 		if (qfi.suffix() == "csv") {
-			suffix_.push_back(qfi.suffix());
-			file_path_.push_back(qfi.filePath());
 			file_name_.push_back(qfi.fileName());
-			if (CloudPoints_IO::csv2pointCloud(file_path_[i]))
+			if (CloudPoints_IO::csv2pointCloud(qfi.filePath()))
 				continue;
 		}
 		else if (qfi.suffix() == "pcd") {
-			suffix_.push_back(qfi.suffix());
-			file_path_.push_back(qfi.filePath());
 			file_name_.push_back(qfi.fileName());
 			PointCloud<PointXYZRGB>::Ptr cloud(new PointCloud < PointXYZRGB>);
-			if (io::loadPCDFile<PointXYZRGB>(file_path_[i].toStdString(), *cloud) != -1) {
+			if (io::loadPCDFile<PointXYZRGB>(qfi.filePath().toStdString(), *cloud) != -1) {
 				VoxelGrid<PointXYZRGB> vox;
 				vox.setInputCloud(cloud);
 				vox.setLeafSize(0.001f, 0.001f, 0.001f);
