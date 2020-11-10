@@ -51,7 +51,7 @@ class CloudPoints_IO
 public:
 	CloudPoints_IO() : import_cloud_()
 	{
-		import_cloud_.reset(new PointCloud<PointXYZRGB>);
+		//import_cloud_.reset(new PointCloud<PointXYZRGB>);
 	};
 
 	//點雲匯入
@@ -60,15 +60,15 @@ public:
 	bool CloudExport(std::vector<PointCloud<PointXYZRGB>::Ptr> childern_cloudData);
 
 	//匯入檔案轉換後點雲
-	PointCloud<PointXYZRGB>::Ptr import_cloud_;
-	std::string file_name_;
+	std::vector< PointCloud<PointXYZRGB>::Ptr> import_cloud_;
+	QStringList file_name_;
 protected:
 	//檔案路徑
-	QString q_file_path_;
-	std::string file_path_;
+	QStringList q_file_path_;
+	QStringList file_path_;
 	//副檔名
-	std::string suffix_;
+	QStringList suffix_;
 private:
 	bool RootSelector();
-	bool csv2pointCloud();
+	bool csv2pointCloud(QString filepath);
 };

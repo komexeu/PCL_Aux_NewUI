@@ -274,7 +274,7 @@ void AUX_UI::mergeLayer() {
 		*mergedCloud += *qt_data.standardModel->itemFromIndex(indexes[i])->data().value<PointCloud<PointXYZRGB>::Ptr>();
 	TreeLayerController ly(qt_data.standardModel);
 	if (!ly.AddLayer("merge_layer", mergedCloud, searchParent(ui.treeView->selectionModel()->currentIndex().parent())))
-		return;	
+		return;
 	for (int i = 0; i < indexes.size(); ++i)
 		qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
 
@@ -299,18 +299,21 @@ void AUX_UI::Tree_importCloud() {
 		return;
 	}
 
-	bool ok;
-	QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-		tr("Layer name:"), QLineEdit::Normal,
-		QString::fromStdString(IO_Tool.file_name_), &ok);
-	if (ok && !text.isEmpty()) {
-		std::string BaseLayerName = text.toStdString();
-		std::string objName = "NONE" + text.toStdString();
-		TreeLayerController* tree_layerController = new TreeLayerController(qt_data.standardModel);
-		if (!tree_layerController->AddLayer(text, IO_Tool.import_cloud_->makeShared()))
-			return;
-		QString selectedText = "Import success.";
-		my_ui.message->setText(selectedText);
+	for (int i = 0; i < IO_Tool.file_name_.size(); i++)
+	{
+		bool ok;
+		QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+			tr("Layer name:"), QLineEdit::Normal,
+			IO_Tool.file_name_[i], &ok);
+		if (ok && !text.isEmpty()) {
+			std::string BaseLayerName = text.toStdString();
+			std::string objName = "NONE" + text.toStdString();
+			TreeLayerController* tree_layerController = new TreeLayerController(qt_data.standardModel);
+			if (!tree_layerController->AddLayer(text, IO_Tool.import_cloud_[i]->makeShared()))
+				return;
+			QString selectedText = "Import success.";
+			my_ui.message->setText(selectedText);
+		}
 	}
 	ui.treeView->selectionModel()->clear();
 }

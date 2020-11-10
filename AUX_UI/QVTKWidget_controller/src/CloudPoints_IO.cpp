@@ -1,26 +1,20 @@
 #include <CloudPoints_IO.h>
 
 bool CloudPoints_IO::RootSelector() {
-	suffix_ = "";
-	import_cloud_->clear();
-
-	q_file_path_ = QFileDialog::getOpenFileName(nullptr, QObject::tr("Select a root."), "C:/", QObject::tr("All file(*.*)"));
-		if (q_file_path_.isEmpty())
+	QFileDialog add_dialog;
+	add_dialog.setFileMode(QFileDialog::ExistingFiles);
+	q_file_path_ = add_dialog.getOpenFileNames(nullptr, QObject::tr("Select a root."),
+		"C:/",
+		QObject::tr("All file(*.*);;pcd file (*.pcd);;csv file(*.csv)"));
+	if (q_file_path_.isEmpty())
 		return(false);
-
-	QFileInfo qfi(q_file_path_);
-	QByteArray ba = qfi.filePath().toLocal8Bit();
-	file_path_ = ba.data();
-	ba = qfi.suffix().toLocal8Bit();
-	suffix_ = ba.data();
-	ba = qfi.fileName().toLocal8Bit();
-	file_name_ = ba.data();
 
 	return(true);
 }
 
-bool CloudPoints_IO::csv2pointCloud() {
-	QFile csvfile(q_file_path_);
+bool CloudPoints_IO::csv2pointCloud(QString filepath) {
+	QFile csvfile(filepath);
+	PointCloud<PointXYZRGB>::Ptr cloud(new PointCloud < PointXYZRGB>);
 	if (csvfile.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		QTextStream infile(&csvfile);
@@ -57,14 +51,16 @@ bool CloudPoints_IO::csv2pointCloud() {
 			}
 			else
 				break;
-			import_cloud_->push_back(tmp);
+			cloud->push_back(tmp);
 		}
 		csvfile.close();
 
 		VoxelGrid<PointXYZRGB> vox;
-		vox.setInputCloud(import_cloud_);
+		vox.setInputCloud(cloud);
 		vox.setLeafSize(0.001f, 0.001f, 0.001f);
-		vox.filter(*import_cloud_);
+		vox.filter(*cloud);
+
+		import_cloud_.push_back(cloud);
 
 		if (Line_i <= 1)
 			return (false);
@@ -77,21 +73,34 @@ bool CloudPoints_IO::CloudImport() {
 	if (!CloudPoints_IO::RootSelector())
 		return(false);
 
-	if (suffix_ == "csv") {
-		if (CloudPoints_IO::csv2pointCloud())
-			return(true);
-	}
-	else if (suffix_ == "pcd") {
-		if (io::loadPCDFile<PointXYZRGB>(file_path_, *import_cloud_) != -1) {
-			VoxelGrid<PointXYZRGB> vox;
-			vox.setInputCloud(import_cloud_);
-			vox.setLeafSize(0.001f, 0.001f, 0.001f);
-			vox.filter(*import_cloud_);
-			return(true);
+	for (int i = 0; i < q_file_path_.size(); i++)
+	{
+		QFileInfo qfi(q_file_path_[i]);
+		if (qfi.suffix() == "csv") {
+			suffix_.push_back(qfi.suffix());
+			file_path_.push_back(qfi.filePath());
+			file_name_.push_back(qfi.fileName());
+			if (CloudPoints_IO::csv2pointCloud(file_path_[i]))
+				continue;
 		}
+		else if (qfi.suffix() == "pcd") {
+			suffix_.push_back(qfi.suffix());
+			file_path_.push_back(qfi.filePath());
+			file_name_.push_back(qfi.fileName());
+			PointCloud<PointXYZRGB>::Ptr cloud(new PointCloud < PointXYZRGB>);
+			if (io::loadPCDFile<PointXYZRGB>(file_path_[i].toStdString(), *cloud) != -1) {
+				VoxelGrid<PointXYZRGB> vox;
+				vox.setInputCloud(cloud);
+				vox.setLeafSize(0.001f, 0.001f, 0.001f);
+				vox.filter(*cloud);
+
+				import_cloud_.push_back(cloud);
+			}
+		}
+		else
+			continue;
 	}
-	else
-		return(false);
+	return(true);
 }
 
 bool CloudPoints_IO::CloudExport(std::vector<PointCloud<PointXYZRGB>::Ptr> childern_cloudData) {
