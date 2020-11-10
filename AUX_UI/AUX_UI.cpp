@@ -322,7 +322,7 @@ void AUX_UI::Tree_importCloud() {
 
 void AUX_UI::ExportCloud() {
 	auto indexes = ui.treeView->selectionModel()->selectedIndexes();
-	if (indexes.size()<=0)
+	if (indexes.size() <= 0)
 	{
 		my_ui.message->setText("No layer selected.");
 		return;
@@ -344,11 +344,11 @@ void AUX_UI::ExportCloud() {
 			children_cloud_data.push_back(qt_data.standardModel->itemFromIndex(parent_index)->child(j)
 				->data().value<PointCloud<PointXYZRGB>::Ptr>()->makeShared());
 		}
+		if (IO_Tool.CloudExport(children_cloud_data))
+			my_ui.message->setText("Export success.");
+		else
+			my_ui.message->setText("Export fail.");
 	}
-	if (IO_Tool.CloudExport(children_cloud_data))
-		my_ui.message->setText("Export success.");
-	else
-		my_ui.message->setText("Export fail.");
 }
 
 void AUX_UI::ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera) {
