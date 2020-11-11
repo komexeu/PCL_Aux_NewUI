@@ -12,7 +12,7 @@
 * ### [Smooth pointcloud](#smooth-pointcloud-1)
 * ### [Select(Brush/Area)](#user-selectbrusharea)
 * ### [Segment pointcloud](#slider-segment-pointcloud)
-* ### [Merge pointcloud](#merge-pointcloud)
+* ### [Merge pointcloud](#merge-pointcloud-1)
 
  ## Hot Key
 |key|features
