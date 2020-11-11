@@ -41,8 +41,8 @@
 * ### [Import pointcloud](#menu)
   __Add pointcloud data to QStandardItemModel and TreeView__
    
-  ![main pic](./asset/AddPointCloud.png)
-  ![main pic](./asset/AddPointCloud_result.png)
+  ![main pic](./asset/AddPointcloud.png)
+  ![main pic](./asset/AddPointcloud_result.png)
   
 * ### [Smooth pointcloud](#menu)
   __Smooth the pointcloud which is selected on TreeView__
