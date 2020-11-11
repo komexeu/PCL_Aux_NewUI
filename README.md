@@ -12,6 +12,7 @@
 * ### [Smooth pointcloud](#smooth-pointcloud-1)
 * ### [Select(Brush/Area)](#user-selectbrusharea)
 * ### [Segment pointcloud](#slider-segment-pointcloud)
+* ### [Merge pointcloud](#merge-pointcloud-1)
 
  ## Hot Key
 |key|features
@@ -71,3 +72,8 @@
   
   ![main pic](./asset/euclidean_region.png)
   ![main pic](./asset/slider_preseg.png)
+  
+* ### [Merge pointcloud](#menu)
+  ![main pic](./asset/merge_0.png)
+  ![main pic](./asset/merge_1.png)
+  ![main pic](./asset/merge_2.png)
