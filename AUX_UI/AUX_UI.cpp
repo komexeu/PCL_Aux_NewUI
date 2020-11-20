@@ -294,7 +294,7 @@ void AUX_UI::Tree_importCloud() {
 	RedSelectClear();
 	SetNoneMode();
 
-	CloudPoints_IO IO_Tool;
+	CloudPoints_IO<PointXYZRGB> IO_Tool;
 	if (!IO_Tool.CloudImport()) {
 		QString selectedText = "Import fail.";
 		my_ui.message->setText(selectedText);
@@ -311,7 +311,7 @@ void AUX_UI::Tree_importCloud() {
 			std::string BaseLayerName = text.toStdString();
 			std::string objName = "NONE" + text.toStdString();
 			TreeLayerController* tree_layerController = new TreeLayerController(qt_data.standardModel);
-			if (!tree_layerController->AddLayer(text, IO_Tool.import_cloud_[i]->makeShared()))
+			if (!tree_layerController->AddLayer(text, IO_Tool.import_cloud_[i].makeShared()))
 				return;
 			QString selectedText = "Import success.";
 			my_ui.message->setText(selectedText);
@@ -328,8 +328,8 @@ void AUX_UI::ExportCloud() {
 		return;
 	}
 
-	CloudPoints_IO IO_Tool;
-	vector<PointCloud<PointXYZRGB>::Ptr> children_cloud_data;
+	CloudPoints_IO<PointXYZRGB> IO_Tool;
+	vector<PointCloud<PointXYZRGB>> children_cloud_data;
 	vector<QModelIndex> parentIndexes;
 	for (int i = 0; i < indexes.size(); ++i)
 	{
@@ -341,8 +341,8 @@ void AUX_UI::ExportCloud() {
 		parentIndexes.push_back(parent_index);
 		for (int j = 0; j < qt_data.standardModel->itemFromIndex(parent_index)->rowCount(); ++j)
 		{
-			children_cloud_data.push_back(qt_data.standardModel->itemFromIndex(parent_index)->child(j)
-				->data().value<PointCloud<PointXYZRGB>::Ptr>()->makeShared());
+			children_cloud_data.push_back(*qt_data.standardModel->itemFromIndex(parent_index)->child(j)
+				->data().value<PointCloud<PointXYZRGB>::Ptr>());
 		}
 		if (IO_Tool.CloudExport(children_cloud_data))
 			my_ui.message->setText("Export success.");
