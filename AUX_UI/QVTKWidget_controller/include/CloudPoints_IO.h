@@ -56,10 +56,8 @@ public:
 	};
 
 	//ÂI¶³¶×¤J
-	bool CloudImport() {
-		if (!CloudPoints_IO::RootSelector())
-			return(false);
-
+	bool CloudImport(QStringList filelist) {
+		q_file_path_ = filelist;
 		for (int i = 0; i < q_file_path_.size(); i++)
 		{
 			QFileInfo qfi(q_file_path_[i]);

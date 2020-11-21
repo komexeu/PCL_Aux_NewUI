@@ -290,12 +290,25 @@ void AUX_UI::changeViewerColor(const QColor& c) {
 	pcl_data.viewer->setBackgroundColor((float)c.red() / 255, (float)c.green() / 255, (float)c.blue() / 255);
 }
 
+#include <qfiledialog.h>
 void AUX_UI::Tree_importCloud() {
 	RedSelectClear();
 	SetNoneMode();
 
+	QFileDialog add_dialog;
+	add_dialog.setFileMode(QFileDialog::ExistingFiles);
+	QStringList filelist = add_dialog.getOpenFileNames(nullptr, QObject::tr("Select a root."),
+		"C:/",
+		QObject::tr("All file(*.*);;pcd file (*.pcd);;csv file(*.csv)"));
+
+	if (filelist.isEmpty())
+	{
+		ui.treeView->selectionModel()->clear();
+		return;
+	}
+
 	CloudPoints_IO<PointXYZRGB> IO_Tool;
-	if (!IO_Tool.CloudImport()) {
+	if (!IO_Tool.CloudImport(filelist)) {
 		QString selectedText = "Import fail.";
 		my_ui.message->setText(selectedText);
 		return;
