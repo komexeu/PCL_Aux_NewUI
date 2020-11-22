@@ -2,7 +2,6 @@
 
 //qt
 #include <qstring.h>
-#include <qfiledialog.h>
 #include <qlocale.h>
 #include <qtextstream.h>
 #include <qobject.h>
@@ -50,38 +49,32 @@ template <typename PointType>
 class CloudPoints_IO
 {
 public:
-	CloudPoints_IO() : import_cloud_()
-	{
-		//import_cloud_.reset(new PointCloud<PointType>);
-	};
+	CloudPoints_IO() {};
 
 	//點雲匯入
-	bool CloudImport(QStringList filelist) {
-		q_file_path_ = filelist;
-		for (int i = 0; i < q_file_path_.size(); i++)
-		{
-			QFileInfo qfi(q_file_path_[i]);
-			if (qfi.suffix() == "csv") {
-				file_name_.push_back(qfi.fileName());
-				if (CloudPoints_IO::csv2pointCloud(qfi.filePath()))
-					continue;
-			}
-			else if (qfi.suffix() == "pcd") {
-				PointCloud<PointType>::Ptr cloud(new PointCloud<PointType>);
-				int importReault = io::loadPCDFile<PointType>
-					(qfi.filePath().toLocal8Bit().data(), *cloud);
-				if (importReault == 0) {
-					file_name_.push_back(qfi.fileName());
-					VoxelGrid<PointType> vox;
-					vox.setInputCloud(cloud);
-					vox.setLeafSize(0.001f, 0.001f, 0.001f);
-					vox.filter(*cloud);
-					import_cloud_.push_back(*cloud);
-				}
-			}
-			else
-				continue;
+	bool CloudImport(QString filename) {
+		QFileInfo qfi(filename);
+		if (qfi.suffix() == "csv") {
+			file_name_.push_back(qfi.fileName());
+			if (CloudPoints_IO::csv2pointCloud(qfi.filePath()))
+				return(false);
 		}
+		else if (qfi.suffix() == "pcd") {
+			PointCloud<PointType>::Ptr cloud(new PointCloud<PointType>);
+			int importReault = io::loadPCDFile<PointType>
+				(qfi.filePath().toLocal8Bit().data(), *cloud);
+			if (importReault == 0) {
+				file_name_.push_back(qfi.fileName());
+				VoxelGrid<PointType> vox;
+				vox.setInputCloud(cloud);
+				vox.setLeafSize(0.001f, 0.001f, 0.001f);
+				vox.filter(*cloud);
+				import_cloud_.push_back(*cloud);
+			}
+		}
+		else
+			return(false);
+
 		return(true);
 	}
 	//點雲匯出
@@ -117,20 +110,8 @@ public:
 	std::vector<PointCloud<PointType>> import_cloud_;
 	QStringList file_name_;
 protected:
-	//檔案路徑
-	QStringList q_file_path_;
+	
 private:
-	bool RootSelector() {
-		QFileDialog add_dialog;
-		add_dialog.setFileMode(QFileDialog::ExistingFiles);
-		q_file_path_ = add_dialog.getOpenFileNames(nullptr, QObject::tr("Select a root."),
-			"C:/",
-			QObject::tr("All file(*.*);;pcd file (*.pcd);;csv file(*.csv)"));
-		if (q_file_path_.isEmpty())
-			return(false);
-
-		return(true);
-	}
 	bool csv2pointCloud(QString filepath) {
 		QFile csvfile(filepath);
 		PointCloud<PointType>::Ptr cloud(new PointCloud < PointType>);
