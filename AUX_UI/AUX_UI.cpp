@@ -311,58 +311,31 @@ void AUX_UI::Tree_importCloud() {
 	QStringList fileTypelist;
 	for (int i = 0; i < filelist.size(); i++)
 	{
-		ifstream fin(filelist[i].toStdString());
-		string tmp_type;
-		char c_fields[1024];
-		for (int j = 0; j < 3; j++)
-		{
-			fin.getline(c_fields, 1024);
-			if (j == 2)
-			{
-				string  s_fields = c_fields;
-				size_t pos = s_fields.find("FIELDS");
-				size_t size = s_fields.size();
-				tmp_type = s_fields.substr(pos + 7, size);
-				qDebug() << QString::fromStdString(tmp_type);
-				//fileTypelist.push_back(QString::fromStdString(tmp_type));
-			}
+		CloudPoints_IO<PointXYZRGB> IO_Tool;
+		if (!IO_Tool.CloudImport(filelist[i])) {
+			QString selectedText = "Import fail.";
+			my_ui.message->setText(selectedText);
+			return;
 		}
 
-		QStringList splited_list = QString::fromStdString(tmp_type).split(" ");
-		if ((splited_list.contains("x") || splited_list.contains("X")) &&
-			(splited_list.contains("y") || splited_list.contains("Y")) &&
-			(splited_list.contains("z") || splited_list.contains("Z")))
+		for (int i = 0; i < IO_Tool.file_name_.size(); i++)
 		{
-			CloudPoints_IO<PointXYZRGB> IO_Tool;
-			if (!IO_Tool.CloudImport(filelist[i])) {
-				QString selectedText = "Import fail.";
+			bool ok;
+			QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+				tr("Layer name:"), QLineEdit::Normal,
+				IO_Tool.file_name_[i], &ok);
+			if (ok && !text.isEmpty()) {
+				std::string BaseLayerName = text.toStdString();
+				std::string objName = "NONE" + text.toStdString();
+				TreeLayerController* tree_layerController = new TreeLayerController(qt_data.standardModel);
+				if (!tree_layerController->AddLayer(text, IO_Tool.import_cloud_[i].makeShared()))
+					return;
+				QString selectedText = "Import success.";
 				my_ui.message->setText(selectedText);
-				return;
-			}
-
-			for (int i = 0; i < IO_Tool.file_name_.size(); i++)
-			{
-				bool ok;
-				QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-					tr("Layer name:"), QLineEdit::Normal,
-					IO_Tool.file_name_[i], &ok);
-				if (ok && !text.isEmpty()) {
-					std::string BaseLayerName = text.toStdString();
-					std::string objName = "NONE" + text.toStdString();
-					TreeLayerController* tree_layerController = new TreeLayerController(qt_data.standardModel);
-					if (!tree_layerController->AddLayer(text, IO_Tool.import_cloud_[i].makeShared()))
-						return;
-					QString selectedText = "Import success.";
-					my_ui.message->setText(selectedText);
-				}
 			}
 		}
 	}
 	ui.treeView->selectionModel()->clear();
-
-	//PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
-	//QString ss = typeid(cld->data()).name();
-	//my_ui.message->setText(ss);
 }
 
 void String2Type(string type) {
