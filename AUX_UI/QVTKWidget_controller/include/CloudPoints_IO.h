@@ -45,6 +45,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(PointXYZRGBObjectID,
 	(int, obj_id, obj_id)
 )
 
+#include <qdebug>
 template <typename PointType>
 class CloudPoints_IO
 {
@@ -56,7 +57,7 @@ public:
 		QFileInfo qfi(filename);
 		if (qfi.suffix() == "csv") {
 			file_name_.push_back(qfi.fileName());
-			if (CloudPoints_IO::csv2pointCloud(qfi.filePath()))
+			if (!CloudPoints_IO::csv2pointCloud(qfi.filePath()))
 				return(false);
 		}
 		else if (qfi.suffix() == "pcd") {
@@ -110,7 +111,7 @@ public:
 	std::vector<PointCloud<PointType>> import_cloud_;
 	QStringList file_name_;
 protected:
-	
+
 private:
 	bool csv2pointCloud(QString filepath) {
 		QFile csvfile(filepath);
@@ -124,23 +125,44 @@ private:
 				QString lineStr = infile.readLine();
 				Line_i++;
 
-				if (Line_i == 1)//欄位名稱跳過				
-					continue;
-
 				QStringList res = lineStr.split(",");//分割","
-
 				if (res.size() == 1)
 				{
 					res = lineStr.split(" ");
 				}
-
 				if (res.size() == 1)
 				{
 					res = lineStr.split("/t");
 				}
 
+				if (Line_i == 1) {
+					if ((res[0] == "x" || res[0] == "X") &&
+						(res[1] == "y" || res[1] == "Y") &&
+						(res[2] == "z" || res[2] == "Z"))
+					{
+						continue;
+					}
+					else if (res.size() >= 3 && res.size() <= 6)
+					{
+						continue;
+					}
+					else
+					{
+						return(false);
+					}
+				}
+
 				PointType tmp;
-				if (res.size() == 6)
+				if (res.size() == 3)
+				{
+					tmp.x = atof(res[0].toStdString().c_str());
+					tmp.y = atof(res[1].toStdString().c_str());
+					tmp.z = atof(res[2].toStdString().c_str());
+					tmp.r = 255;
+					tmp.g = 255;
+					tmp.b = 255;
+				}
+				else if (res.size() == 6)
 				{
 					tmp.x = atof(res[0].toStdString().c_str());
 					tmp.y = atof(res[1].toStdString().c_str());
