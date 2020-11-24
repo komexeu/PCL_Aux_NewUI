@@ -308,7 +308,6 @@ void AUX_UI::Tree_importCloud() {
 		return;
 	}
 
-	QStringList fileTypelist;
 	for (int i = 0; i < filelist.size(); i++)
 	{
 		CloudPoints_IO<PointXYZRGB> IO_Tool;

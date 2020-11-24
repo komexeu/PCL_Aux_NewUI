@@ -139,30 +139,18 @@ private:
 					if ((res[0] == "x" || res[0] == "X") &&
 						(res[1] == "y" || res[1] == "Y") &&
 						(res[2] == "z" || res[2] == "Z"))
-					{
 						continue;
-					}
-					else if (res.size() >= 3 && res.size() <= 6)
-					{
+					else if (res.size() >= 3)
 						continue;
-					}
 					else
-					{
 						return(false);
-					}
 				}
 
 				PointType tmp;
-				if (res.size() == 3)
-				{
-					tmp.x = atof(res[0].toStdString().c_str());
-					tmp.y = atof(res[1].toStdString().c_str());
-					tmp.z = atof(res[2].toStdString().c_str());
-					tmp.r = 255;
-					tmp.g = 255;
-					tmp.b = 255;
-				}
-				else if (res.size() == 6)
+				if (res.size() >= 6 &&
+					(res[3] == "r" || res[3] == "R") &&
+					(res[4] == "g" || res[4] == "G") &&
+					(res[5] == "b" || res[5] == "B"))
 				{
 					tmp.x = atof(res[0].toStdString().c_str());
 					tmp.y = atof(res[1].toStdString().c_str());
@@ -170,6 +158,15 @@ private:
 					tmp.r = atof(res[3].toStdString().c_str());
 					tmp.g = atof(res[4].toStdString().c_str());
 					tmp.b = atof(res[5].toStdString().c_str());
+				}
+				else if (res.size() >= 3)
+				{
+					tmp.x = atof(res[0].toStdString().c_str());
+					tmp.y = atof(res[1].toStdString().c_str());
+					tmp.z = atof(res[2].toStdString().c_str());
+					tmp.r = 255;
+					tmp.g = 255;
+					tmp.b = 255;
 				}
 				else
 					break;
