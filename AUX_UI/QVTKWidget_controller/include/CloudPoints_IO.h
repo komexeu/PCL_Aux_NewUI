@@ -169,7 +169,7 @@ private:
 					tmp.b = 255;
 				}
 				else
-					break;
+					return(false);
 				cloud->push_back(tmp);
 			}
 			csvfile.close();
