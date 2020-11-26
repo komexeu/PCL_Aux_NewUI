@@ -516,7 +516,7 @@ void AUX_UI::Slider_PreSegCloud() {
 
 	std::vector<PointIndices> seg_cloud_2;
 	if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION)
-		seg_cloud_2 = cpTools.CloudSegmentation(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
+		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowingRGB(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
 	else if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING)
 		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowing(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
 

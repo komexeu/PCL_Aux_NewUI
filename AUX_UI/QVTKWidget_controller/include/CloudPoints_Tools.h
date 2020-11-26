@@ -6,7 +6,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/PointIndices.h>
-
+#include <pcl/segmentation/region_growing_rgb.h>
 
 using namespace pcl;
 using namespace std;
@@ -19,6 +19,7 @@ public:
 
 	vector<PointIndices> CloudSegmentation(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int sliderValue, float nowCloud_avg_distance);
 	vector<PointIndices> CloudSegmentation_regionGrowing(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int sliderValue, float nowCloud_avg_distance);
+	vector<PointIndices> CloudSegmentation_regionGrowingRGB(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int sliderValue, float nowCloud_avg_distance);
 	PointCloud<PointXYZRGB>::Ptr CloudSmooth(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, float smooth_strength);
 private:
 };
