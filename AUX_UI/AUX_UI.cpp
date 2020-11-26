@@ -337,15 +337,6 @@ void AUX_UI::Tree_importCloud() {
 	ui.treeView->selectionModel()->clear();
 }
 
-void String2Type(string type) {
-
-
-	if (type == "xyzrgb")
-	{
-
-	}
-}
-
 void AUX_UI::ExportCloud() {
 	auto indexes = ui.treeView->selectionModel()->selectedIndexes();
 	if (indexes.size() <= 0)
