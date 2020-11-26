@@ -595,7 +595,7 @@ void AUX_UI::Color_Segment() {
 	copyPointCloud(*general_data.nowLayerCloud, *cld);
 
 	std::vector<PointIndices> seg_cloud_2;
-	seg_cloud_2 = cpTools.CloudSegmentation_regionGrowingRGB(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
+	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld);
 
 
 	for (int i = 0; i < cld->size(); i++)

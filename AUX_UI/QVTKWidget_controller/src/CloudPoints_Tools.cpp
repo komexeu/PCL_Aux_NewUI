@@ -58,7 +58,7 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowing(PointClo
 	return cluster_indice;
 }
 #include <pcl/filters/voxel_grid.h>
-vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowingRGB(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int sliderValue, float nowCloud_avg_distance) {
+vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(PointCloud<PointXYZRGB>::Ptr nowLayerCloud) {
 	PointCloud<PointXYZRGB>::Ptr nowLayrCloudClone(new PointCloud<PointXYZRGB>);
 	copyPointCloud(*nowLayerCloud, *nowLayrCloudClone);
 	vector<PointIndices> cluster_indice;
