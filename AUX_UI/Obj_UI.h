@@ -34,6 +34,9 @@ public:
 	my_spinBox* preSeg_spinbox;
 	my_slider* preSeg_slider;
 	my_button* preSeg_confirm;
+
+	my_foldGroupBox* color_filter_groupbox;
+	my_button* color_filter_start_button;
 };
 
 namespace my_UI {

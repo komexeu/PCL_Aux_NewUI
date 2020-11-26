@@ -68,7 +68,7 @@ public:
 				file_name_.push_back(qfi.fileName());
 				VoxelGrid<PointType> vox;
 				vox.setInputCloud(cloud);
-				vox.setLeafSize(0.001f, 0.001f, 0.001f);
+				vox.setLeafSize(0.003f, 0.003f, 0.003f);
 				vox.filter(*cloud);
 				import_cloud_.push_back(*cloud);
 			}

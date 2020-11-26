@@ -133,9 +133,16 @@ AUX_UI::AUX_UI(QWidget* parent)
 	my_ui.preSeg_confirm = new my_button(my_ui.preSeg_groupbox, QString::fromUtf8("confirm"));
 	my_ui.preSeg_confirm->set_font_color(QColor(255, 255, 255));
 	my_ui.preSeg_groupbox->addWidget(2, QFormLayout::SpanningRole, my_ui.preSeg_confirm);
+	//----groupbox(Color Filter)----
+	my_ui.color_filter_groupbox = new my_foldGroupBox("Color Filter", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
+
+	my_ui.color_filter_start_button = new my_button(my_ui.color_filter_groupbox, QString::fromUtf8("Start"));
+	my_ui.color_filter_start_button->set_font_color(QColor(255, 255, 255));
+	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
 	//---------
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.smooth_groupbox);
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.preSeg_groupbox);
+	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.color_filter_groupbox);
 	//------colordialog-----------
 	QColorDialog* Qcolordia = new QColorDialog();
 	connect(Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeWindowsColor(const QColor&)));
@@ -147,6 +154,8 @@ AUX_UI::AUX_UI(QWidget* parent)
 	connect(my_ui.smooth_spinbox, SIGNAL(valueChanged(int)), my_ui.smooth_slider, SLOT(setValue(int)));
 	connect(my_ui.preSeg_slider, SIGNAL(valueChanged(int)), my_ui.preSeg_spinbox, SLOT(setValue(int)));
 	connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), my_ui.preSeg_slider, SLOT(setValue(int)));
+	//---------color segment------------
+	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(Color_Segment()));
 	//----------Mode Change------
 	connect(my_ui.Brush, SIGNAL(clicked()), this, SLOT(SetBrushMode()));
 	connect(my_ui.Area, SIGNAL(clicked()), this, SLOT(SetAreaMode()));
@@ -202,6 +211,8 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 	my_ui.preSeg_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
 	my_ui.preSeg_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
+
+	my_ui.color_filter_start_button->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
 
 	my_ui.message->setText("Color changed!");
 	ui.statusBar->addPermanentWidget(my_ui.message);
@@ -516,7 +527,7 @@ void AUX_UI::Slider_PreSegCloud() {
 
 	std::vector<PointIndices> seg_cloud_2;
 	if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION)
-		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowingRGB(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
+		seg_cloud_2 = cpTools.CloudSegmentation(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
 	else if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING)
 		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowing(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
 
@@ -569,6 +580,47 @@ void AUX_UI::Slider_confirmSegCloud() {
 	general_data.SegClouds.clear();
 
 	ui.treeView->selectionModel()->clear();
+}
+
+void AUX_UI::Color_Segment() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	general_data.SegClouds.clear();
+	CloudPoints_Tools cpTools;
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+
+	PointCloud<PointXYZRGB>::Ptr database_cloud(new PointCloud<PointXYZRGB>);
+	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
+	copyPointCloud(*general_data.nowLayerCloud, *database_cloud);
+	copyPointCloud(*general_data.nowLayerCloud, *cld);
+
+	std::vector<PointIndices> seg_cloud_2;
+	seg_cloud_2 = cpTools.CloudSegmentation_regionGrowingRGB(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
+
+
+	for (int i = 0; i < cld->size(); i++)
+	{
+		cld->points[i].r = 255;
+		cld->points[i].g = 255;
+		cld->points[i].b = 255;
+	}
+	for (vector<PointIndices>::const_iterator i = seg_cloud_2.begin(); i < seg_cloud_2.end(); i++)
+	{
+		int color_R = rand() % 250;
+		int color_G = rand() % 250;
+		int color_B = rand() % 250;
+		PointCloud<PointXYZRGB>::Ptr tmp(new PointCloud<PointXYZRGB>);
+		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
+		{
+			tmp->push_back(database_cloud->points[*j]);
+			cld->points[*j].r = color_R;
+			cld->points[*j].g = color_G;
+			cld->points[*j].b = color_B;
+		}
+		general_data.SegClouds.push_back(tmp);
+	}
+	ViewCloudUpdate(cld, false);
+	RedSelectClear();
 }
 //USER segment
 void AUX_UI::Tree_UserSegmentation() {

@@ -33,7 +33,7 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation(PointCloud<PointXYZRGB
 	return cluster_indice;
 }
 
-vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowing(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, 
+vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowing(PointCloud<PointXYZRGB>::Ptr nowLayerCloud,
 	int sliderValue, float nowCloud_avg_distance) {
 	search::KdTree<PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
 	pcl::PointCloud <pcl::Normal>::Ptr normals(new pcl::PointCloud <pcl::Normal>);
@@ -57,25 +57,19 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowing(PointClo
 
 	return cluster_indice;
 }
-
+#include <pcl/filters/voxel_grid.h>
 vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowingRGB(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int sliderValue, float nowCloud_avg_distance) {
 	PointCloud<PointXYZRGB>::Ptr nowLayrCloudClone(new PointCloud<PointXYZRGB>);
 	copyPointCloud(*nowLayerCloud, *nowLayrCloudClone);
-
-	search::KdTree<PointXYZRGB>::Ptr tree(new search::KdTree<PointXYZRGB>);
-	tree->setInputCloud(nowLayrCloudClone);
-
-	RegionGrowingRGB<PointXYZRGB> RG_rgb;
-	RG_rgb.setInputCloud(nowLayrCloudClone);
-	RG_rgb.setSearchMethod(tree);
-	RG_rgb.setDistanceThreshold(nowCloud_avg_distance);
-	RG_rgb.setPointColorThreshold(30);
-	RG_rgb.setRegionColorThreshold(nowCloud_avg_distance*3);
-	RG_rgb.setMinClusterSize(300);
-
 	vector<PointIndices> cluster_indice;
-	RG_rgb.extract(cluster_indice);
-
+	PointIndices p;
+	for (int i = 0; i < nowLayerCloud->size(); i++)
+	{
+		if ((nowLayerCloud->points[i].g > nowLayerCloud->points[i].r) &&
+			(nowLayerCloud->points[i].g > nowLayerCloud->points[i].b))
+			p.indices.push_back(i);
+	}
+	cluster_indice.push_back(p);
 	return cluster_indice;
 }
 
