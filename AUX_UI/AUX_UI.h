@@ -50,6 +50,7 @@ public Q_SLOTS:
 	void Brush_SizeChange();
 	void Set_HSVSlider(const QColor& c);
 	void Color_Segment();
+	void AA();
 
 	void onCustomContextMenu(const QPoint& point);
 	void mergeLayer();

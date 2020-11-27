@@ -297,9 +297,10 @@ void AUX_UI::Set_ToolConnect() {
 	QColorDialog* Qcolordia_SegColor = new QColorDialog();
 	connect(Qcolordia_SegColor, SIGNAL(colorSelected(const QColor&)), this, SLOT(Set_HSVSlider(const QColor&)));
 	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
-	//QObject::connect(my_ui.H_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
-	//QObject::connect(my_ui.S_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
-	//QObject::connect(my_ui.V_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
+	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(AA()));
+	connect(my_ui.H_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
+	connect(my_ui.S_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
+	connect(my_ui.V_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
 	QObject::connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
 	//confirm
 	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(Slider_confirmSegCloud()));
@@ -317,6 +318,18 @@ void AUX_UI::Set_ToolConnect() {
 	connect(Viewer_Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeViewerColor(const QColor&)));
 	//-------layer merge------
 	connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onCustomContextMenu(const QPoint&)));
+}
+
+void AUX_UI::AA() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
+	cld = qt_data.standardModel->itemFromIndex(index)->data().
+		value<PointCloud<PointXYZRGB>::Ptr>()->makeShared();
+
+	ViewCloudUpdate(cld, false);
+	RedSelectClear();
 }
 
 void AUX_UI::onCustomContextMenu(const QPoint& point)
@@ -638,9 +651,6 @@ void AUX_UI::Slider_confirmSegCloud() {
 }
 
 void AUX_UI::Set_HSVSlider(const QColor& c) {
-	qDebug() << "------------";
-	qDebug() << "------------";
-	qDebug() << "------------";
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	general_data.SegClouds.clear();
@@ -656,7 +666,6 @@ void AUX_UI::Set_HSVSlider(const QColor& c) {
 	my_ui.H_spinbox->setValue(hsvData.h);
 	my_ui.S_spinbox->setValue(hsvData.s);
 	my_ui.V_spinbox->setValue(hsvData.v);
-	qDebug() << hsvData.h <<","<< hsvData.s <<","<< hsvData.v;
 
 	/*std::vector<PointIndices> seg_cloud_2;
 	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
