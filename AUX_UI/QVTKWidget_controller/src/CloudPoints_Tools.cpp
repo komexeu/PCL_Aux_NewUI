@@ -5,56 +5,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/segmentation/region_growing.h>
 
-enum RGB_TYPE
-{
-	RGB, RBG, BGR, BRG, GRB, GBR
-};
-
-struct HSV {
-	int h;
-	int s;
-	int v;
-};
 #include <qdebug.h>
-HSV rgb2hsv(int r, int g, int b) {
-	HSV hsv_data;
-	int Max, Min;
-	if (r >= g && r >= b) {
-		Max = r;
-		Min = (g >= b) ? b : g;
-	}
-	else if (g >= r && g >= b)
-	{
-		Max = g;
-		Min = (r >= b) ? b : r;
-	}
-	else if (b >= r && b >= g) {
-		Max = b;
-		Min = (r >= g) ? g : r;
-	}
-
-	if ((Max - Min) <= 0)
-	{
-		hsv_data.h = -1;
-		hsv_data.s = -1;
-		hsv_data.v = -1;
-		return hsv_data;
-	}
-
-	if (r == Max)
-		hsv_data.h = (g - b) / (Max - Min);
-	else if (g == Max)
-		hsv_data.h = 2 + (b - r) / (Max - Min);
-	else if (g == Max)
-		hsv_data.h = 4 + (r - g) / (Max - Min);
-
-	hsv_data.h *= 60;
-	if (hsv_data.h < 0)
-		hsv_data.h += 360;
-	hsv_data.s = (Max - Min) / Max;
-	hsv_data.v = Max;
-	return hsv_data;
-}
 
 vector<PointIndices> CloudPoints_Tools::CloudSegmentation(PointCloud<PointXYZRGB>::Ptr nowLayerCloud
 	, int sliderValue, float nowCloud_avg_distance) {
@@ -110,9 +61,8 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowing(PointClo
 }
 
 vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
-	PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int r, int g, int b
-	,int h_range,int s_range,int v_range) {
-	HSV hsv_data = rgb2hsv(r, g, b);
+	PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int h, int s, int v, int v_range) {
+	HSV hsv_data{ h,s,v };
 
 	PointCloud<PointXYZRGB>::Ptr nowLayrCloudClone(new PointCloud<PointXYZRGB>);
 	copyPointCloud(*nowLayerCloud, *nowLayrCloudClone);
@@ -121,12 +71,11 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
 	for (int i = 0; i < nowLayerCloud->size(); i++)
 	{
 		HSV point_hsv = rgb2hsv(nowLayerCloud->points[i].r, nowLayerCloud->points[i].g, nowLayerCloud->points[i].b);
-		int range = 20;
 		if (point_hsv.h == -1 || point_hsv.s == -1 || point_hsv.v == -1)
 			continue;
 
-		if (abs(hsv_data.h - point_hsv.h) < h_range &&
-			abs(hsv_data.s - point_hsv.s) < s_range &&
+		if (abs(hsv_data.h - point_hsv.h) < 8 &&
+			abs(hsv_data.s - point_hsv.s) < 8 &&
 			abs(hsv_data.v - point_hsv.v) < v_range)
 		{
 			p.indices.push_back(i);

@@ -42,6 +42,8 @@ public:
 	my_slider* S_slider;
 	my_spinBox* V_spinbox;
 	my_slider* V_slider;
+	my_spinBox* V_range_spinbox;
+	my_slider* V_range_slider;
 	my_button* color_filter_start_button;
 };
 

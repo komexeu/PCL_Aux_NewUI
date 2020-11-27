@@ -95,3 +95,48 @@ namespace Data_Class {
 	class PCL_Data :public PCL_DataClass {};
 	class General_Data :public General_DataClass {};
 }
+
+struct HSV {
+	int h;
+	int s;
+	int v;
+};
+HSV rgb2hsv(int r, int g, int b) {
+	HSV hsv_data;
+	int Max, Min;
+	if (r >= g && r >= b) {
+		Max = r;
+		Min = (g >= b) ? b : g;
+	}
+	else if (g >= r && g >= b)
+	{
+		Max = g;
+		Min = (r >= b) ? b : r;
+	}
+	else if (b >= r && b >= g) {
+		Max = b;
+		Min = (r >= g) ? g : r;
+	}
+
+	if ((Max - Min) <= 0)
+	{
+		hsv_data.h = -1;
+		hsv_data.s = -1;
+		hsv_data.v = -1;
+		return hsv_data;
+	}
+
+	if (r == Max)
+		hsv_data.h = (g - b) / (Max - Min);
+	else if (g == Max)
+		hsv_data.h = 2 + (b - r) / (Max - Min);
+	else if (g == Max)
+		hsv_data.h = 4 + (r - g) / (Max - Min);
+
+	hsv_data.h *= 60;
+	if (hsv_data.h < 0)
+		hsv_data.h += 360;
+	hsv_data.s = (Max - Min) / Max;
+	hsv_data.v = Max;
+	return hsv_data;
+}

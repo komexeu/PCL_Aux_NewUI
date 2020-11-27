@@ -19,7 +19,7 @@ public:
 
 	vector<PointIndices> CloudSegmentation(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int sliderValue, float nowCloud_avg_distance);
 	vector<PointIndices> CloudSegmentation_regionGrowing(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int sliderValue, float nowCloud_avg_distance);
-	vector<PointIndices> CloudSegmentation_RGB(PointCloud<PointXYZRGB>::Ptr nowLayerCloud,int r,int g,int b, int h_range, int s_range, int v_range);
+	vector<PointIndices> CloudSegmentation_RGB(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int h, int s, int v,int v_range);
 	PointCloud<PointXYZRGB>::Ptr CloudSmooth(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, float smooth_strength);
 private:
 };
