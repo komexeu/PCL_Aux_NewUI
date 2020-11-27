@@ -53,7 +53,6 @@ HSV rgb2hsv(int r, int g, int b) {
 		hsv_data.h += 360;
 	hsv_data.s = (Max - Min) / Max;
 	hsv_data.v = Max;
-	//qDebug() << hsv_data.h<< "," << hsv_data.s<<","<< hsv_data.v;
 	return hsv_data;
 }
 
@@ -112,21 +111,7 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowing(PointClo
 
 vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
 	PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int r, int g, int b) {
-	//int type;
 	HSV hsv_data = rgb2hsv(r, g, b);
-
-	/*if (max == r && min == b)
-		type = RGB_TYPE::RGB;
-	else if (max == r && min == g)
-		type = RGB_TYPE::RBG;
-	else if (max == g && min == b)
-		type = RGB_TYPE::GRB;
-	else if (max == g && min == r)
-		type = RGB_TYPE::GBR;
-	else if (max == b && min == g)
-		type = RGB_TYPE::BRG;
-	else if (max == b && min == r)
-		type = RGB_TYPE::BGR;*/
 
 	PointCloud<PointXYZRGB>::Ptr nowLayrCloudClone(new PointCloud<PointXYZRGB>);
 	copyPointCloud(*nowLayerCloud, *nowLayrCloudClone);
@@ -145,48 +130,6 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
 		{
 			p.indices.push_back(i);
 		}
-
-		/*switch (type)
-		{
-		case RGB_TYPE::RGB:
-			if ((nowLayerCloud->points[i].r >= nowLayerCloud->points[i].g) &&
-				(nowLayerCloud->points[i].r >= nowLayerCloud->points[i].b) &&
-				(nowLayerCloud->points[i].g >= nowLayerCloud->points[i].b))
-				p.indices.push_back(i);
-			break;
-		case RGB_TYPE::RBG:
-			if ((nowLayerCloud->points[i].r >= nowLayerCloud->points[i].g) &&
-				(nowLayerCloud->points[i].r >= nowLayerCloud->points[i].b) &&
-				(nowLayerCloud->points[i].b >= nowLayerCloud->points[i].g))
-				p.indices.push_back(i);
-			break;
-		case RGB_TYPE::GRB:
-			if ((nowLayerCloud->points[i].g >= nowLayerCloud->points[i].r) &&
-				(nowLayerCloud->points[i].g >= nowLayerCloud->points[i].b) &&
-				(nowLayerCloud->points[i].r >= nowLayerCloud->points[i].b))
-				p.indices.push_back(i);
-			break;
-		case RGB_TYPE::GBR:
-			if ((nowLayerCloud->points[i].g >= nowLayerCloud->points[i].r) &&
-				(nowLayerCloud->points[i].g >= nowLayerCloud->points[i].b) &&
-				(nowLayerCloud->points[i].b >= nowLayerCloud->points[i].r))
-				p.indices.push_back(i);
-			break;
-		case RGB_TYPE::BRG:
-			if ((nowLayerCloud->points[i].b >= nowLayerCloud->points[i].r) &&
-				(nowLayerCloud->points[i].b >= nowLayerCloud->points[i].g) &&
-				(nowLayerCloud->points[i].r >= nowLayerCloud->points[i].g))
-				p.indices.push_back(i);
-			break;
-		case RGB_TYPE::BGR:
-			if ((nowLayerCloud->points[i].b >= nowLayerCloud->points[i].r) &&
-				(nowLayerCloud->points[i].b >= nowLayerCloud->points[i].g) &&
-				(nowLayerCloud->points[i].g >= nowLayerCloud->points[i].r))
-				p.indices.push_back(i);
-			break;
-		default:
-			break;
-		}*/
 	}
 	cluster_indice.push_back(p);
 	return cluster_indice;
