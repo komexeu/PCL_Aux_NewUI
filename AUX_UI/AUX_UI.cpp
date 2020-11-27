@@ -136,9 +136,30 @@ AUX_UI::AUX_UI(QWidget* parent)
 	//----groupbox(Color Filter)----
 	my_ui.color_filter_groupbox = new my_foldGroupBox("Color Filter", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
 
+	my_ui.H_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "H_spinBox");
+	my_ui.H_spinbox->setRange(0, 20);
+	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::LabelRole, my_ui.H_spinbox);
+	my_ui.H_slider = new my_slider(my_ui.color_filter_groupbox);
+	my_ui.H_slider->setRange(0, 20);
+	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::FieldRole, my_ui.H_slider);
+
+	my_ui.S_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "S_spinBox");
+	my_ui.S_spinbox->setRange(0, 10);
+	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::LabelRole, my_ui.S_spinbox);
+	my_ui.S_slider = new my_slider(my_ui.color_filter_groupbox);
+	my_ui.S_slider->setRange(0, 10);
+	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::FieldRole, my_ui.S_slider);
+
+	my_ui.V_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "V_spinBox");
+	my_ui.V_spinbox->setRange(0, 255);
+	my_ui.color_filter_groupbox->addWidget(2, QFormLayout::LabelRole, my_ui.V_spinbox);
+	my_ui.V_slider = new my_slider(my_ui.color_filter_groupbox);
+	my_ui.V_slider->setRange(0, 255);
+	my_ui.color_filter_groupbox->addWidget(2, QFormLayout::FieldRole, my_ui.V_slider);
+
 	my_ui.color_filter_start_button = new my_button(my_ui.color_filter_groupbox, QString::fromUtf8("Start"));
 	my_ui.color_filter_start_button->set_font_color(QColor(255, 255, 255));
-	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
+	my_ui.color_filter_groupbox->addWidget(3, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
 	//---------
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.smooth_groupbox);
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.preSeg_groupbox);
@@ -156,10 +177,14 @@ AUX_UI::AUX_UI(QWidget* parent)
 	connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), my_ui.preSeg_slider, SLOT(setValue(int)));
 	//---------color segment------------
 	QColorDialog* Qcolordia_SegColor = new QColorDialog();
+	connect(my_ui.H_slider, SIGNAL(valueChanged(int)), my_ui.H_spinbox, SLOT(setValue(int)));
+	connect(my_ui.H_spinbox, SIGNAL(valueChanged(int)), my_ui.H_slider, SLOT(setValue(int)));
+	connect(my_ui.S_slider, SIGNAL(valueChanged(int)), my_ui.S_spinbox, SLOT(setValue(int)));
+	connect(my_ui.S_spinbox, SIGNAL(valueChanged(int)), my_ui.S_slider, SLOT(setValue(int)));
+	connect(my_ui.V_slider, SIGNAL(valueChanged(int)), my_ui.V_spinbox, SLOT(setValue(int)));
+	connect(my_ui.V_spinbox, SIGNAL(valueChanged(int)), my_ui.V_slider, SLOT(setValue(int)));
 	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
 	connect(Qcolordia_SegColor, SIGNAL(colorSelected(const QColor&)), this, SLOT(Color_Segment(const QColor&)));
-
-	//connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(Color_Segment()));
 	//----------Mode Change------
 	connect(my_ui.Brush, SIGNAL(clicked()), this, SLOT(SetBrushMode()));
 	connect(my_ui.Area, SIGNAL(clicked()), this, SLOT(SetAreaMode()));
@@ -216,6 +241,15 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 	my_ui.preSeg_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
 
+	my_ui.H_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
+	my_ui.H_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
+		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
+	my_ui.S_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
+	my_ui.S_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
+		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
+	my_ui.V_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
+	my_ui.V_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
+		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
 	my_ui.color_filter_start_button->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
 
 	my_ui.message->setText("Color changed!");
@@ -599,7 +633,8 @@ void AUX_UI::Color_Segment(const QColor& c) {
 	copyPointCloud(*general_data.nowLayerCloud, *cld);
 
 	std::vector<PointIndices> seg_cloud_2;
-	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld, c.red(), c.green(), c.blue());
+	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld, c.red(), c.green(), c.blue()
+		,my_ui.H_spinbox->value(), my_ui.S_spinbox->value(), my_ui.V_spinbox->value());
 
 	for (int i = 0; i < cld->size(); i++)
 	{
