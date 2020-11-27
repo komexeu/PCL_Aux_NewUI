@@ -155,7 +155,11 @@ AUX_UI::AUX_UI(QWidget* parent)
 	connect(my_ui.preSeg_slider, SIGNAL(valueChanged(int)), my_ui.preSeg_spinbox, SLOT(setValue(int)));
 	connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), my_ui.preSeg_slider, SLOT(setValue(int)));
 	//---------color segment------------
-	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(Color_Segment()));
+	QColorDialog* Qcolordia_SegColor = new QColorDialog();
+	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
+	connect(Qcolordia_SegColor, SIGNAL(colorSelected(const QColor&)), this, SLOT(Color_Segment(const QColor&)));
+
+	//connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(Color_Segment()));
 	//----------Mode Change------
 	connect(my_ui.Brush, SIGNAL(clicked()), this, SLOT(SetBrushMode()));
 	connect(my_ui.Area, SIGNAL(clicked()), this, SLOT(SetAreaMode()));
@@ -582,7 +586,7 @@ void AUX_UI::Slider_confirmSegCloud() {
 	ui.treeView->selectionModel()->clear();
 }
 
-void AUX_UI::Color_Segment() {
+void AUX_UI::Color_Segment(const QColor& c) {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	general_data.SegClouds.clear();
@@ -595,8 +599,7 @@ void AUX_UI::Color_Segment() {
 	copyPointCloud(*general_data.nowLayerCloud, *cld);
 
 	std::vector<PointIndices> seg_cloud_2;
-	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld);
-
+	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld, c.red(), c.green(), c.blue());
 
 	for (int i = 0; i < cld->size(); i++)
 	{
@@ -621,6 +624,25 @@ void AUX_UI::Color_Segment() {
 	}
 	ViewCloudUpdate(cld, false);
 	RedSelectClear();
+
+	for (int i = 0; i < general_data.SegClouds.size(); ++i)
+	{
+		QString segLayer = QString::fromStdString(std::to_string(i));
+		TreeLayerController ly(qt_data.standardModel);
+
+		if (!ly.AddLayer(segLayer, general_data.SegClouds[i], searchParent(index)))
+			return;
+	}
+	if (index.parent().row() != -1)
+		Tree_deleteLayer();
+
+	QString children_message = general_data.SegClouds.size() <= 1 ?
+		QString::fromStdString("Segment " + std::to_string(general_data.SegClouds.size()) + " child") :
+		QString::fromStdString("Segment " + std::to_string(general_data.SegClouds.size()) + " children");
+	my_ui.message->setText(children_message);
+	general_data.SegClouds.clear();
+
+	ui.treeView->selectionModel()->clear();
 }
 //USER segment
 void AUX_UI::Tree_UserSegmentation() {

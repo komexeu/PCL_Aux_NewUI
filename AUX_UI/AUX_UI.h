@@ -48,7 +48,7 @@ public Q_SLOTS:
 	void Tree_deleteLayer();
 	void changeViewerColor(const QColor& c);
 	void Brush_SizeChange();
-	void Color_Segment();
+	void Color_Segment(const QColor& c);
 
 	void onCustomContextMenu(const QPoint& point);
 	void mergeLayer();
