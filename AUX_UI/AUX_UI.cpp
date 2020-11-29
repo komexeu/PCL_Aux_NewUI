@@ -136,16 +136,27 @@ AUX_UI::AUX_UI(QWidget* parent)
 	//----groupbox(Color Filter)----
 	my_ui.color_filter_groupbox = new my_foldGroupBox("Color Filter", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
 
+	my_ui.color_widget = new QPushButton(my_ui.color_filter_groupbox);
+	my_ui.color_widget->setStyleSheet(QString("background-color:"
+		"qlineargradient("
+		"spread:"
+		"pad, x1:0, y1:0.5, x2:1, y2:0.5,"
+		"stop:0 rgb(%1, %2, %3),"
+		"stop:1 rgb(%4, %5, %6));")
+		.arg(QString::number(0), QString::number(0), QString::number(0),
+			QString::number(255), QString::number(255), QString::number(255)));
+	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::SpanningRole, my_ui.color_widget);
+
 	my_ui.V_range_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "V_range_spinBox");
 	my_ui.V_range_spinbox->setRange(1, 255);
-	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::LabelRole, my_ui.V_range_spinbox);
+	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::LabelRole, my_ui.V_range_spinbox);
 	my_ui.V_range_slider = new my_slider(my_ui.color_filter_groupbox);
 	my_ui.V_range_slider->setRange(1, 255);
-	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::FieldRole, my_ui.V_range_slider);
+	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::FieldRole, my_ui.V_range_slider);
 
 	my_ui.color_filter_start_button = new my_button(my_ui.color_filter_groupbox, QString::fromUtf8("Start"));
 	my_ui.color_filter_start_button->set_font_color(QColor(255, 255, 255));
-	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
+	my_ui.color_filter_groupbox->addWidget(2, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
 	//---------
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.smooth_groupbox);
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.preSeg_groupbox);
@@ -261,9 +272,9 @@ void AUX_UI::Set_ToolConnect() {
 	QObject::connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Slider_PreSegCloud()));
 	//--------color segment--------
 	QColorDialog* Qcolordia_SegColor = new QColorDialog();
-	connect(Qcolordia_SegColor, SIGNAL(colorSelected(const QColor&)), this, SLOT(Set_HSVSlider(const QColor&)));
-	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
-	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(AA()));
+	connect(Qcolordia_SegColor, SIGNAL(colorSelected(const QColor&)), this, SLOT(Set_lightRange(const QColor&)));
+	connect(my_ui.color_widget, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
+	connect(my_ui.color_widget, SIGNAL(clicked()), this, SLOT(reset_point_color()));
 	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
 	//confirm
 	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(Slider_confirmSegCloud()));
@@ -283,7 +294,7 @@ void AUX_UI::Set_ToolConnect() {
 	connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onCustomContextMenu(const QPoint&)));
 }
 
-void AUX_UI::AA() {
+void AUX_UI::reset_point_color() {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
@@ -613,11 +624,43 @@ void AUX_UI::Slider_confirmSegCloud() {
 	ui.treeView->selectionModel()->clear();
 }
 
-void AUX_UI::Set_HSVSlider(const QColor& c) {
+void AUX_UI::Set_lightRange(const QColor& c) {
 	general_data.rgb_data = M_RGB{ c.red(), c.green(), c.blue() };
+	my_ui.color_widget->setStyleSheet(QString("background-color:"
+		"qlineargradient("
+		"spread:"
+		"pad, x1:0, y1:0.5, x2:1, y2:0.5,"
+		"stop:0 rgb(%1, %2, %3),"
+		"stop:1 rgb(%4, %5, %6));")
+		.arg(QString::number(general_data.rgb_data.r),
+			QString::number(general_data.rgb_data.g),
+			QString::number(general_data.rgb_data.b),
+			QString::number(255), QString::number(255), QString::number(255)));
 	Color_Segment();
 }
 void AUX_UI::Color_Segment() {
+	HSV hsv_data = rgb2hsv(general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b);
+	M_RGB rgb_light_data = hsv2rgb(hsv_data.h, hsv_data.s,
+		(hsv_data.v + my_ui.V_range_spinbox->value()) % 256);
+	qDebug() << "---------";
+	qDebug() << rgb_light_data.r;
+	qDebug() << "---------";
+	qDebug() << rgb_light_data.g;
+	qDebug() << "---------";
+	qDebug() << rgb_light_data.b;
+	my_ui.color_widget->setStyleSheet(QString("background-color:"
+		"qlineargradient("
+		"spread:"
+		"pad, x1:0, y1:0.5, x2:1, y2:0.5,"
+		"stop:0 rgb(%1, %2, %3),"
+		"stop:1 rgb(%4, %5, %6));")
+		.arg(QString::number(general_data.rgb_data.r),
+			QString::number(general_data.rgb_data.g),
+			QString::number(general_data.rgb_data.b),
+			QString::number(rgb_light_data.r),
+			QString::number(rgb_light_data.g),
+			QString::number(rgb_light_data.b)));
+	//-----------
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	general_data.SegClouds.clear();

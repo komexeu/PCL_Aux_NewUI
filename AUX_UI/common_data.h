@@ -22,8 +22,6 @@ enum class SegmentMode :int
 };
 static SegmentMode GLOBAL_SEGMENTMODE = SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION;
 
-
-
 struct HSV {
 	int h;
 	int s;
@@ -63,7 +61,14 @@ struct M_RGB {
 };
 M_RGB hsv2rgb(int h, int s, int v) {
 	M_RGB rgb;
+	if (s == 0)
+	{
+		rgb = M_RGB{ v,v,v };
+		return rgb;
+	}
+
 	float hi, f, p, q, t;
+	s /= 255;
 	hi = (h / 60) % 6;
 	f = (h / 60) - hi;
 	p = v * (1 - s);
@@ -73,22 +78,22 @@ M_RGB hsv2rgb(int h, int s, int v) {
 	switch ((int)hi)
 	{
 	case 0:
-		rgb.r = v * 255; rgb.g = t * 255; rgb.b = p * 255;
+		rgb.r = v; rgb.g = t ; rgb.b = p ;
 		break;
 	case 1:
-		rgb.r = q * 255; rgb.g = v * 255; rgb.b = p * 255;
+		rgb.r = q ; rgb.g = v; rgb.b = p ;
 		break;
 	case 2:
-		rgb.r = p * 255; rgb.g = v * 255; rgb.b = t * 255;
+		rgb.r = p ; rgb.g = v; rgb.b = t ;
 		break;
 	case 3:
-		rgb.r = p * 255; rgb.g = q * 255; rgb.b = v * 255;
+		rgb.r = p ; rgb.g = q ; rgb.b = v;
 		break;
 	case 4:
-		rgb.r = t * 255; rgb.g = p * 255; rgb.b = v * 255;
+		rgb.r = t ; rgb.g = p ; rgb.b = v;
 		break;
 	case 5:
-		rgb.r = v * 255; rgb.g = p * 255; rgb.b = q * 255;
+		rgb.r = v; rgb.g = p ; rgb.b = q ;
 		break;
 	default:
 		rgb.r = 0; rgb.g = 0; rgb.b = 0;
