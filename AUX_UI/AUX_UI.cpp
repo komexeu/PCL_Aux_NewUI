@@ -301,7 +301,7 @@ void AUX_UI::Set_ToolConnect() {
 	connect(my_ui.H_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
 	connect(my_ui.S_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
 	connect(my_ui.V_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
-	QObject::connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
+	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
 	//confirm
 	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(Slider_confirmSegCloud()));
 	//USER confirm
@@ -712,7 +712,7 @@ void AUX_UI::Color_Segment() {
 	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
 		my_ui.H_spinbox->value(), my_ui.S_spinbox->value(),
 		my_ui.V_spinbox->value(), my_ui.V_range_spinbox->value());
-
+	M_RGB rgb = hsv2rgb(my_ui.H_spinbox->value(), my_ui.S_spinbox->value(), my_ui.V_spinbox->value());
 	for (int i = 0; i < cld->size(); i++)
 	{
 		cld->points[i].r = 255;
@@ -721,16 +721,13 @@ void AUX_UI::Color_Segment() {
 	}
 	for (vector<PointIndices>::const_iterator i = seg_cloud_2.begin(); i < seg_cloud_2.end(); i++)
 	{
-		int color_R = rand() % 250;
-		int color_G = rand() % 250;
-		int color_B = rand() % 250;
 		PointCloud<PointXYZRGB>::Ptr tmp(new PointCloud<PointXYZRGB>);
 		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
 		{
 			tmp->push_back(database_cloud->points[*j]);
-			cld->points[*j].r = color_R;
-			cld->points[*j].g = color_G;
-			cld->points[*j].b = color_B;
+			cld->points[*j].r = rgb.R;
+			cld->points[*j].g = rgb.G;
+			cld->points[*j].b = rgb.B;
 		}
 		general_data.SegClouds.push_back(tmp);
 	}

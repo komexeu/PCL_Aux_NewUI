@@ -75,7 +75,7 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
 			continue;
 
 		if (abs(hsv_data.h - point_hsv.h) < 8 &&
-			abs(hsv_data.s - point_hsv.s) < 8 &&
+			abs(hsv_data.s - point_hsv.s) < 255 &&
 			abs(hsv_data.v - point_hsv.v) < v_range)
 		{
 			p.indices.push_back(i);

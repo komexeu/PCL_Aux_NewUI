@@ -103,40 +103,69 @@ struct HSV {
 };
 HSV rgb2hsv(int r, int g, int b) {
 	HSV hsv_data;
-	int Max, Min;
-	if (r >= g && r >= b) {
-		Max = r;
-		Min = (g >= b) ? b : g;
-	}
-	else if (g >= r && g >= b)
-	{
-		Max = g;
-		Min = (r >= b) ? b : r;
-	}
-	else if (b >= r && b >= g) {
-		Max = b;
-		Min = (r >= g) ? g : r;
-	}
+	int Max = std::max(r, std::max(g, b));
+	int Min = std::min(r, std::min(g, b));
+	int delta = Max - Min;
 
-	if ((Max - Min) <= 0)
-	{
-		hsv_data.h = -1;
-		hsv_data.s = -1;
-		hsv_data.v = -1;
-		return hsv_data;
+	if (Max == Min)
+		hsv_data.h = 0;
+	else if (r == Max) {
+		if (g > b)
+			hsv_data.h = 60 * ((g - b) / delta) + 0;
+		else
+			hsv_data.h = 60 * ((g - b) / delta) + 360;
 	}
-
-	if (r == Max)
-		hsv_data.h = (g - b) / (Max - Min);
 	else if (g == Max)
-		hsv_data.h = 2 + (b - r) / (Max - Min);
-	else if (g == Max)
-		hsv_data.h = 4 + (r - g) / (Max - Min);
+		hsv_data.h = 60 * ((b - r) / delta) + 120;
+	else if (b == Max)
+		hsv_data.h = 60 * ((r - g) / delta) + 240;
 
-	hsv_data.h *= 60;
-	if (hsv_data.h < 0)
-		hsv_data.h += 360;
-	hsv_data.s = (Max - Min) / Max;
+	if (Max == 0)
+		hsv_data.s = 0;
+	else
+		hsv_data.s = delta * 255 / Max;
+
 	hsv_data.v = Max;
 	return hsv_data;
+}
+struct M_RGB {
+	int R;
+	int G;
+	int B;
+};
+M_RGB hsv2rgb(int h, int s, int v) {
+	M_RGB rgb;
+	int hi;
+	float f, p, q, t;
+	hi = (h / 60) % 6;
+	f = (h / 60) - hi;
+	p = v * (1 - s);
+	q = v * (1 - f * s);
+	t = v * (1 - (1 - f) * s);
+
+	switch (hi)
+	{
+	case 0:
+		rgb.R = v * 255; rgb.G = t * 255; rgb.B = p * 255;
+		break;
+	case 1:
+		rgb.R = q * 255; rgb.G = v * 255; rgb.B = p * 255;
+		break;
+	case 2:
+		rgb.R = p * 255; rgb.G = v * 255; rgb.B = t * 255;
+		break;
+	case 3:
+		rgb.R = p * 255; rgb.G = q * 255; rgb.B = v * 255;
+		break;
+	case 4:
+		rgb.R = t * 255; rgb.G = p * 255; rgb.B = v * 255;
+		break;
+	case 5:
+		rgb.R = v * 255; rgb.G = p * 255; rgb.B = q * 255;
+		break;
+	default:
+		rgb.R = 0; rgb.G = 0; rgb.B = 0;
+		break;
+	}
+	return rgb;
 }
