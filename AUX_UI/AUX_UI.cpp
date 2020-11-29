@@ -140,10 +140,12 @@ AUX_UI::AUX_UI(QWidget* parent)
 	my_ui.color_widget->setStyleSheet(QString("background-color:"
 		"qlineargradient("
 		"spread:"
-		"pad, x1:0, y1:0.5, x2:1, y2:0.5,"
+		"pad, x1:0, y1:0.5,x2:1, y2:0.5,"
 		"stop:0 rgb(%1, %2, %3),"
-		"stop:1 rgb(%4, %5, %6));")
+		"stop:0.5 rgb(%4, %5, %6),"
+		"stop:1 rgb(%7, %8, %9));")
 		.arg(QString::number(0), QString::number(0), QString::number(0),
+			QString::number(128), QString::number(128), QString::number(128),
 			QString::number(255), QString::number(255), QString::number(255)));
 	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::SpanningRole, my_ui.color_widget);
 
@@ -241,7 +243,7 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 }
 
 void AUX_UI::Init_Basedata() {
-	my_ui.V_range_spinbox->setValue(120);
+	my_ui.V_range_spinbox->setValue(128);
 
 	general_data.nowLayerCloud.reset(new PointCloud<PointXYZRGB>);
 	general_data.brush_radius = 20;
@@ -625,36 +627,45 @@ void AUX_UI::Slider_confirmSegCloud() {
 }
 
 void AUX_UI::Set_lightRange(const QColor& c) {
+	qDebug() <<c.red()<< "!!!!!!!!!!!!!!!!!";
+	qDebug() << c.green() << "!!!!!!!!!!!!!!!!!";
+	qDebug() << c.blue() << "!!!!!!!!!!!!!!!!!";
 	general_data.rgb_data = M_RGB{ c.red(), c.green(), c.blue() };
-	my_ui.color_widget->setStyleSheet(QString("background-color:"
-		"qlineargradient("
-		"spread:"
-		"pad, x1:0, y1:0.5, x2:1, y2:0.5,"
-		"stop:0 rgb(%1, %2, %3),"
-		"stop:1 rgb(%4, %5, %6));")
-		.arg(QString::number(general_data.rgb_data.r),
-			QString::number(general_data.rgb_data.g),
-			QString::number(general_data.rgb_data.b),
-			QString::number(255), QString::number(255), QString::number(255)));
 	Color_Segment();
 }
 void AUX_UI::Color_Segment() {
+	QColor c{ general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b };
+	if (!c.isValid())
+	{
+		reset_point_color();
+		return;
+	}
 	HSV hsv_data = rgb2hsv(general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b);
-	M_RGB rgb_light_data = hsv2rgb(hsv_data.h, hsv_data.s,
-		(hsv_data.v + my_ui.V_range_spinbox->value()) % 256);
-	qDebug() << "---------";
-	qDebug() << rgb_light_data.r;
-	qDebug() << "---------";
-	qDebug() << rgb_light_data.g;
-	qDebug() << "---------";
-	qDebug() << rgb_light_data.b;
+	int dark_color = hsv_data.v - my_ui.V_range_spinbox->value() <= 0 ?
+		0 : hsv_data.v - my_ui.V_range_spinbox->value();
+	int light_color = hsv_data.v + my_ui.V_range_spinbox->value() >= 255 ?
+		255 : hsv_data.v + my_ui.V_range_spinbox->value();
+	
+	qDebug() << "dark:" << dark_color;
+	qDebug() << "mid:" << hsv_data.v;
+	qDebug() << "light:" << light_color;
+	qDebug() << "===========";
+
+	M_RGB rgb_dark_data = hsv2rgb(hsv_data.h, hsv_data.s, dark_color);
+	M_RGB rgb_light_data = hsv2rgb(hsv_data.h, hsv_data.s, light_color);
+	qDebug() << dark_color <<","<< light_color;
 	my_ui.color_widget->setStyleSheet(QString("background-color:"
 		"qlineargradient("
 		"spread:"
-		"pad, x1:0, y1:0.5, x2:1, y2:0.5,"
+		"pad, x1:0, y1:0.5,x2:1, y2:0.5,"
 		"stop:0 rgb(%1, %2, %3),"
-		"stop:1 rgb(%4, %5, %6));")
-		.arg(QString::number(general_data.rgb_data.r),
+		"stop:0.5 rgb(%4, %5, %6),"
+		"stop:1 rgb(%7, %8, %9));")
+		.arg(
+			QString::number(rgb_dark_data.r),
+			QString::number(rgb_dark_data.g),
+			QString::number(rgb_dark_data.b),
+			QString::number(general_data.rgb_data.r),
 			QString::number(general_data.rgb_data.g),
 			QString::number(general_data.rgb_data.b),
 			QString::number(rgb_light_data.r),
@@ -676,6 +687,7 @@ void AUX_UI::Color_Segment() {
 	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
 		general_data.rgb_data.r, general_data.rgb_data.g,
 		general_data.rgb_data.b, my_ui.V_range_spinbox->value());
+	qDebug() << "??????";
 	for (int i = 0; i < cld->size(); i++)
 	{
 		cld->points[i].r = 255;
