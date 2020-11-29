@@ -35,13 +35,7 @@ public:
 	my_slider* preSeg_slider;
 	my_button* preSeg_confirm;
 
-	my_foldGroupBox* color_filter_groupbox;
-	my_spinBox* H_spinbox;
-	my_slider* H_slider;
-	my_spinBox* S_spinbox;
-	my_slider* S_slider;
-	my_spinBox* V_spinbox;
-	my_slider* V_slider;
+	my_foldGroupBox* color_filter_groupbox;	
 	my_spinBox* V_range_spinbox;
 	my_slider* V_range_slider;
 	my_button* color_filter_start_button;

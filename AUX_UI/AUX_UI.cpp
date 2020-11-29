@@ -136,37 +136,16 @@ AUX_UI::AUX_UI(QWidget* parent)
 	//----groupbox(Color Filter)----
 	my_ui.color_filter_groupbox = new my_foldGroupBox("Color Filter", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
 
-	my_ui.H_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "H_spinBox");
-	my_ui.H_spinbox->setRange(0, 255);
-	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::LabelRole, my_ui.H_spinbox);
-	my_ui.H_slider = new my_slider(my_ui.color_filter_groupbox);
-	my_ui.H_slider->setRange(0, 255);
-	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::FieldRole, my_ui.H_slider);
-
-	my_ui.S_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "S_spinBox");
-	my_ui.S_spinbox->setRange(0, 255);
-	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::LabelRole, my_ui.S_spinbox);
-	my_ui.S_slider = new my_slider(my_ui.color_filter_groupbox);
-	my_ui.S_slider->setRange(0, 255);
-	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::FieldRole, my_ui.S_slider);
-
-	my_ui.V_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "V_spinBox");
-	my_ui.V_spinbox->setRange(0, 255);
-	my_ui.color_filter_groupbox->addWidget(2, QFormLayout::LabelRole, my_ui.V_spinbox);
-	my_ui.V_slider = new my_slider(my_ui.color_filter_groupbox);
-	my_ui.V_slider->setRange(0, 255);
-	my_ui.color_filter_groupbox->addWidget(2, QFormLayout::FieldRole, my_ui.V_slider);
-
 	my_ui.V_range_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "V_range_spinBox");
 	my_ui.V_range_spinbox->setRange(1, 255);
-	my_ui.color_filter_groupbox->addWidget(3, QFormLayout::LabelRole, my_ui.V_range_spinbox);
+	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::LabelRole, my_ui.V_range_spinbox);
 	my_ui.V_range_slider = new my_slider(my_ui.color_filter_groupbox);
 	my_ui.V_range_slider->setRange(1, 255);
-	my_ui.color_filter_groupbox->addWidget(3, QFormLayout::FieldRole, my_ui.V_range_slider);
+	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::FieldRole, my_ui.V_range_slider);
 
 	my_ui.color_filter_start_button = new my_button(my_ui.color_filter_groupbox, QString::fromUtf8("Start"));
 	my_ui.color_filter_start_button->set_font_color(QColor(255, 255, 255));
-	my_ui.color_filter_groupbox->addWidget(4, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
+	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
 	//---------
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.smooth_groupbox);
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.preSeg_groupbox);
@@ -183,12 +162,6 @@ AUX_UI::AUX_UI(QWidget* parent)
 	connect(my_ui.preSeg_slider, SIGNAL(valueChanged(int)), my_ui.preSeg_spinbox, SLOT(setValue(int)));
 	connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), my_ui.preSeg_slider, SLOT(setValue(int)));
 	//---------color segment------------
-	connect(my_ui.H_slider, SIGNAL(valueChanged(int)), my_ui.H_spinbox, SLOT(setValue(int)));
-	connect(my_ui.H_spinbox, SIGNAL(valueChanged(int)), my_ui.H_slider, SLOT(setValue(int)));
-	connect(my_ui.S_slider, SIGNAL(valueChanged(int)), my_ui.S_spinbox, SLOT(setValue(int)));
-	connect(my_ui.S_spinbox, SIGNAL(valueChanged(int)), my_ui.S_slider, SLOT(setValue(int)));
-	connect(my_ui.V_slider, SIGNAL(valueChanged(int)), my_ui.V_spinbox, SLOT(setValue(int)));
-	connect(my_ui.V_spinbox, SIGNAL(valueChanged(int)), my_ui.V_slider, SLOT(setValue(int)));
 	connect(my_ui.V_range_slider, SIGNAL(valueChanged(int)), my_ui.V_range_spinbox, SLOT(setValue(int)));
 	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), my_ui.V_range_slider, SLOT(setValue(int)));
 	//----------Mode Change------
@@ -247,15 +220,6 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 	my_ui.preSeg_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
 
-	my_ui.H_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
-	my_ui.H_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
-		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
-	my_ui.S_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
-	my_ui.S_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
-		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
-	my_ui.V_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
-	my_ui.V_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
-		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
 	my_ui.V_range_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
 	my_ui.V_range_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
@@ -266,6 +230,8 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 }
 
 void AUX_UI::Init_Basedata() {
+	my_ui.V_range_spinbox->setValue(120);
+
 	general_data.nowLayerCloud.reset(new PointCloud<PointXYZRGB>);
 	general_data.brush_radius = 20;
 	general_data.Selected_cloud.reset(new PointCloud<PointXYZRGB>);
@@ -298,9 +264,6 @@ void AUX_UI::Set_ToolConnect() {
 	connect(Qcolordia_SegColor, SIGNAL(colorSelected(const QColor&)), this, SLOT(Set_HSVSlider(const QColor&)));
 	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
 	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(AA()));
-	connect(my_ui.H_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
-	connect(my_ui.S_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
-	connect(my_ui.V_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
 	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
 	//confirm
 	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(Slider_confirmSegCloud()));
@@ -651,50 +614,8 @@ void AUX_UI::Slider_confirmSegCloud() {
 }
 
 void AUX_UI::Set_HSVSlider(const QColor& c) {
-	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
-		return;
-	general_data.SegClouds.clear();
-	CloudPoints_Tools cpTools;
-	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-
-	PointCloud<PointXYZRGB>::Ptr database_cloud(new PointCloud<PointXYZRGB>);
-	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
-	copyPointCloud(*general_data.nowLayerCloud, *database_cloud);
-	copyPointCloud(*general_data.nowLayerCloud, *cld);
-
-	HSV hsvData = rgb2hsv(c.red(), c.green(), c.blue());
-	my_ui.H_spinbox->setValue(hsvData.h);
-	my_ui.S_spinbox->setValue(hsvData.s);
-	my_ui.V_spinbox->setValue(hsvData.v);
-
-	/*std::vector<PointIndices> seg_cloud_2;
-	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
-		my_ui.H_spinbox->value(), my_ui.S_spinbox->value(),
-		my_ui.V_spinbox->value(), my_ui.V_range_spinbox->value());
-
-	for (int i = 0; i < cld->size(); i++)
-	{
-		cld->points[i].r = 255;
-		cld->points[i].g = 255;
-		cld->points[i].b = 255;
-	}
-	for (vector<PointIndices>::const_iterator i = seg_cloud_2.begin(); i < seg_cloud_2.end(); i++)
-	{
-		int color_R = rand() % 250;
-		int color_G = rand() % 250;
-		int color_B = rand() % 250;
-		PointCloud<PointXYZRGB>::Ptr tmp(new PointCloud<PointXYZRGB>);
-		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
-		{
-			tmp->push_back(database_cloud->points[*j]);
-			cld->points[*j].r = color_R;
-			cld->points[*j].g = color_G;
-			cld->points[*j].b = color_B;
-		}
-		general_data.SegClouds.push_back(tmp);
-	}
-	ViewCloudUpdate(cld, false);
-	RedSelectClear();*/
+	general_data.rgb_data = M_RGB{ c.red(), c.green(), c.blue() };
+	Color_Segment();
 }
 void AUX_UI::Color_Segment() {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
@@ -710,9 +631,8 @@ void AUX_UI::Color_Segment() {
 
 	std::vector<PointIndices> seg_cloud_2;
 	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
-		my_ui.H_spinbox->value(), my_ui.S_spinbox->value(),
-		my_ui.V_spinbox->value(), my_ui.V_range_spinbox->value());
-	M_RGB rgb = hsv2rgb(my_ui.H_spinbox->value(), my_ui.S_spinbox->value(), my_ui.V_spinbox->value());
+		general_data.rgb_data.r, general_data.rgb_data.g,
+		general_data.rgb_data.b, my_ui.V_range_spinbox->value());
 	for (int i = 0; i < cld->size(); i++)
 	{
 		cld->points[i].r = 255;
@@ -725,9 +645,9 @@ void AUX_UI::Color_Segment() {
 		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
 		{
 			tmp->push_back(database_cloud->points[*j]);
-			cld->points[*j].r = rgb.R;
-			cld->points[*j].g = rgb.G;
-			cld->points[*j].b = rgb.B;
+			cld->points[*j].r = general_data.rgb_data.r;
+			cld->points[*j].g = general_data.rgb_data.g;
+			cld->points[*j].b = general_data.rgb_data.b;
 		}
 		general_data.SegClouds.push_back(tmp);
 	}

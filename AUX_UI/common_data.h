@@ -22,6 +22,81 @@ enum class SegmentMode :int
 };
 static SegmentMode GLOBAL_SEGMENTMODE = SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION;
 
+
+
+struct HSV {
+	int h;
+	int s;
+	int v;
+};
+HSV rgb2hsv(int r, int g, int b) {
+	HSV hsv_data;
+	int Max = std::max(r, std::max(g, b));
+	int Min = std::min(r, std::min(g, b));
+	int delta = Max - Min;
+
+	if (Max == Min)
+		hsv_data.h = 0;
+	else if (r == Max) {
+		if (g > b)
+			hsv_data.h = 60 * ((g - b) / delta) + 0;
+		else
+			hsv_data.h = 60 * ((g - b) / delta) + 360;
+	}
+	else if (g == Max)
+		hsv_data.h = 60 * ((b - r) / delta) + 120;
+	else if (b == Max)
+		hsv_data.h = 60 * ((r - g) / delta) + 240;
+
+	if (Max == 0)
+		hsv_data.s = 0;
+	else
+		hsv_data.s = delta * 255 / Max;
+
+	hsv_data.v = Max;
+	return hsv_data;
+}
+struct M_RGB {
+	int r;
+	int g;
+	int b;
+};
+M_RGB hsv2rgb(int h, int s, int v) {
+	M_RGB rgb;
+	float hi, f, p, q, t;
+	hi = (h / 60) % 6;
+	f = (h / 60) - hi;
+	p = v * (1 - s);
+	q = v * (1 - f * s);
+	t = v * (1 - (1 - f) * s);
+
+	switch ((int)hi)
+	{
+	case 0:
+		rgb.r = v * 255; rgb.g = t * 255; rgb.b = p * 255;
+		break;
+	case 1:
+		rgb.r = q * 255; rgb.g = v * 255; rgb.b = p * 255;
+		break;
+	case 2:
+		rgb.r = p * 255; rgb.g = v * 255; rgb.b = t * 255;
+		break;
+	case 3:
+		rgb.r = p * 255; rgb.g = q * 255; rgb.b = v * 255;
+		break;
+	case 4:
+		rgb.r = t * 255; rgb.g = p * 255; rgb.b = v * 255;
+		break;
+	case 5:
+		rgb.r = v * 255; rgb.g = p * 255; rgb.b = q * 255;
+		break;
+	default:
+		rgb.r = 0; rgb.g = 0; rgb.b = 0;
+		break;
+	}
+	return rgb;
+}
+
 namespace ColorScale {
 	struct Color_5Level {
 		QColor colorE;
@@ -88,84 +163,12 @@ public:
 	PointCloud<PointXYZRGB>::Ptr nowLayerCloud;
 	std::vector<PointCloud<PointXYZRGB>::Ptr> SegClouds;
 	PointCloud<PointXYZRGB>::Ptr Selected_cloud;
+
+	M_RGB rgb_data;
 };
 namespace Data_Class {
 	class QT_Data :public QT_DataClass {};
 	class Key_Data :public Key_DataClass {};
 	class PCL_Data :public PCL_DataClass {};
 	class General_Data :public General_DataClass {};
-}
-
-struct HSV {
-	int h;
-	int s;
-	int v;
-};
-HSV rgb2hsv(int r, int g, int b) {
-	HSV hsv_data;
-	int Max = std::max(r, std::max(g, b));
-	int Min = std::min(r, std::min(g, b));
-	int delta = Max - Min;
-
-	if (Max == Min)
-		hsv_data.h = 0;
-	else if (r == Max) {
-		if (g > b)
-			hsv_data.h = 60 * ((g - b) / delta) + 0;
-		else
-			hsv_data.h = 60 * ((g - b) / delta) + 360;
-	}
-	else if (g == Max)
-		hsv_data.h = 60 * ((b - r) / delta) + 120;
-	else if (b == Max)
-		hsv_data.h = 60 * ((r - g) / delta) + 240;
-
-	if (Max == 0)
-		hsv_data.s = 0;
-	else
-		hsv_data.s = delta * 255 / Max;
-
-	hsv_data.v = Max;
-	return hsv_data;
-}
-struct M_RGB {
-	int R;
-	int G;
-	int B;
-};
-M_RGB hsv2rgb(int h, int s, int v) {
-	M_RGB rgb;
-	int hi;
-	float f, p, q, t;
-	hi = (h / 60) % 6;
-	f = (h / 60) - hi;
-	p = v * (1 - s);
-	q = v * (1 - f * s);
-	t = v * (1 - (1 - f) * s);
-
-	switch (hi)
-	{
-	case 0:
-		rgb.R = v * 255; rgb.G = t * 255; rgb.B = p * 255;
-		break;
-	case 1:
-		rgb.R = q * 255; rgb.G = v * 255; rgb.B = p * 255;
-		break;
-	case 2:
-		rgb.R = p * 255; rgb.G = v * 255; rgb.B = t * 255;
-		break;
-	case 3:
-		rgb.R = p * 255; rgb.G = q * 255; rgb.B = v * 255;
-		break;
-	case 4:
-		rgb.R = t * 255; rgb.G = p * 255; rgb.B = v * 255;
-		break;
-	case 5:
-		rgb.R = v * 255; rgb.G = p * 255; rgb.B = q * 255;
-		break;
-	default:
-		rgb.R = 0; rgb.G = 0; rgb.B = 0;
-		break;
-	}
-	return rgb;
 }

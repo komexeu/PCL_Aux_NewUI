@@ -62,7 +62,7 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowing(PointClo
 
 vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
 	PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int h, int s, int v, int v_range) {
-	HSV hsv_data{ h,s,v };
+	HSV hsv_data = rgb2hsv(h, s, v);
 
 	PointCloud<PointXYZRGB>::Ptr nowLayrCloudClone(new PointCloud<PointXYZRGB>);
 	copyPointCloud(*nowLayerCloud, *nowLayrCloudClone);
@@ -77,9 +77,7 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
 		if (abs(hsv_data.h - point_hsv.h) < 8 &&
 			abs(hsv_data.s - point_hsv.s) < 255 &&
 			abs(hsv_data.v - point_hsv.v) < v_range)
-		{
 			p.indices.push_back(i);
-		}
 	}
 	cluster_indice.push_back(p);
 	return cluster_indice;
