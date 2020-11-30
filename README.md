@@ -11,7 +11,8 @@
 * ### [Import pointcloud](#import-pointcloud-1)
 * ### [Smooth pointcloud](#smooth-pointcloud-1)
 * ### [Select(Brush/Area)](#user-selectbrusharea)
-* ### [Segment pointcloud](#slider-segment-pointcloud)
+* ### [Segment pointcloud(Euclidean/Region Growing)](#slider-segment-pointcloud)
+* ### [Color Filter](#color-filter-1)
 * ### [Merge pointcloud](#merge-pointcloud-1)
 
  ## Hot Key
@@ -72,6 +73,8 @@
   
   ![main pic](./asset/euclidean_region.png)
   ![main pic](./asset/slider_preseg.png)
+  
+* ### [Color Filter](#menu)
   
 * ### [Merge pointcloud](#menu)
   ![main pic](./asset/merge_0.png)
