@@ -631,15 +631,12 @@ void AUX_UI::Set_lightRange(const QColor& c) {
 	Color_Segment();
 }
 void AUX_UI::Color_Segment() {
-	//HSV hsv_data = rgb2hsv(general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b);
 	QColor rgb_data{ general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b };
 	int dark_color = (rgb_data.value() - my_ui.V_range_spinbox->value()) <= 0 ?
 		0 : rgb_data.value() - my_ui.V_range_spinbox->value();
 	int light_color = (rgb_data.value() + my_ui.V_range_spinbox->value()) >= 255 ?
 		255 : rgb_data.value() + my_ui.V_range_spinbox->value();
 
-	/*M_RGB rgb_dark_data = hsv2rgb(hsv_data.h, hsv_data.s, dark_color);
-	M_RGB rgb_light_data = hsv2rgb(hsv_data.h, hsv_data.s, light_color);*/
 	QColor rgb_dark_data;
 	rgb_dark_data.setHsv(rgb_data.hue(), rgb_data.saturation(), dark_color);
 	QColor rgb_light_data;
@@ -662,10 +659,6 @@ void AUX_UI::Color_Segment() {
 			QString::number(rgb_light_data.red()),
 			QString::number(rgb_light_data.green()),
 			QString::number(rgb_light_data.blue())));
-	//qDebug() << "dark:" << rgb_dark_data.r<<"," << rgb_dark_data.g << "," << rgb_dark_data.b ;
-	//qDebug() << "mid:" << hsv_data.v;
-	//qDebug() << "light:" << rgb_light_data.r << "," << rgb_light_data.g << "," << rgb_light_data.b;
-	qDebug() << "===========";
 	//-----------
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
@@ -682,7 +675,6 @@ void AUX_UI::Color_Segment() {
 	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
 		general_data.rgb_data.r, general_data.rgb_data.g,
 		general_data.rgb_data.b, my_ui.V_range_spinbox->value());
-	qDebug() << "??????";
 	for (int i = 0; i < cld->size(); i++)
 	{
 		cld->points[i].r = 255;

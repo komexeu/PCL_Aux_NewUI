@@ -71,7 +71,6 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
 	PointIndices p;
 	for (int i = 0; i < nowLayerCloud->size(); i++)
 	{
-		//HSV point_hsv = rgb2hsv(nowLayerCloud->points[i].r, nowLayerCloud->points[i].g, nowLayerCloud->points[i].b);
 		QColor point_hsv{ nowLayerCloud->points[i].r, nowLayerCloud->points[i].g, nowLayerCloud->points[i].b };
 
 		if (abs(hsv_data.h - point_hsv.hue()) < 30 &&
