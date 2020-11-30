@@ -638,8 +638,8 @@ void AUX_UI::confirm_colors_segment() {
 		if (!ly.AddLayer(segLayer, general_data.SegClouds[i], searchParent(index)))
 			return;
 	}
-	if (index.parent().row() != -1)
-		Tree_deleteLayer();
+	/*if (index.parent().row() != -1)
+		Tree_deleteLayer();*/
 
 	QString children_message = general_data.SegClouds.size() <= 1 ?
 		QString::fromStdString("Segment " + std::to_string(general_data.SegClouds.size()) + " child") :
