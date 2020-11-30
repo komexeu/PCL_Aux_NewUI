@@ -627,21 +627,20 @@ void AUX_UI::Slider_confirmSegCloud() {
 }
 
 void AUX_UI::Set_lightRange(const QColor& c) {
-	general_data.rgb_data = M_RGB{ c.red(), c.green(), c.blue() };
+	general_data.rgb_data = QColor{ c.red(), c.green(), c.blue() };
 	Color_Segment();
 }
 void AUX_UI::Color_Segment() {
-	QColor rgb_data{ general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b };
-	int dark_color = (rgb_data.value() - my_ui.V_range_spinbox->value()) <= 0 ?
-		0 : rgb_data.value() - my_ui.V_range_spinbox->value();
-	int light_color = (rgb_data.value() + my_ui.V_range_spinbox->value()) >= 255 ?
-		255 : rgb_data.value() + my_ui.V_range_spinbox->value();
+	int dark_color = (general_data.rgb_data.value() - my_ui.V_range_spinbox->value()) <= 0 ?
+		0 : general_data.rgb_data.value() - my_ui.V_range_spinbox->value();
+	int light_color = (general_data.rgb_data.value() + my_ui.V_range_spinbox->value()) >= 255 ?
+		255 : general_data.rgb_data.value() + my_ui.V_range_spinbox->value();
 
 	QColor rgb_dark_data;
-	rgb_dark_data.setHsv(rgb_data.hue(), rgb_data.saturation(), dark_color);
+	rgb_dark_data.setHsv(general_data.rgb_data.hue(), general_data.rgb_data.saturation(), dark_color);
 	QColor rgb_light_data;
-	rgb_light_data.setHsv(rgb_data.hue(), rgb_data.saturation(), light_color);
-	qDebug() << dark_color << "," << light_color;
+	rgb_light_data.setHsv(general_data.rgb_data.hue(), general_data.rgb_data.saturation(), light_color);
+
 	my_ui.color_widget->setStyleSheet(QString("background-color:"
 		"qlineargradient("
 		"spread:"
@@ -653,9 +652,9 @@ void AUX_UI::Color_Segment() {
 			QString::number(rgb_dark_data.red()),
 			QString::number(rgb_dark_data.green()),
 			QString::number(rgb_dark_data.blue()),
-			QString::number(general_data.rgb_data.r),
-			QString::number(general_data.rgb_data.g),
-			QString::number(general_data.rgb_data.b),
+			QString::number(general_data.rgb_data.red()),
+			QString::number(general_data.rgb_data.green()),
+			QString::number(general_data.rgb_data.blue()),
 			QString::number(rgb_light_data.red()),
 			QString::number(rgb_light_data.green()),
 			QString::number(rgb_light_data.blue())));
@@ -673,8 +672,7 @@ void AUX_UI::Color_Segment() {
 
 	std::vector<PointIndices> seg_cloud_2;
 	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
-		general_data.rgb_data.r, general_data.rgb_data.g,
-		general_data.rgb_data.b, my_ui.V_range_spinbox->value());
+		general_data.rgb_data, my_ui.V_range_spinbox->value());
 	for (int i = 0; i < cld->size(); i++)
 	{
 		cld->points[i].r = 255;
@@ -687,9 +685,9 @@ void AUX_UI::Color_Segment() {
 		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
 		{
 			tmp->push_back(database_cloud->points[*j]);
-			cld->points[*j].r = general_data.rgb_data.r;
-			cld->points[*j].g = general_data.rgb_data.g;
-			cld->points[*j].b = general_data.rgb_data.b;
+			cld->points[*j].r = general_data.rgb_data.red();
+			cld->points[*j].g = general_data.rgb_data.green();
+			cld->points[*j].b = general_data.rgb_data.blue();
 		}
 		general_data.SegClouds.push_back(tmp);
 	}
