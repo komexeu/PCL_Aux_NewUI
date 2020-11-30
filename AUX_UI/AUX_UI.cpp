@@ -627,33 +627,24 @@ void AUX_UI::Slider_confirmSegCloud() {
 }
 
 void AUX_UI::Set_lightRange(const QColor& c) {
-	qDebug() <<c.red()<< "!!!!!!!!!!!!!!!!!";
-	qDebug() << c.green() << "!!!!!!!!!!!!!!!!!";
-	qDebug() << c.blue() << "!!!!!!!!!!!!!!!!!";
 	general_data.rgb_data = M_RGB{ c.red(), c.green(), c.blue() };
 	Color_Segment();
 }
 void AUX_UI::Color_Segment() {
-	QColor c{ general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b };
-	if (!c.isValid())
-	{
-		reset_point_color();
-		return;
-	}
-	HSV hsv_data = rgb2hsv(general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b);
-	int dark_color = hsv_data.v - my_ui.V_range_spinbox->value() <= 0 ?
-		0 : hsv_data.v - my_ui.V_range_spinbox->value();
-	int light_color = hsv_data.v + my_ui.V_range_spinbox->value() >= 255 ?
-		255 : hsv_data.v + my_ui.V_range_spinbox->value();
-	
-	qDebug() << "dark:" << dark_color;
-	qDebug() << "mid:" << hsv_data.v;
-	qDebug() << "light:" << light_color;
-	qDebug() << "===========";
+	//HSV hsv_data = rgb2hsv(general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b);
+	QColor rgb_data{ general_data.rgb_data.r, general_data.rgb_data.g, general_data.rgb_data.b };
+	int dark_color = (rgb_data.value() - my_ui.V_range_spinbox->value()) <= 0 ?
+		0 : rgb_data.value() - my_ui.V_range_spinbox->value();
+	int light_color = (rgb_data.value() + my_ui.V_range_spinbox->value()) >= 255 ?
+		255 : rgb_data.value() + my_ui.V_range_spinbox->value();
 
-	M_RGB rgb_dark_data = hsv2rgb(hsv_data.h, hsv_data.s, dark_color);
-	M_RGB rgb_light_data = hsv2rgb(hsv_data.h, hsv_data.s, light_color);
-	qDebug() << dark_color <<","<< light_color;
+	/*M_RGB rgb_dark_data = hsv2rgb(hsv_data.h, hsv_data.s, dark_color);
+	M_RGB rgb_light_data = hsv2rgb(hsv_data.h, hsv_data.s, light_color);*/
+	QColor rgb_dark_data;
+	rgb_dark_data.setHsv(rgb_data.hue(), rgb_data.saturation(), dark_color);
+	QColor rgb_light_data;
+	rgb_light_data.setHsv(rgb_data.hue(), rgb_data.saturation(), light_color);
+	qDebug() << dark_color << "," << light_color;
 	my_ui.color_widget->setStyleSheet(QString("background-color:"
 		"qlineargradient("
 		"spread:"
@@ -662,15 +653,19 @@ void AUX_UI::Color_Segment() {
 		"stop:0.5 rgb(%4, %5, %6),"
 		"stop:1 rgb(%7, %8, %9));")
 		.arg(
-			QString::number(rgb_dark_data.r),
-			QString::number(rgb_dark_data.g),
-			QString::number(rgb_dark_data.b),
+			QString::number(rgb_dark_data.red()),
+			QString::number(rgb_dark_data.green()),
+			QString::number(rgb_dark_data.blue()),
 			QString::number(general_data.rgb_data.r),
 			QString::number(general_data.rgb_data.g),
 			QString::number(general_data.rgb_data.b),
-			QString::number(rgb_light_data.r),
-			QString::number(rgb_light_data.g),
-			QString::number(rgb_light_data.b)));
+			QString::number(rgb_light_data.red()),
+			QString::number(rgb_light_data.green()),
+			QString::number(rgb_light_data.blue())));
+	//qDebug() << "dark:" << rgb_dark_data.r<<"," << rgb_dark_data.g << "," << rgb_dark_data.b ;
+	//qDebug() << "mid:" << hsv_data.v;
+	//qDebug() << "light:" << rgb_light_data.r << "," << rgb_light_data.g << "," << rgb_light_data.b;
+	qDebug() << "===========";
 	//-----------
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;

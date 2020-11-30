@@ -68,15 +68,19 @@ M_RGB hsv2rgb(int h, int s, int v) {
 		return rgb;
 	}
 
-	float hi, f, p, q, t;
-	float fs = s / 255.0f;
-	hi = (h / 60) % 6;
-	f = (h / 60) - hi;
+	int hi;
+	float  f, p, q, t;
+	float fs = (float)s / 255;
+	hi = (int)((float)h / 60) % 6;
+	f = ((float)h / 60) - hi;
 	p = v * (1 - fs);
 	q = v * (1 - f * fs);
 	t = v * (1 - (1 - f) * fs);
 
-	switch ((int)hi)
+	qDebug() << h << "," << s << "," << v << ",hi: " << hi;
+	qDebug() << hi << "," << f << "," << p << "," << q << "," << t;
+
+	switch (hi)
 	{
 	case 0:
 		rgb.r = v; rgb.g = t; rgb.b = p;
@@ -97,9 +101,22 @@ M_RGB hsv2rgb(int h, int s, int v) {
 		rgb.r = v; rgb.g = p; rgb.b = q;
 		break;
 	default:
-		rgb.r = 0; rgb.g = 0; rgb.b = 0;
+		rgb.r = 255; rgb.g = 255; rgb.b = 255;
 		break;
 	}
+
+	/*while (rgb.r < 0)
+		rgb.r += 255;
+	while (rgb.g < 0)
+		rgb.r += 255;
+	while (rgb.b < 0)
+		rgb.r += 255;*/
+
+	rgb.r = (rgb.r >= 256) ? rgb.r % 256 : rgb.r;
+	rgb.g = (rgb.g >= 256) ? rgb.g % 256 : rgb.g;
+	rgb.b = (rgb.b >= 256) ? rgb.b % 256 : rgb.b;
+	qDebug() << "R:" << rgb.r << ",G:" << rgb.g << ",B:" << rgb.b;
+
 	return rgb;
 }
 

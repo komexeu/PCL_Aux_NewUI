@@ -59,10 +59,11 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_regionGrowing(PointClo
 
 	return cluster_indice;
 }
-
+#include <qcolor.h>
 vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
 	PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int r, int g, int b, int v_range) {
-	HSV hsv_data = rgb2hsv(r, g, b);
+	QColor base_rgb{r,g,b};
+	HSV hsv_data{ base_rgb.hue(),base_rgb.saturation(),base_rgb .value()};
 
 	PointCloud<PointXYZRGB>::Ptr nowLayrCloudClone(new PointCloud<PointXYZRGB>);
 	copyPointCloud(*nowLayerCloud, *nowLayrCloudClone);
@@ -70,13 +71,12 @@ vector<PointIndices> CloudPoints_Tools::CloudSegmentation_RGB(
 	PointIndices p;
 	for (int i = 0; i < nowLayerCloud->size(); i++)
 	{
-		HSV point_hsv = rgb2hsv(nowLayerCloud->points[i].r, nowLayerCloud->points[i].g, nowLayerCloud->points[i].b);
-		if (point_hsv.h == -1 || point_hsv.s == -1 || point_hsv.v == -1)
-			continue;
+		//HSV point_hsv = rgb2hsv(nowLayerCloud->points[i].r, nowLayerCloud->points[i].g, nowLayerCloud->points[i].b);
+		QColor point_hsv{ nowLayerCloud->points[i].r, nowLayerCloud->points[i].g, nowLayerCloud->points[i].b };
 
-		if (abs(hsv_data.h - point_hsv.h) < 8 &&
-			abs(hsv_data.s - point_hsv.s) < 255 &&
-			abs(hsv_data.v - point_hsv.v) < v_range)
+		if (abs(hsv_data.h - point_hsv.hue()) < 30 &&
+			abs(hsv_data.s - point_hsv.saturation()) < 255 &&
+			abs(hsv_data.v - point_hsv.value()) < v_range)
 			p.indices.push_back(i);
 	}
 	cluster_indice.push_back(p);
