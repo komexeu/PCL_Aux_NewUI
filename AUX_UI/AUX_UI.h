@@ -43,12 +43,13 @@ public Q_SLOTS:
 	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
 	void Tree_Smooth();
 	void Slider_PreSegCloud();
-	void Slider_confirmSegCloud();
+	void confirm_colors_segment();
 	void Tree_UserSegmentation();
 	void Tree_deleteLayer();
 	void changeViewerColor(const QColor& c);
 	void Brush_SizeChange();
 	void Set_lightRange(const QColor& c);
+	void Color_PreSegment();
 	void Color_Segment();
 	void reset_point_color();
 

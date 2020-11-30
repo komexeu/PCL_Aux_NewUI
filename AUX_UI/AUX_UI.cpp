@@ -299,10 +299,11 @@ void AUX_UI::Set_ToolConnect() {
 	connect(Qcolordia_SegColor, SIGNAL(colorSelected(const QColor&)), this, SLOT(Set_lightRange(const QColor&)));
 	connect(my_ui.color_widget, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
 	connect(my_ui.color_widget, SIGNAL(clicked()), this, SLOT(reset_point_color()));
-	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
-	connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
-	//confirm
-	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(Slider_confirmSegCloud()));
+	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
+	connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
+	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
+		//confirm
+	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
 	//USER confirm
 	QObject::connect(my_ui.confirm_userSeg, SIGNAL(clicked()), this, SLOT(Tree_UserSegmentation()));
 	//-------delete layer------
@@ -622,7 +623,7 @@ void AUX_UI::Slider_PreSegCloud() {
 	ViewCloudUpdate(cld, false);
 	RedSelectClear();
 }
-void AUX_UI::Slider_confirmSegCloud() {
+void AUX_UI::confirm_colors_segment() {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	if (general_data.SegClouds.size() == 0)
@@ -651,9 +652,9 @@ void AUX_UI::Slider_confirmSegCloud() {
 
 void AUX_UI::Set_lightRange(const QColor& c) {
 	general_data.rgb_data = QColor{ c.red(), c.green(), c.blue() };
-	Color_Segment();
+	Color_PreSegment();
 }
-void AUX_UI::Color_Segment() {
+void AUX_UI::Color_PreSegment() {
 	int dark_color_h = (general_data.rgb_data.hue() - my_ui.H_range_spinbox->value()) < 0 ?
 		(general_data.rgb_data.hue() - my_ui.H_range_spinbox->value()) + 360 :
 		general_data.rgb_data.hue() - my_ui.H_range_spinbox->value();
@@ -724,6 +725,10 @@ void AUX_UI::Color_Segment() {
 	ViewCloudUpdate(cld, false);
 	RedSelectClear();
 }
+void AUX_UI::Color_Segment() {
+
+}
+
 //USER segment
 void AUX_UI::Tree_UserSegmentation() {
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
