@@ -149,16 +149,31 @@ AUX_UI::AUX_UI(QWidget* parent)
 			QString::number(255), QString::number(255), QString::number(255)));
 	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::SpanningRole, my_ui.color_widget);
 
+	QLabel* H_range_label=new QLabel("Hue Range",my_ui.color_filter_groupbox);
+	QFont font;
+	font.setFamily(QString::fromUtf8("Taipei Sans TC Beta"));
+	H_range_label->setFont(font);
+	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::LabelRole, H_range_label);
+	my_ui.H_range_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "V_range_spinBox");
+	my_ui.H_range_spinbox->setRange(0, 120);
+	my_ui.color_filter_groupbox->addWidget(2, QFormLayout::LabelRole, my_ui.H_range_spinbox);
+	my_ui.H_range_slider = new my_slider(my_ui.color_filter_groupbox);
+	my_ui.H_range_slider->setRange(0, 120);
+	my_ui.color_filter_groupbox->addWidget(2, QFormLayout::FieldRole, my_ui.H_range_slider);
+
+	QLabel* V_range_label = new QLabel("Value Range", my_ui.color_filter_groupbox);
+	V_range_label->setFont(font);
+	my_ui.color_filter_groupbox->addWidget(3, QFormLayout::LabelRole, V_range_label);
 	my_ui.V_range_spinbox = new my_spinBox(my_ui.color_filter_groupbox, "V_range_spinBox");
 	my_ui.V_range_spinbox->setRange(1, 255);
-	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::LabelRole, my_ui.V_range_spinbox);
+	my_ui.color_filter_groupbox->addWidget(4, QFormLayout::LabelRole, my_ui.V_range_spinbox);
 	my_ui.V_range_slider = new my_slider(my_ui.color_filter_groupbox);
 	my_ui.V_range_slider->setRange(1, 255);
-	my_ui.color_filter_groupbox->addWidget(1, QFormLayout::FieldRole, my_ui.V_range_slider);
+	my_ui.color_filter_groupbox->addWidget(4, QFormLayout::FieldRole, my_ui.V_range_slider);
 
 	my_ui.color_filter_start_button = new my_button(my_ui.color_filter_groupbox, QString::fromUtf8("Start"));
 	my_ui.color_filter_start_button->set_font_color(QColor(255, 255, 255));
-	my_ui.color_filter_groupbox->addWidget(2, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
+	my_ui.color_filter_groupbox->addWidget(5, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
 	//---------
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.smooth_groupbox);
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.preSeg_groupbox);
@@ -175,6 +190,8 @@ AUX_UI::AUX_UI(QWidget* parent)
 	connect(my_ui.preSeg_slider, SIGNAL(valueChanged(int)), my_ui.preSeg_spinbox, SLOT(setValue(int)));
 	connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), my_ui.preSeg_slider, SLOT(setValue(int)));
 	//---------color segment------------
+	connect(my_ui.H_range_slider, SIGNAL(valueChanged(int)), my_ui.H_range_spinbox, SLOT(setValue(int)));
+	connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), my_ui.H_range_slider, SLOT(setValue(int)));
 	connect(my_ui.V_range_slider, SIGNAL(valueChanged(int)), my_ui.V_range_spinbox, SLOT(setValue(int)));
 	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), my_ui.V_range_slider, SLOT(setValue(int)));
 	//----------Mode Change------
@@ -233,6 +250,10 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 	my_ui.preSeg_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
 
+	my_ui.H_range_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
+	my_ui.H_range_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
+		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
+
 	my_ui.V_range_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
 	my_ui.V_range_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
@@ -243,6 +264,7 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 }
 
 void AUX_UI::Init_Basedata() {
+	my_ui.H_range_spinbox->setValue(10);
 	my_ui.V_range_spinbox->setValue(128);
 
 	general_data.nowLayerCloud.reset(new PointCloud<PointXYZRGB>);
@@ -278,6 +300,7 @@ void AUX_UI::Set_ToolConnect() {
 	connect(my_ui.color_widget, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
 	connect(my_ui.color_widget, SIGNAL(clicked()), this, SLOT(reset_point_color()));
 	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
+	connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_Segment()));
 	//confirm
 	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(Slider_confirmSegCloud()));
 	//USER confirm
@@ -631,15 +654,22 @@ void AUX_UI::Set_lightRange(const QColor& c) {
 	Color_Segment();
 }
 void AUX_UI::Color_Segment() {
-	int dark_color = (general_data.rgb_data.value() - my_ui.V_range_spinbox->value()) <= 0 ?
+	int dark_color_h = (general_data.rgb_data.hue() - my_ui.H_range_spinbox->value()) < 0 ?
+		(general_data.rgb_data.hue() - my_ui.H_range_spinbox->value()) + 360 :
+		general_data.rgb_data.hue() - my_ui.H_range_spinbox->value();
+	int light_color_h = (general_data.rgb_data.hue() + my_ui.H_range_spinbox->value()) >= 360 ?
+		(general_data.rgb_data.hue() + my_ui.H_range_spinbox->value()) % 360 :
+		general_data.rgb_data.hue() + my_ui.H_range_spinbox->value();
+
+	int dark_color_v = (general_data.rgb_data.value() - my_ui.V_range_spinbox->value()) <= 0 ?
 		0 : general_data.rgb_data.value() - my_ui.V_range_spinbox->value();
-	int light_color = (general_data.rgb_data.value() + my_ui.V_range_spinbox->value()) >= 255 ?
+	int light_color_v = (general_data.rgb_data.value() + my_ui.V_range_spinbox->value()) >= 255 ?
 		255 : general_data.rgb_data.value() + my_ui.V_range_spinbox->value();
 
 	QColor rgb_dark_data;
-	rgb_dark_data.setHsv(general_data.rgb_data.hue(), general_data.rgb_data.saturation(), dark_color);
+	rgb_dark_data.setHsv(dark_color_h, general_data.rgb_data.saturation(), dark_color_v);
 	QColor rgb_light_data;
-	rgb_light_data.setHsv(general_data.rgb_data.hue(), general_data.rgb_data.saturation(), light_color);
+	rgb_light_data.setHsv(light_color_h, general_data.rgb_data.saturation(), light_color_v);
 
 	my_ui.color_widget->setStyleSheet(QString("background-color:"
 		"qlineargradient("
@@ -672,7 +702,7 @@ void AUX_UI::Color_Segment() {
 
 	std::vector<PointIndices> seg_cloud_2;
 	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
-		general_data.rgb_data, my_ui.V_range_spinbox->value());
+		general_data.rgb_data, my_ui.H_range_spinbox->value(), my_ui.V_range_spinbox->value());
 	for (int i = 0; i < cld->size(); i++)
 	{
 		cld->points[i].r = 255;

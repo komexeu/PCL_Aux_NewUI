@@ -37,6 +37,8 @@ public:
 
 	my_foldGroupBox* color_filter_groupbox;
 	QPushButton* color_widget;
+	my_spinBox* H_range_spinbox;
+	my_slider* H_range_slider;	
 	my_spinBox* V_range_spinbox;
 	my_slider* V_range_slider;
 	my_button* color_filter_start_button;
