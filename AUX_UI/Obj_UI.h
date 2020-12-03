@@ -46,6 +46,7 @@ public:
 	my_foldGroupBox* pointDensity_groupbox;
 	my_spinBox* leaf_spinbox;
 	my_slider* leaf_slider;
+	my_button* pointDensity_start_button;
 };
 
 namespace my_UI {

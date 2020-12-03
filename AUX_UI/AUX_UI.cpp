@@ -182,8 +182,12 @@ AUX_UI::AUX_UI(QWidget* parent)
 	my_ui.leaf_spinbox->setRange(1, 40);
 	my_ui.pointDensity_groupbox->addWidget(0, QFormLayout::LabelRole, my_ui.leaf_spinbox);
 	my_ui.leaf_slider = new my_slider(my_ui.color_filter_groupbox);
-	my_ui.leaf_slider->setRange(1,40);
+	my_ui.leaf_slider->setRange(1, 40);
 	my_ui.pointDensity_groupbox->addWidget(0, QFormLayout::FieldRole, my_ui.leaf_slider);
+	
+	my_ui.pointDensity_start_button = new my_button(my_ui.pointDensity_groupbox, QString::fromUtf8("Start"));
+	my_ui.pointDensity_start_button->set_font_color(QColor(255, 255, 255));
+	my_ui.pointDensity_groupbox->addWidget(1, QFormLayout::SpanningRole, my_ui.pointDensity_start_button);
 	//---------
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.smooth_groupbox);
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.preSeg_groupbox);
@@ -277,6 +281,7 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 	my_ui.leaf_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
 	my_ui.color_filter_start_button->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
+	my_ui.pointDensity_start_button->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
 
 	my_ui.message->setText("Color changed!");
 	ui.statusBar->addPermanentWidget(my_ui.message);
@@ -291,6 +296,7 @@ void AUX_UI::Init_Basedata() {
 	general_data.nowLayerCloud.reset(new PointCloud<PointXYZRGB>);
 	general_data.brush_radius = 20;
 	general_data.Selected_cloud.reset(new PointCloud<PointXYZRGB>);
+	general_data.Voxel_cloud.reset(new PointCloud<PointXYZRGB>);
 
 	qt_data.selectionModel = ui.treeView->selectionModel();
 
@@ -325,6 +331,7 @@ void AUX_UI::Set_ToolConnect() {
 	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
 	//---------point density--------
 	connect(my_ui.leaf_spinbox, SIGNAL(valueChanged(int)), this, SLOT(voxelFilter()));
+	connect(my_ui.pointDensity_start_button, SIGNAL(clicked()), this, SLOT(VoxelWork()));
 	//confirm
 	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
 	//USER confirm
@@ -344,20 +351,34 @@ void AUX_UI::Set_ToolConnect() {
 }
 
 void AUX_UI::voxelFilter() {
+	general_data.Voxel_cloud->clear();
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
 	cld = qt_data.standardModel->itemFromIndex(index)->data().
 		value<PointCloud<PointXYZRGB>::Ptr>();
-	
+
 	PointCloud<PointXYZRGB>::Ptr voxel_cld(new PointCloud<PointXYZRGB>);
 	CloudPoints_Tools tools;
 	voxel_cld = tools.CloudDensity(cld, my_ui.leaf_spinbox->value())->makeShared();
+	general_data.Voxel_cloud = voxel_cld->makeShared();
 
 	ViewCloudUpdate(voxel_cld, false);
 	RedSelectClear();
 	my_ui.message->setText(QString::fromStdString(std::to_string(voxel_cld->size())));
+}
+void AUX_UI::VoxelWork() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	if (general_data.Voxel_cloud->size()<=0)
+		return;
+
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	QVariant itemCloud;
+	itemCloud.setValue(general_data.Voxel_cloud->makeShared());
+	qt_data.standardModel->itemFromIndex(index)->setData(itemCloud);
+	general_data.Voxel_cloud->clear();
 }
 
 void AUX_UI::reset_point_color() {

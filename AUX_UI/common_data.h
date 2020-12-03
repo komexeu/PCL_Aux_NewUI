@@ -89,6 +89,7 @@ public:
 	PointCloud<PointXYZRGB>::Ptr nowLayerCloud;
 	std::vector<PointCloud<PointXYZRGB>::Ptr> SegClouds;
 	PointCloud<PointXYZRGB>::Ptr Selected_cloud;
+	PointCloud<PointXYZRGB>::Ptr Voxel_cloud;
 
 	QColor rgb_data;
 };
