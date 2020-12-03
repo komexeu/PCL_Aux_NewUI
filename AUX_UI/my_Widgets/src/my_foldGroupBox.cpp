@@ -20,7 +20,6 @@ my_foldGroupBox::my_foldGroupBox(QWidget* parent, State state)
 
 	setObjectName("my_foldGroupBox");
 	setCheckable(true);
-	this->setFocusPolicy(Qt::NoFocus);
 	state_ = state;
 	if (state_ == STATE_FOLD)
 	{

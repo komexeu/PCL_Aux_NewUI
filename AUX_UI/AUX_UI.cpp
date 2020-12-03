@@ -29,6 +29,7 @@ AUX_UI::AUX_UI(QWidget* parent)
 	pcl_data.my_interactorStyle = InteractorStyle_override::New();
 	pcl_data.viewer.reset(new pcl::visualization::PCLVisualizer(__argc, __argv, "pcl_data.viewer", pcl_data.my_interactorStyle, false));
 	ui.qvtkWidget->SetRenderWindow(pcl_data.viewer->getRenderWindow());
+	ui.qvtkWidget->setFocusPolicy(Qt::StrongFocus);
 	pcl_data.viewer->setupInteractor(ui.qvtkWidget->GetInteractor(), ui.qvtkWidget->GetRenderWindow());
 	pcl_data.viewer->setBackgroundColor(0, 0, 0);
 	//---------------------------------
@@ -137,6 +138,7 @@ AUX_UI::AUX_UI(QWidget* parent)
 	my_ui.color_filter_groupbox = new my_foldGroupBox("Color Filter", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
 
 	my_ui.color_widget = new QPushButton(my_ui.color_filter_groupbox);
+	my_ui.color_widget->setFocusPolicy(Qt::NoFocus);
 	my_ui.color_widget->setStyleSheet(QString("background-color:"
 		"qlineargradient("
 		"spread:"

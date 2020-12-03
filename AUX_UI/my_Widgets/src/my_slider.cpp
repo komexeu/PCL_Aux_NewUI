@@ -2,7 +2,6 @@
 
 my_slider::my_slider(QWidget *parent) :QSlider(parent)
 {
-	this->setFocusPolicy(Qt::NoFocus);
 	this->setOrientation(Qt::Orientation::Horizontal);
 	this->setRange(1, 400);
 }

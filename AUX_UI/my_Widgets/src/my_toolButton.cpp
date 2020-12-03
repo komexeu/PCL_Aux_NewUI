@@ -3,7 +3,6 @@
 my_toolButton::my_toolButton(QWidget *parent, QString name, QString icon_root)
 	:QToolButton(parent) {
 	this->setObjectName(name);
-	this->setFocusPolicy(Qt::NoFocus);
 	Add_toolButton(icon_root);
 }
 
