@@ -179,10 +179,10 @@ AUX_UI::AUX_UI(QWidget* parent)
 	//--------point density groupbox-----------
 	my_ui.pointDensity_groupbox = new my_foldGroupBox("Point Density", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
 	my_ui.leaf_spinbox = new my_spinBox(my_ui.pointDensity_groupbox, "leaf_spinBox");
-	my_ui.leaf_spinbox->setRange(1, 10000);
+	my_ui.leaf_spinbox->setRange(1, 40);
 	my_ui.pointDensity_groupbox->addWidget(0, QFormLayout::LabelRole, my_ui.leaf_spinbox);
 	my_ui.leaf_slider = new my_slider(my_ui.color_filter_groupbox);
-	my_ui.leaf_slider->setRange(1, 10000);
+	my_ui.leaf_slider->setRange(1,40);
 	my_ui.pointDensity_groupbox->addWidget(0, QFormLayout::FieldRole, my_ui.leaf_slider);
 	//---------
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.smooth_groupbox);
@@ -350,7 +350,7 @@ void AUX_UI::voxelFilter() {
 	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
 	cld = qt_data.standardModel->itemFromIndex(index)->data().
 		value<PointCloud<PointXYZRGB>::Ptr>();
-
+	
 	PointCloud<PointXYZRGB>::Ptr voxel_cld(new PointCloud<PointXYZRGB>);
 	CloudPoints_Tools tools;
 	voxel_cld = tools.CloudDensity(cld, my_ui.leaf_spinbox->value())->makeShared();

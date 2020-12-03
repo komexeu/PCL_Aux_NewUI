@@ -99,10 +99,13 @@ PointCloud<PointXYZRGB>::Ptr CloudPoints_Tools::CloudSmooth(PointCloud<PointXYZR
 }
 
 PointCloud<PointXYZRGB>::Ptr CloudPoints_Tools::CloudDensity(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int leafValue) {
+	PointCloud<PointXYZRGB>::Ptr cloud(new PointCloud<PointXYZRGB>);
 	PointCloud<PointXYZRGB>::Ptr voxelCloud(new PointCloud<PointXYZRGB>);
+	copyPointCloud(*nowLayerCloud, *cloud);
+
 	VoxelGrid<PointXYZRGB> vox;
 	vox.setInputCloud(nowLayerCloud);
-	float leaf = 1/leafValue;
+	float leaf = leafValue / 1000.0f;
 	vox.setLeafSize(leaf, leaf, leaf);
 	vox.filter(*voxelCloud);
 
