@@ -4,6 +4,7 @@
 #include <pcl/surface/mls.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/segmentation/region_growing.h>
+#include <pcl/filters/voxel_grid.h>
 
 #include <qdebug.h>
 
@@ -95,4 +96,15 @@ PointCloud<PointXYZRGB>::Ptr CloudPoints_Tools::CloudSmooth(PointCloud<PointXYZR
 	mls->process(*smoothCloud);
 
 	return smoothCloud;
+}
+
+PointCloud<PointXYZRGB>::Ptr CloudPoints_Tools::CloudDensity(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int leafValue) {
+	PointCloud<PointXYZRGB>::Ptr voxelCloud(new PointCloud<PointXYZRGB>);
+	VoxelGrid<PointXYZRGB> vox;
+	vox.setInputCloud(nowLayerCloud);
+	float leaf = 1/leafValue;
+	vox.setLeafSize(leaf, leaf, leaf);
+	vox.filter(*voxelCloud);
+
+	return voxelCloud;
 }

@@ -52,6 +52,7 @@ public Q_SLOTS:
 	void Color_PreSegment();
 	void Color_Segment();
 	void reset_point_color();
+	void voxelFilter();
 
 	void onCustomContextMenu(const QPoint& point);
 	void mergeLayer();

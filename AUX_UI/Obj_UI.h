@@ -42,6 +42,10 @@ public:
 	my_spinBox* V_range_spinbox;
 	my_slider* V_range_slider;
 	my_button* color_filter_start_button;
+
+	my_foldGroupBox* pointDensity_groupbox;
+	my_spinBox* leaf_spinbox;
+	my_slider* leaf_slider;
 };
 
 namespace my_UI {

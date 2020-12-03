@@ -176,10 +176,19 @@ AUX_UI::AUX_UI(QWidget* parent)
 	my_ui.color_filter_start_button = new my_button(my_ui.color_filter_groupbox, QString::fromUtf8("Start"));
 	my_ui.color_filter_start_button->set_font_color(QColor(255, 255, 255));
 	my_ui.color_filter_groupbox->addWidget(5, QFormLayout::SpanningRole, my_ui.color_filter_start_button);
+	//--------point density groupbox-----------
+	my_ui.pointDensity_groupbox = new my_foldGroupBox("Point Density", ui.dockWidgetContents, my_foldGroupBox::STATE_EXPAND);
+	my_ui.leaf_spinbox = new my_spinBox(my_ui.pointDensity_groupbox, "leaf_spinBox");
+	my_ui.leaf_spinbox->setRange(1, 10000);
+	my_ui.pointDensity_groupbox->addWidget(0, QFormLayout::LabelRole, my_ui.leaf_spinbox);
+	my_ui.leaf_slider = new my_slider(my_ui.color_filter_groupbox);
+	my_ui.leaf_slider->setRange(1, 10000);
+	my_ui.pointDensity_groupbox->addWidget(0, QFormLayout::FieldRole, my_ui.leaf_slider);
 	//---------
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.smooth_groupbox);
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.preSeg_groupbox);
 	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.color_filter_groupbox);
+	ui.formLayout->setWidget(ui.formLayout->count() + 1, QFormLayout::FieldRole, my_ui.pointDensity_groupbox);
 	//------colordialog-----------
 	QColorDialog* Qcolordia = new QColorDialog();
 	connect(Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeWindowsColor(const QColor&)));
@@ -196,6 +205,9 @@ AUX_UI::AUX_UI(QWidget* parent)
 	connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), my_ui.H_range_slider, SLOT(setValue(int)));
 	connect(my_ui.V_range_slider, SIGNAL(valueChanged(int)), my_ui.V_range_spinbox, SLOT(setValue(int)));
 	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), my_ui.V_range_slider, SLOT(setValue(int)));
+	//--------point density -----------
+	connect(my_ui.leaf_slider, SIGNAL(valueChanged(int)), my_ui.leaf_spinbox, SLOT(setValue(int)));
+	connect(my_ui.leaf_spinbox, SIGNAL(valueChanged(int)), my_ui.leaf_slider, SLOT(setValue(int)));
 	//----------Mode Change------
 	connect(my_ui.Brush, SIGNAL(clicked()), this, SLOT(SetBrushMode()));
 	connect(my_ui.Area, SIGNAL(clicked()), this, SLOT(SetAreaMode()));
@@ -261,6 +273,11 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
 	my_ui.color_filter_start_button->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
 
+	my_ui.leaf_spinbox->SetSliderStylesheet_default(ColorScale::Color_struct.colorE);
+	my_ui.leaf_slider->SetSliderStylesheet_default(ColorScale::Color_struct.colorB,
+		ColorScale::Color_struct.colorE, ColorScale::Color_struct.colorA);
+	my_ui.color_filter_start_button->set_styleSheet_color(ColorScale::Color_struct.colorD, ColorScale::Color_struct.colorB);
+
 	my_ui.message->setText("Color changed!");
 	ui.statusBar->addPermanentWidget(my_ui.message);
 }
@@ -306,6 +323,8 @@ void AUX_UI::Set_ToolConnect() {
 	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
 	connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
 	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
+	//---------point density--------
+	connect(my_ui.leaf_spinbox, SIGNAL(valueChanged(int)), this, SLOT(voxelFilter()));
 	//confirm
 	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
 	//USER confirm
@@ -322,6 +341,23 @@ void AUX_UI::Set_ToolConnect() {
 	connect(Viewer_Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeViewerColor(const QColor&)));
 	//-------layer merge------
 	connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onCustomContextMenu(const QPoint&)));
+}
+
+void AUX_UI::voxelFilter() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
+	cld = qt_data.standardModel->itemFromIndex(index)->data().
+		value<PointCloud<PointXYZRGB>::Ptr>();
+
+	PointCloud<PointXYZRGB>::Ptr voxel_cld(new PointCloud<PointXYZRGB>);
+	CloudPoints_Tools tools;
+	voxel_cld = tools.CloudDensity(cld, my_ui.leaf_spinbox->value())->makeShared();
+
+	ViewCloudUpdate(voxel_cld, false);
+	RedSelectClear();
+	my_ui.message->setText(QString::fromStdString(std::to_string(voxel_cld->size())));
 }
 
 void AUX_UI::reset_point_color() {
