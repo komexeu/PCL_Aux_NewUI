@@ -151,7 +151,7 @@ AUX_UI::AUX_UI(QWidget* parent)
 			QString::number(255), QString::number(255), QString::number(255)));
 	my_ui.color_filter_groupbox->addWidget(0, QFormLayout::SpanningRole, my_ui.color_widget);
 
-	QLabel* H_range_label=new QLabel("Hue Range",my_ui.color_filter_groupbox);
+	QLabel* H_range_label = new QLabel("Hue Range", my_ui.color_filter_groupbox);
 	QFont font;
 	font.setFamily(QString::fromUtf8("Taipei Sans TC Beta"));
 	H_range_label->setFont(font);
@@ -266,6 +266,8 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 }
 
 void AUX_UI::Init_Basedata() {
+	general_data.rgb_data = QColor{ 128,128,128 };
+
 	my_ui.H_range_spinbox->setValue(10);
 	my_ui.V_range_spinbox->setValue(128);
 
@@ -304,7 +306,7 @@ void AUX_UI::Set_ToolConnect() {
 	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
 	connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
 	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
-		//confirm
+	//confirm
 	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
 	//USER confirm
 	QObject::connect(my_ui.confirm_userSeg, SIGNAL(clicked()), this, SLOT(Tree_UserSegmentation()));
