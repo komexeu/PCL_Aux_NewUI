@@ -6,7 +6,6 @@
 
 //--------import pointcloud-------
 #include <qinputdialog.h>
-#include "QVTKWidget_controller/include/LayerControl.h"
 #include "QVTKWidget_controller/include/CloudPoints_IO.h"
 #include "QVTKWidget_controller/include/CloudPoints_Tools.h"
 
@@ -288,6 +287,8 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 }
 
 void AUX_UI::Init_Basedata() {
+	tree_layerController = new TreeLayerController(qt_data.standardModel);
+
 	general_data.rgb_data = QColor{ 128,128,128 };
 
 	my_ui.H_range_spinbox->setValue(10);
@@ -414,8 +415,8 @@ void AUX_UI::mergeLayer() {
 	PointCloud<PointXYZRGB>::Ptr mergedCloud(new PointCloud<PointXYZRGB>);
 	for (int i = 0; i < indexes.size(); ++i)
 		*mergedCloud += *qt_data.standardModel->itemFromIndex(indexes[i])->data().value<PointCloud<PointXYZRGB>::Ptr>();
-	TreeLayerController ly(qt_data.standardModel);
-	if (!ly.AddLayer("merge_layer", mergedCloud, searchParent(ui.treeView->selectionModel()->currentIndex().parent())))
+	
+	if (!tree_layerController->AddLayer("merge_layer", mergedCloud, searchParent(ui.treeView->selectionModel()->currentIndex().parent())))
 		return;
 	for (int i = 0; i < indexes.size(); ++i)
 		qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
@@ -466,7 +467,6 @@ void AUX_UI::Tree_importCloud() {
 			if (ok && !text.isEmpty()) {
 				std::string BaseLayerName = text.toStdString();
 				std::string objName = "NONE" + text.toStdString();
-				TreeLayerController* tree_layerController = new TreeLayerController(qt_data.standardModel);
 				if (!tree_layerController->AddLayer(text, IO_Tool.import_cloud_[i].makeShared()))
 					return;
 				QString selectedText = "Import success.";
@@ -694,9 +694,7 @@ void AUX_UI::confirm_colors_segment() {
 	for (int i = 0; i < general_data.SegClouds.size(); ++i)
 	{
 		QString segLayer = QString::fromStdString(std::to_string(i));
-		TreeLayerController ly(qt_data.standardModel);
-
-		if (!ly.AddLayer(segLayer, general_data.SegClouds[i], searchParent(index)))
+		if (!tree_layerController->AddLayer(segLayer, general_data.SegClouds[i], searchParent(index)))
 			return;
 	}
 	/*if (index.parent().row() != -1)
@@ -804,7 +802,6 @@ void AUX_UI::Tree_UserSegmentation() {
 			QDir::home().dirName(), &ok);
 		if (ok && !text.isEmpty())
 		{
-			TreeLayerController ly(qt_data.standardModel);
 			PointCloud<PointXYZRGB>::Ptr newCloud(new PointCloud<PointXYZRGB>);
 			PointCloud<PointXYZRGB>::Ptr newCloud2(new PointCloud<PointXYZRGB>);
 
@@ -817,11 +814,11 @@ void AUX_UI::Tree_UserSegmentation() {
 			}
 
 			//改為全部只有一層子類
-			if (!ly.AddLayer(text, newCloud->makeShared(), searchParent(index)))
+			if (!tree_layerController->AddLayer(text, newCloud->makeShared(), searchParent(index)))
 				return;
 			if (newCloud2->size() > 0)
 			{
-				if (!ly.AddLayer("base", newCloud2->makeShared(), searchParent(index)))
+				if (!tree_layerController->AddLayer("base", newCloud2->makeShared(), searchParent(index)))
 					return;
 			}
 

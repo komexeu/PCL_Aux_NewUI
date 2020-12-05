@@ -1,5 +1,6 @@
 #pragma once
 
+#include "QVTKWidget_controller/include/LayerControl.h"
 #include "common_data.h"
 #include "ui_AUX_UI.h" 
 #include "Obj_UI.h"
@@ -76,3 +77,4 @@ Data_Class::PCL_Data AUX_UI::pcl_data;
 Data_Class::QT_Data AUX_UI::qt_data;
 
 static std::map<int, PointXYZRGB> select_map;
+static TreeLayerController* tree_layerController;
