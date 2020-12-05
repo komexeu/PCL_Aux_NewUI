@@ -16,6 +16,7 @@
 * ### [Select(Brush/Area)](#user-selectbrusharea)
 * ### [Segment pointcloud(Euclidean/Region Growing)](#slider-segment-pointcloud)
 * ### [Color Filter](#color-filter-1)
+* ### [Voxel Filter](#voxel-filter-1)
 * ### [Merge pointcloud](#merge-pointcloud-1)
 
  ## Hot Key
@@ -88,6 +89,11 @@
   ![main pic](./asset/Color_filter_5.png)
   ![main pic](./asset/Color_filter_6.png)
   
+* ### [Voxel Filter](#menu) 
+  __Drag slider set pointcloud to lower points__
+  ![main pic](./asset/Voxel_filter_0.png)
+  ![main pic](./asset/Voxel_filter_1.png)
+
 * ### [Merge pointcloud](#menu)
   ![main pic](./asset/merge_0.png)
   ![main pic](./asset/merge_1.png)
