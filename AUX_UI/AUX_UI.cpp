@@ -362,7 +362,7 @@ void AUX_UI::voxelFilter() {
 
 	PointCloud<PointXYZRGB>::Ptr voxel_cld(new PointCloud<PointXYZRGB>);
 	CloudPoints_Tools tools;
-	voxel_cld = tools.CloudDensity(cld, my_ui.leaf_spinbox->value())->makeShared();
+	voxel_cld = tools.CloudDensity(cld, my_ui.leaf_spinbox->value(),general_data.nowCloud_avg_distance)->makeShared();
 	general_data.Voxel_cloud = voxel_cld->makeShared();
 
 	ViewCloudUpdate(voxel_cld, false);

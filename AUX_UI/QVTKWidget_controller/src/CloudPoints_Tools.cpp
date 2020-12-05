@@ -98,14 +98,14 @@ PointCloud<PointXYZRGB>::Ptr CloudPoints_Tools::CloudSmooth(PointCloud<PointXYZR
 	return smoothCloud;
 }
 
-PointCloud<PointXYZRGB>::Ptr CloudPoints_Tools::CloudDensity(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int leafValue) {
+PointCloud<PointXYZRGB>::Ptr CloudPoints_Tools::CloudDensity(PointCloud<PointXYZRGB>::Ptr nowLayerCloud, int leafValue, float nowCloud_avg_distance) {
 	PointCloud<PointXYZRGB>::Ptr cloud(new PointCloud<PointXYZRGB>);
 	PointCloud<PointXYZRGB>::Ptr voxelCloud(new PointCloud<PointXYZRGB>);
 	copyPointCloud(*nowLayerCloud, *cloud);
 
 	VoxelGrid<PointXYZRGB> vox;
 	vox.setInputCloud(nowLayerCloud);
-	float leaf = leafValue / 1000.0f;
+	float leaf = nowCloud_avg_distance * 0.5 * leafValue;
 	vox.setLeafSize(leaf, leaf, leaf);
 	vox.filter(*voxelCloud);
 
