@@ -20,6 +20,8 @@ extern Data_Class::Key_Data key_data;
 extern Data_Class::PCL_Data pcl_data;
 extern Data_Class::QT_Data qt_data;
 
+//extern TreeLayerController* tree_layerController;
+
 AUX_UI::AUX_UI(QWidget* parent)
 	: QMainWindow(parent)
 {
@@ -113,8 +115,6 @@ void AUX_UI::changeWindowsColor(const QColor& c) {
 }
 
 void AUX_UI::Init_Basedata() {
-	tree_layerController = new TreeLayerController(qt_data.standardModel);
-
 	general_data.rgb_data = QColor{ 128,128,128 };
 
 	my_ui.H_range_spinbox->setValue(10);
@@ -140,9 +140,9 @@ void AUX_UI::Init_Basedata() {
 
 void AUX_UI::Set_ToolConnect() {
 	//-------import-------
-	connect(my_ui.New_Pointcloud, SIGNAL(clicked()), this, SLOT(Tree_importCloud()));
+	//connect(my_ui.New_Pointcloud, SIGNAL(clicked()), this, SLOT(Tree_importCloud()));
 	//-------export------
-	connect(my_ui.Exprot_Pointcloud, SIGNAL(clicked()), this, SLOT(ExportCloud()));
+	//connect(my_ui.Exprot_Pointcloud, SIGNAL(clicked()), this, SLOT(ExportCloud()));
 	//-------click layer------
 	connect(qt_data.selectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this,
 		SLOT(Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&)));

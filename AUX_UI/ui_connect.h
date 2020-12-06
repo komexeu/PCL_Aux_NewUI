@@ -17,10 +17,6 @@ extern Data_Class::QT_Data qt_data;
 class ui_connect :public QObject
 {
 	Q_OBJECT
-public Q_SLOTS:
-	void sayHI() {
-		qDebug() << "HIIIIIIIIIIIIIII";
-	}
 public:
 	void Init_Ui_connect() {
 		//-----------spinbox & slider connect------------
@@ -43,6 +39,11 @@ public:
 		QObject::connect(my_ui.Brush, SIGNAL(clicked()), obw, SLOT(SetBrushMode()));
 		QObject::connect(my_ui.Area, SIGNAL(clicked()), obw, SLOT(SetAreaMode()));
 		QObject::connect(my_ui.Default, SIGNAL(clicked()), obw, SLOT(SetNoneMode()));
+		//------------^UI^------------
+
+		//----------IO pointcloud-----
+		QObject::connect(my_ui.New_Pointcloud, SIGNAL(clicked()), obw, SLOT(ImportCloud()));
+		QObject::connect(my_ui.Exprot_Pointcloud, SIGNAL(clicked()), obw, SLOT(ExportCloud()));
 	}
 };
 

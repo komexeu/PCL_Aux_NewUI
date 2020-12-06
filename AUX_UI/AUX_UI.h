@@ -1,6 +1,6 @@
 #pragma once
 
-#include "QVTKWidget_controller/include/LayerControl.h"
+//#include "QVTKWidget_controller/include/LayerControl.h"
 #include "common_data.h"
 
 #include <QtWidgets/QMainWindow>
@@ -61,5 +61,5 @@ public:
 	QModelIndex  searchParent(QModelIndex index);
 };
 
-static std::map<int, PointXYZRGB> select_map;
-static TreeLayerController* tree_layerController;
+static std::map<int, PointXYZRGB> select_map;/*
+static TreeLayerController* tree_layerController;*/
