@@ -93,9 +93,12 @@
     <ClCompile Include="my_Widgets\src\my_slider.cpp" />
     <ClCompile Include="my_Widgets\src\my_spinBox.cpp" />
     <ClCompile Include="my_Widgets\src\my_toolButton.cpp" />
+    <ClCompile Include="object_work.cpp" />
     <ClCompile Include="QVTKWidget_controller\src\CloudPoints_IO.cpp" />
     <ClCompile Include="QVTKWidget_controller\src\CloudPoints_Tools.cpp" />
     <ClCompile Include="QVTKWidget_controller\src\LayerControl.cpp" />
+    <ClCompile Include="ui_connect.cpp" />
+    <ClCompile Include="ui_work.cpp" />
     <QtRcc Include="AUX_UI.qrc" />
     <QtUic Include="AUX_UI.ui" />
     <QtMoc Include="AUX_UI.h" />
@@ -104,11 +107,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_data.h" />
+    <QtMoc Include="ui_connect.h" />
+    <ClInclude Include="ui_work.h" />
     <QtMoc Include="my_Widgets\include\my_button.h" />
     <QtMoc Include="my_Widgets\include\my_foldGroupBox.h" />
     <ClInclude Include="my_Widgets\include\my_slider.h" />
     <ClInclude Include="my_Widgets\include\my_spinBox.h" />
     <QtMoc Include="my_Widgets\include\my_toolButton.h" />
+    <QtMoc Include="object_work.h" />
     <ClInclude Include="override_src\vtkInteractorStyleRubberBandPick.h" />
     <ClInclude Include="QVTKWidget_controller\include\CloudPoints_IO.h" />
     <ClInclude Include="QVTKWidget_controller\include\CloudPoints_Tools.h" />

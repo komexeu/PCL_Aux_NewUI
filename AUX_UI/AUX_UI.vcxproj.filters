@@ -68,6 +68,15 @@
     <ClCompile Include="my_Widgets\src\my_toolButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="object_work.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_work.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_connect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_data.h">
@@ -100,6 +109,9 @@
     <ClInclude Include="Obj_UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ui_work.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AUX_UI.rc">
@@ -114,6 +126,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="my_Widgets\include\my_toolButton.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="object_work.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ui_connect.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

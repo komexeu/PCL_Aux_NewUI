@@ -2,12 +2,12 @@
 
 #include "QVTKWidget_controller/include/LayerControl.h"
 #include "common_data.h"
-#include "ui_AUX_UI.h" 
-#include "Obj_UI.h"
 
 #include <QtWidgets/QMainWindow>
-#include <vtkRenderWindow.h>
-#include <vtkSmartPointer.h>
+
+#include "object_work.h"
+#include "ui_work.h"
+#include "ui_connect.h"
 
 using namespace pcl;
 
@@ -17,10 +17,6 @@ class AUX_UI : public QMainWindow
 		//features for control UI
 public 	Q_SLOTS:
 	void changeWindowsColor(const QColor& c);
-	static void SetAreaMode();
-	static void SetBrushMode();
-	static void SetNoneMode();
-
 	void SegMode_Change();
 public:
 	AUX_UI(QWidget* parent = Q_NULLPTR);
@@ -31,12 +27,7 @@ public:
 	static void Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent& event);
 
 private:
-	static Ui::AUX_UIClass ui;
-	static my_UI::Obj_UIClass my_ui;
-	static Data_Class::General_Data general_data;
-	static Data_Class::Key_Data key_data;
-	static Data_Class::PCL_Data pcl_data;
-	static Data_Class::QT_Data qt_data;
+	
 
 public Q_SLOTS:
 	void Tree_importCloud();
@@ -69,12 +60,6 @@ public:
 	void Set_ToolConnect();
 	QModelIndex  searchParent(QModelIndex index);
 };
-Ui::AUX_UIClass AUX_UI::ui;
-my_UI::Obj_UIClass AUX_UI::my_ui;
-Data_Class::General_Data AUX_UI::general_data;
-Data_Class::Key_Data AUX_UI::key_data;
-Data_Class::PCL_Data AUX_UI::pcl_data;
-Data_Class::QT_Data AUX_UI::qt_data;
 
 static std::map<int, PointXYZRGB> select_map;
 static TreeLayerController* tree_layerController;
