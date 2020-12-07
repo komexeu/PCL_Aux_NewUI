@@ -10,7 +10,8 @@
 	//-----tool----
 #include "QVTKWidget_controller/include/LayerControl.h"
 void object_work::ImportCloud() {
-	tree_layerController = new TreeLayerController(qt_data.standardModel);
+	if (tree_layerController == NULL)
+		tree_layerController = new TreeLayerController(qt_data.standardModel);
 	//RedSelectClear();
 
 	QFileDialog add_dialog;
@@ -65,7 +66,8 @@ QModelIndex searchParent(QModelIndex index) {
 	}
 }
 void object_work::ExportCloud() {
-	tree_layerController = new TreeLayerController(qt_data.standardModel);
+	if (tree_layerController == NULL)
+		tree_layerController = new TreeLayerController(qt_data.standardModel);
 	auto indexes = ui.treeView->selectionModel()->selectedIndexes();
 	if (indexes.size() <= 0)
 	{
