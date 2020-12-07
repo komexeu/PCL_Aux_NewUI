@@ -6,7 +6,8 @@
 
 //-----tool----
 #include "QVTKWidget_controller/include/LayerControl.h"
-static TreeLayerController* tree_layerController;
+TreeLayerController* tree_layerController;
+static std::map<int, PointXYZRGB> select_map;
 
 Data_Class::General_Data general_data;
 Data_Class::Key_Data key_data;
@@ -21,8 +22,14 @@ class object_work :public QObject
 {
 	Q_OBJECT
 public Q_SLOTS:
+	void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
+	void RedSelectClear();
+	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
+
 	void ImportCloud();
 	void ExportCloud();
+
+	void voxelFilter();
 
 	void SetBrushMode();
 	void SetAreaMode();

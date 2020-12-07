@@ -32,7 +32,7 @@ private:
 public Q_SLOTS:
 	void Tree_importCloud();
 	void ExportCloud();
-	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
+	//void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
 	void Tree_Smooth();
 	void Slider_PreSegCloud();
 	void confirm_colors_segment();
@@ -61,5 +61,5 @@ public:
 	QModelIndex  searchParent(QModelIndex index);
 };
 
-static std::map<int, PointXYZRGB> select_map;/*
-static TreeLayerController* tree_layerController;*/
+//static std::map<int, PointXYZRGB> select_map;
+/*static TreeLayerController* tree_layerController;*/

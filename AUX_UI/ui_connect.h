@@ -44,6 +44,11 @@ public:
 		//----------IO pointcloud-----
 		QObject::connect(my_ui.New_Pointcloud, SIGNAL(clicked()), obw, SLOT(ImportCloud()));
 		QObject::connect(my_ui.Exprot_Pointcloud, SIGNAL(clicked()), obw, SLOT(ExportCloud()));
+		QObject::connect(qt_data.selectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), obw,
+			SLOT(Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&)));
+		//---------point density--------
+		QObject::connect(my_ui.leaf_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(voxelFilter()));
+		QObject::connect(my_ui.pointDensity_start_button, SIGNAL(clicked()), obw, SLOT(VoxelWork()));
 	}
 };
 

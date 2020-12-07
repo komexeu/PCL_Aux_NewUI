@@ -18,6 +18,9 @@ class ui_work
 {
 public:
 	void Init_UI(QMainWindow* w) {
+		qt_data.standardModel = new QStandardItemModel(ui.treeView);
+		ui.treeView->setModel(qt_data.standardModel);
+		qt_data.selectionModel = ui.treeView->selectionModel();
 		//------init tree view------
 		ui.treeView->setFocusPolicy(Qt::NoFocus);
 		ui.treeView->setContextMenuPolicy(Qt::CustomContextMenu);		

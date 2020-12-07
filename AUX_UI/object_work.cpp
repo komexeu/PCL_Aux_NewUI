@@ -9,10 +9,91 @@
 #include <typeinfo>
 	//-----tool----
 #include "QVTKWidget_controller/include/LayerControl.h"
+
+QModelIndex searchParent(QModelIndex index) {
+	if (index.parent().row() == -1) {
+		return index;
+	}
+	else {
+		QModelIndex parentItem = index.parent();
+		while (parentItem.parent().row() != -1)
+			parentItem = parentItem.parent();
+
+		return parentItem;
+	}
+}
+
+void object_work::ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera) {
+	pcl_data.viewer->updatePointCloud(updateCloud, "cld");
+	if (resetCamera)
+		pcl_data.viewer->resetCamera();
+	ui.qvtkWidget->update();
+}
+void object_work::RedSelectClear() {
+	//select_map.clear();
+	general_data.Selected_cloud = general_data.nowLayerCloud->makeShared();
+}
+#include <pcl/kdtree/kdtree_flann.h>
+void object_work::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&) {
+	RedSelectClear();
+	general_data.SegClouds.clear();
+
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	if (index.row() == -1) {
+		PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
+		ViewCloudUpdate(nullCloud, true);
+		return;
+	}
+
+	int size = qt_data.standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>()->size();
+	general_data.nowLayerCloud = qt_data.standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>();
+
+	general_data.Selected_cloud->clear();
+	general_data.Selected_cloud = general_data.nowLayerCloud->makeShared();
+
+	QModelIndex TopParent = searchParent(index);
+	PointCloud<PointXYZRGB>::Ptr TopCloud(new PointCloud<PointXYZRGB>);
+	TopCloud = qt_data.standardModel->itemFromIndex(TopParent)->data().value<PointCloud<PointXYZRGB>::Ptr>()->makeShared();
+	ViewCloudUpdate(TopCloud, true);
+	ViewCloudUpdate(general_data.nowLayerCloud, false);
+
+	QString selectedText = QString::fromStdString(std::to_string(size)) + " points.";
+	my_ui.message->setText(selectedText);
+
+	//取1000點做平均取距離
+	std::vector<int> k_indices;
+	std::vector<float> k_sqr_distances;
+	int n = 0;
+	double norm = 0;
+	int searched_points = 0;
+	pcl::KdTreeFLANN<PointXYZRGB>::Ptr tree(new pcl::KdTreeFLANN<PointXYZRGB>);
+	tree->setInputCloud(general_data.nowLayerCloud);
+
+	for (int i = 0; i < (general_data.nowLayerCloud->size() >= 1000 ? 1000 : general_data.nowLayerCloud->size()); ++i)
+	{
+		n = tree->nearestKSearch(i, 2, k_indices, k_sqr_distances);
+		if (n == 2)
+		{
+			double n = sqrt(k_sqr_distances[1]);
+			if (n < VTK_DOUBLE_MIN || n>VTK_DOUBLE_MAX)
+				continue;
+			norm += n;
+			++searched_points;
+		}
+	}
+
+	if (searched_points != 0) {
+		general_data.nowCloud_avg_distance = norm / searched_points;
+	}
+	else {
+		general_data.nowCloud_avg_distance = 0;
+	}
+}
+
 void object_work::ImportCloud() {
 	if (tree_layerController == NULL)
 		tree_layerController = new TreeLayerController(qt_data.standardModel);
-	//RedSelectClear();
+	RedSelectClear();
 
 	QFileDialog add_dialog;
 	add_dialog.setFileMode(QFileDialog::ExistingFiles);
@@ -53,18 +134,6 @@ void object_work::ImportCloud() {
 	ui.treeView->selectionModel()->clear();
 }
 
-QModelIndex searchParent(QModelIndex index) {
-	if (index.parent().row() == -1) {
-		return index;
-	}
-	else {
-		QModelIndex parentItem = index.parent();
-		while (parentItem.parent().row() != -1)
-			parentItem = parentItem.parent();
-
-		return parentItem;
-	}
-}
 void object_work::ExportCloud() {
 	if (tree_layerController == NULL)
 		tree_layerController = new TreeLayerController(qt_data.standardModel);
@@ -96,6 +165,25 @@ void object_work::ExportCloud() {
 		else
 			my_ui.message->setText("Export fail.");
 	}
+}
+
+void object_work::voxelFilter() {
+	general_data.Voxel_cloud->clear();
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
+	cld = qt_data.standardModel->itemFromIndex(index)->data().
+		value<PointCloud<PointXYZRGB>::Ptr>();
+
+	PointCloud<PointXYZRGB>::Ptr voxel_cld(new PointCloud<PointXYZRGB>);
+	CloudPoints_Tools tools;
+	voxel_cld = tools.CloudDensity(cld, my_ui.leaf_spinbox->value(), general_data.nowCloud_avg_distance)->makeShared();
+	general_data.Voxel_cloud = voxel_cld->makeShared();
+
+	ViewCloudUpdate(voxel_cld, false);
+	RedSelectClear();
+	my_ui.message->setText(QString::fromStdString(std::to_string(voxel_cld->size())));
 }
 
 void object_work::SetBrushMode() {
