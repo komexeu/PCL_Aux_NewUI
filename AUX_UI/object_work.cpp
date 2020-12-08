@@ -185,6 +185,20 @@ void object_work::voxelFilter() {
 	RedSelectClear();
 	my_ui.message->setText(QString::fromStdString(std::to_string(voxel_cld->size())));
 }
+void object_work::VoxelWork() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	if (general_data.Voxel_cloud->size() <= 0)
+		return;
+
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	QVariant itemCloud;
+	itemCloud.setValue(general_data.Voxel_cloud->makeShared());
+	qt_data.standardModel->itemFromIndex(index)->setData(itemCloud);
+	general_data.Voxel_cloud->clear();
+
+	my_ui.message->setText("Filter Finish.");
+}
 
 void object_work::SetBrushMode() {
 	qt_data.brush_sliderAction->setVisible(true);

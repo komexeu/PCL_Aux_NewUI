@@ -30,6 +30,8 @@ public Q_SLOTS:
 	void ExportCloud();
 
 	void voxelFilter();
+	void VoxelWork();
+
 
 	void SetBrushMode();
 	void SetAreaMode();

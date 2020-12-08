@@ -30,9 +30,6 @@ private:
 	
 
 public Q_SLOTS:
-	void Tree_importCloud();
-	void ExportCloud();
-	//void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
 	void Tree_Smooth();
 	void Slider_PreSegCloud();
 	void confirm_colors_segment();
@@ -44,8 +41,6 @@ public Q_SLOTS:
 	void Color_PreSegment();
 	void Color_Segment();
 	void reset_point_color();
-	void voxelFilter();
-	void VoxelWork();
 
 	void onCustomContextMenu(const QPoint& point);
 	void mergeLayer();

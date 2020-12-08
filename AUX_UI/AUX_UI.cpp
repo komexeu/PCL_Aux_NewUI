@@ -134,15 +134,7 @@ void AUX_UI::Init_Basedata() {
 	pcl_data.viewer->addPointCloud(nullCloud, "White_BrushCursorPoints");
 }
 
-void AUX_UI::Set_ToolConnect() {
-	//-------import-------
-	//connect(my_ui.New_Pointcloud, SIGNAL(clicked()), this, SLOT(Tree_importCloud()));
-	//-------export------
-	//connect(my_ui.Exprot_Pointcloud, SIGNAL(clicked()), this, SLOT(ExportCloud()));
-	//-------click layer------
-	/*connect(qt_data.selectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this,
-		SLOT(Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&)));*/
-	//------smooth------
+void AUX_UI::Set_ToolConnect() {	
 	QObject::connect(my_ui.smooth_confirm, SIGNAL(clicked()), this, SLOT(Tree_Smooth()));
 	//------slider pre segmentation----
 	QObject::connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Slider_PreSegCloud()));
@@ -154,9 +146,6 @@ void AUX_UI::Set_ToolConnect() {
 	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
 	connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
 	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
-	//---------point density--------
-	/*connect(my_ui.leaf_spinbox, SIGNAL(valueChanged(int)), this, SLOT(voxelFilter()));
-	connect(my_ui.pointDensity_start_button, SIGNAL(clicked()), this, SLOT(VoxelWork()));*/
 	//confirm
 	QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
 	//USER confirm
@@ -173,37 +162,6 @@ void AUX_UI::Set_ToolConnect() {
 	connect(Viewer_Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeViewerColor(const QColor&)));
 	//-------layer merge------
 	connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onCustomContextMenu(const QPoint&)));
-}
-
-void AUX_UI::voxelFilter() {
-	//general_data.Voxel_cloud->clear();
-	//if (ui.treeView->selectionModel()->currentIndex().row() == -1)
-	//	return;
-	//QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-	//PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
-	//cld = qt_data.standardModel->itemFromIndex(index)->data().
-	//	value<PointCloud<PointXYZRGB>::Ptr>();
-
-	//PointCloud<PointXYZRGB>::Ptr voxel_cld(new PointCloud<PointXYZRGB>);
-	//CloudPoints_Tools tools;
-	//voxel_cld = tools.CloudDensity(cld, my_ui.leaf_spinbox->value(),general_data.nowCloud_avg_distance)->makeShared();
-	//general_data.Voxel_cloud = voxel_cld->makeShared();
-
-	//ViewCloudUpdate(voxel_cld, false);
-	//RedSelectClear();
-	//my_ui.message->setText(QString::fromStdString(std::to_string(voxel_cld->size())));
-}
-void AUX_UI::VoxelWork() {
-	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
-		return;
-	if (general_data.Voxel_cloud->size()<=0)
-		return;
-
-	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-	QVariant itemCloud;
-	itemCloud.setValue(general_data.Voxel_cloud->makeShared());
-	qt_data.standardModel->itemFromIndex(index)->setData(itemCloud);
-	general_data.Voxel_cloud->clear();
 }
 
 void AUX_UI::reset_point_color() {
@@ -258,79 +216,6 @@ void AUX_UI::changeViewerColor(const QColor& c) {
 #include <qfiledialog.h>
 #include <fstream>
 #include <typeinfo>
-void AUX_UI::Tree_importCloud() {
-	RedSelectClear();
-	//SetNoneMode();
-
-	QFileDialog add_dialog;
-	add_dialog.setFileMode(QFileDialog::ExistingFiles);
-	QStringList filelist = add_dialog.getOpenFileNames(nullptr, QObject::tr("Select a root."),
-		"C:/",
-		QObject::tr("All file(*.*);;pcd file (*.pcd);;csv file(*.csv)"));
-	if (filelist.isEmpty())
-	{
-		ui.treeView->selectionModel()->clear();
-		return;
-	}
-
-	for (int i = 0; i < filelist.size(); i++)
-	{
-		CloudPoints_IO<PointXYZRGB> IO_Tool;
-		if (!IO_Tool.CloudImport(filelist[i])) {
-			QString selectedText = "Import fail.";
-			my_ui.message->setText(selectedText);
-			return;
-		}
-
-		for (int i = 0; i < IO_Tool.file_name_.size(); i++)
-		{
-			bool ok;
-			QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-				tr("Layer name:"), QLineEdit::Normal,
-				IO_Tool.file_name_[i], &ok);
-			if (ok && !text.isEmpty()) {
-				std::string BaseLayerName = text.toStdString();
-				std::string objName = "NONE" + text.toStdString();
-				if (!tree_layerController->AddLayer(text, IO_Tool.import_cloud_[i].makeShared()))
-					return;
-				QString selectedText = "Import success.";
-				my_ui.message->setText(selectedText);
-			}
-		}
-	}
-	ui.treeView->selectionModel()->clear();
-}
-
-void AUX_UI::ExportCloud() {
-	auto indexes = ui.treeView->selectionModel()->selectedIndexes();
-	if (indexes.size() <= 0)
-	{
-		my_ui.message->setText("No layer selected.");
-		return;
-	}
-
-	CloudPoints_IO<PointXYZRGB> IO_Tool;
-	vector<PointCloud<PointXYZRGB>> children_cloud_data;
-	vector<QModelIndex> parentIndexes;
-	for (int i = 0; i < indexes.size(); ++i)
-	{
-		QModelIndex parent_index = searchParent(indexes[i]);
-		vector<QModelIndex>::iterator it_result =
-			std::find(parentIndexes.begin(), parentIndexes.end(), parent_index);
-		if (it_result != parentIndexes.end())
-			continue;
-		parentIndexes.push_back(parent_index);
-		for (int j = 0; j < qt_data.standardModel->itemFromIndex(parent_index)->rowCount(); ++j)
-		{
-			children_cloud_data.push_back(*qt_data.standardModel->itemFromIndex(parent_index)->child(j)
-				->data().value<PointCloud<PointXYZRGB>::Ptr>());
-		}
-		if (IO_Tool.CloudExport(children_cloud_data))
-			my_ui.message->setText("Export success.");
-		else
-			my_ui.message->setText("Export fail.");
-	}
-}
 
 void AUX_UI::ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera) {
 	/*pcl_data.viewer->updatePointCloud(updateCloud, "cld");
@@ -376,62 +261,6 @@ QModelIndex AUX_UI::searchParent(QModelIndex index) {
 		return parentItem;
 	}
 }
-
-//void AUX_UI::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&) {
-//	RedSelectClear();
-//	general_data.SegClouds.clear();
-//
-//	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-//	if (index.row() == -1) {
-//		PointCloud<PointXYZRGB>::Ptr nullCloud(new PointCloud<PointXYZRGB>);
-//		ViewCloudUpdate(nullCloud, true);
-//		return;
-//	}
-//
-//	int size = qt_data.standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>()->size();
-//	general_data.nowLayerCloud = qt_data.standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>();
-//
-//	general_data.Selected_cloud->clear();
-//	general_data.Selected_cloud = general_data.nowLayerCloud->makeShared();
-//
-//	QModelIndex TopParent = searchParent(index);
-//	PointCloud<PointXYZRGB>::Ptr TopCloud(new PointCloud<PointXYZRGB>);
-//	TopCloud = qt_data.standardModel->itemFromIndex(TopParent)->data().value<PointCloud<PointXYZRGB>::Ptr>()->makeShared();
-//	ViewCloudUpdate(TopCloud, true);
-//	ViewCloudUpdate(general_data.nowLayerCloud, false);
-//
-//	QString selectedText = QString::fromStdString(std::to_string(size)) + " points.";
-//	my_ui.message->setText(selectedText);
-//
-//	//取1000點做平均取距離
-//	std::vector<int> k_indices;
-//	std::vector<float> k_sqr_distances;
-//	int n = 0;
-//	double norm = 0;
-//	int searched_points = 0;
-//	pcl::KdTreeFLANN<PointXYZRGB>::Ptr tree(new pcl::KdTreeFLANN<PointXYZRGB>);
-//	tree->setInputCloud(general_data.nowLayerCloud);
-//
-//	for (int i = 0; i < (general_data.nowLayerCloud->size() >= 1000 ? 1000 : general_data.nowLayerCloud->size()); ++i)
-//	{
-//		n = tree->nearestKSearch(i, 2, k_indices, k_sqr_distances);
-//		if (n == 2)
-//		{
-//			double n = sqrt(k_sqr_distances[1]);
-//			if (n < VTK_DOUBLE_MIN || n>VTK_DOUBLE_MAX)
-//				continue;
-//			norm += n;
-//			++searched_points;
-//		}
-//	}
-//
-//	if (searched_points != 0) {
-//		general_data.nowCloud_avg_distance = norm / searched_points;
-//	}
-//	else {
-//		general_data.nowCloud_avg_distance = 0;
-//	}
-//}
 
 void AUX_UI::Tree_Smooth() {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
