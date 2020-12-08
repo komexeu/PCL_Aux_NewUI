@@ -210,7 +210,7 @@ void object_work::ExportCloud() {
 	}
 }
 
-void object_work::Tree_deleteLayer() {
+void object_work::deleteLayer() {
 	QModelIndexList indexes = ui.treeView->selectionModel()->selectedIndexes();
 	RedSelectClear();
 	if (indexes.size() <= 0)
@@ -239,6 +239,7 @@ void object_work::onCustomContextMenu(const QPoint& point)
 	QModelIndex index = ui.treeView->indexAt(point);
 	QMenu menu;
 	menu.addAction(QStringLiteral("merge"), this, SLOT(mergeLayer()));
+	menu.addAction(QStringLiteral("delete"), this, SLOT(deleteLayer()));
 	menu.addSeparator();
 	menu.exec(ui.treeView->viewport()->mapToGlobal(point));
 }
@@ -512,7 +513,7 @@ void object_work::Tree_UserSegmentation() {
 			}
 
 			if (index.parent().row() != -1)
-				Tree_deleteLayer();
+				deleteLayer();
 
 			ui.treeView->selectionModel()->clear();
 			RedSelectClear();

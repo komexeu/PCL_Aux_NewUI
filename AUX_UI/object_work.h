@@ -39,7 +39,7 @@ public Q_SLOTS:
 	void ImportCloud();
 	void ExportCloud();
 
-	void Tree_deleteLayer();
+	void deleteLayer();
 
 	void onCustomContextMenu(const QPoint& point);
 	void mergeLayer();
