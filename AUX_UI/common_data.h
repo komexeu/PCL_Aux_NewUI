@@ -20,7 +20,7 @@ enum class SegmentMode :int
 	EUCLIDEAN_CLUSTER_EXTRACTION,
 	REGION_GROWING
 };
-static SegmentMode GLOBAL_SEGMENTMODE = SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION;
+SegmentMode GLOBAL_SEGMENTMODE = SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION;
 
 namespace ColorScale {
 	struct Color_5Level {
