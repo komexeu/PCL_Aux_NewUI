@@ -38,6 +38,10 @@ public:
 		//------------^UI^------------
 
 		object_work* obw = new object_work();
+		//----------Mode Change------
+		QObject::connect(my_ui.Brush, SIGNAL(clicked()), obw, SLOT(SetBrushMode()));
+		QObject::connect(my_ui.Area, SIGNAL(clicked()), obw, SLOT(SetAreaMode()));
+		QObject::connect(my_ui.Default, SIGNAL(clicked()), obw, SLOT(SetNoneMode()));
 		//----------IO pointcloud-----
 		QObject::connect(my_ui.New_Pointcloud, SIGNAL(clicked()), obw, SLOT(ImportCloud()));
 		QObject::connect(my_ui.Exprot_Pointcloud, SIGNAL(clicked()), obw, SLOT(ExportCloud()));

@@ -31,9 +31,6 @@ public Q_SLOTS:
 	void changeViewerColor(const QColor& c);
 	void Brush_SizeChange();
 
-	static void SetBrushMode();
-	static void SetAreaMode();
-	static void SetNoneMode();
 public:
 	//if true only delete white cursor,false for update position of white cursor.
 	static void WhiteCursorUpdate(bool whiteCursor_clear);

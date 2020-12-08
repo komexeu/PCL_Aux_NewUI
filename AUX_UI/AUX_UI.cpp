@@ -39,14 +39,10 @@ AUX_UI::AUX_UI(QWidget* parent)
 	QColorDialog* Qcolordia = new QColorDialog();
 	connect(Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeWindowsColor(const QColor&)));
 	connect(my_ui.UI_Color_Style, SIGNAL(clicked()), Qcolordia, SLOT(open()));
-	//----------Mode Change------
-	QObject::connect(my_ui.Brush, SIGNAL(clicked()), this, SLOT(SetBrushMode()));
-	QObject::connect(my_ui.Area, SIGNAL(clicked()), this, SLOT(SetAreaMode()));
-	QObject::connect(my_ui.Default, SIGNAL(clicked()), this, SLOT(SetNoneMode()));
 
 	ui_connect u_connect;
 	u_connect.Init_Ui_connect();
-	
+
 	//--------------
 	changeWindowsColor(ColorScale::Color_struct.colorC);
 	my_ui.message->clear();
@@ -138,8 +134,8 @@ void AUX_UI::Init_Basedata() {
 	pcl_data.viewer->addPointCloud(nullCloud, "White_BrushCursorPoints");
 }
 
-void AUX_UI::Set_ToolConnect() {	
-	
+void AUX_UI::Set_ToolConnect() {
+
 	//---------slider/spinbox set brush size----
 	QObject::connect(my_ui.brush_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Brush_SizeChange()));
 	//------segmode change-------
@@ -152,44 +148,6 @@ void AUX_UI::Set_ToolConnect() {
 
 void AUX_UI::changeViewerColor(const QColor& c) {
 	pcl_data.viewer->setBackgroundColor((float)c.red() / 255, (float)c.green() / 255, (float)c.blue() / 255);
-}
-
-
-
-void AUX_UI::SetBrushMode() {
-	qt_data.brush_sliderAction->setVisible(true);
-	qt_data.brush_spinBoxAction->setVisible(true);
-
-	my_ui.brush_spinbox->setValue(general_data.brush_radius);
-
-	QIcon the_icon;
-	the_icon.addFile("./my_source/cursor1-2.png", QSize(), QIcon::Normal, QIcon::Off);
-	my_ui.Tool_Mode->setIcon(the_icon);
-	GLOBAL_SELECTMODE = SelectMode::BRUSH_SELECT_MODE;
-	pcl_data.my_interactorStyle->SetCurrentMode_AreaPick(0);
-	WhiteCursorUpdate(false);
-}
-void AUX_UI::SetAreaMode() {
-	qt_data.brush_sliderAction->setVisible(false);
-	qt_data.brush_spinBoxAction->setVisible(false);
-
-	QIcon the_icon;
-	the_icon.addFile("./my_source/AreaSelect.png", QSize(), QIcon::Normal, QIcon::Off);
-	my_ui.Tool_Mode->setIcon(the_icon);
-	GLOBAL_SELECTMODE = SelectMode::AREA_SELECT_MODE;
-	pcl_data.my_interactorStyle->SetCurrentMode_AreaPick(1);
-	WhiteCursorUpdate(true);
-}
-void AUX_UI::SetNoneMode() {
-	qt_data.brush_sliderAction->setVisible(false);
-	qt_data.brush_spinBoxAction->setVisible(false);
-
-	QIcon the_icon;
-	the_icon.addFile("./my_source/NonMode.png", QSize(), QIcon::Normal, QIcon::Off);
-	my_ui.Tool_Mode->setIcon(the_icon);
-	GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
-	pcl_data.my_interactorStyle->SetCurrentMode_AreaPick(0);
-	WhiteCursorUpdate(true);
 }
 
 #include <qfiledialog.h>
@@ -239,18 +197,21 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 	if ((event.getKeySym() == "x" || event.getKeySym() == "X") && event.keyDown()) {
 		if (GLOBAL_SELECTMODE != SelectMode::AREA_SELECT_MODE)
 		{
-			SetAreaMode();
+			object_work::SetAreaMode();
+			WhiteCursorUpdate(true);
 		}
 		else
 		{
-			SetNoneMode();
+			object_work::SetNoneMode();
+			WhiteCursorUpdate(true);
 		}
 	}
 
 	if ((event.getKeySym() == "b" || event.getKeySym() == "B") && event.keyDown()) {
 		if (GLOBAL_SELECTMODE != SelectMode::BRUSH_SELECT_MODE)
 		{
-			SetBrushMode();
+			object_work::SetBrushMode();
+			WhiteCursorUpdate(false);
 			my_ui.brush_spinbox->setValue(general_data.brush_radius);
 
 			QModelIndex index = ui.treeView->selectionModel()->currentIndex();
@@ -282,7 +243,8 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	if (index.row() == -1)
 		return;
-
+	bool b = GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE;
+	qDebug() << b;
 	if (general_data.nowLayerCloud->size() > 0 && GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE)
 	{
 		if (event.getType() == event.MouseMove)
@@ -332,7 +294,7 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 			if (key_data.keyBoard_ctrl || key_data.keyBoard_alt)
 			{
 				general_data.SegClouds.clear();
-				object_work::object_work::ViewCloudUpdate(general_data.Selected_cloud->makeShared(), false);
+				object_work::ViewCloudUpdate(general_data.Selected_cloud->makeShared(), false);
 			}
 			visualization::PointCloudColorHandlerCustom<PointXYZRGB> white(cursor_premark, 255, 255, 255);
 			pcl_data.viewer->removePointCloud("White_BrushCursorPoints");
@@ -345,7 +307,7 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent& event) {
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	if (index.row() == -1)
-		return;
+		return;	
 	//AREA PICK CLOUD
 	std::vector<int> foundPointID;
 	if (event.getPointsIndices(foundPointID) <= 0) {

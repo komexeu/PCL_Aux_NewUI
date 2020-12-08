@@ -26,6 +26,10 @@ public:
 	QModelIndex  searchParent(QModelIndex index);
 	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
 	static void RedSelectClear();
+
+	static void SetBrushMode();
+	static void SetAreaMode();
+	static void SetNoneMode();
 public Q_SLOTS:
 	void reset_point_color();
 	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);

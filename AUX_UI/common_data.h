@@ -13,7 +13,7 @@ enum class SelectMode :int
 	BRUSH_SELECT_MODE,
 	AREA_SELECT_MODE
 };
-static SelectMode GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
+SelectMode GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
 
 enum class SegmentMode :int
 {
