@@ -195,10 +195,11 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 	}
 
 	if ((event.getKeySym() == "x" || event.getKeySym() == "X") && event.keyDown()) {
+		object_work::ViewCloudUpdate(general_data.Selected_cloud, false);
 		if (GLOBAL_SELECTMODE != SelectMode::AREA_SELECT_MODE)
 		{
 			object_work::SetAreaMode();
-			WhiteCursorUpdate(true);
+			WhiteCursorUpdate(true); 			
 		}
 		else
 		{
@@ -208,10 +209,11 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 	}
 
 	if ((event.getKeySym() == "b" || event.getKeySym() == "B") && event.keyDown()) {
+		object_work::ViewCloudUpdate(general_data.Selected_cloud, false);
 		if (GLOBAL_SELECTMODE != SelectMode::BRUSH_SELECT_MODE)
 		{
 			object_work::SetBrushMode();
-			WhiteCursorUpdate(false);
+			WhiteCursorUpdate(false);			
 			my_ui.brush_spinbox->setValue(general_data.brush_radius);
 
 			QModelIndex index = ui.treeView->selectionModel()->currentIndex();
@@ -243,8 +245,6 @@ void AUX_UI::cursor_BrushSelector(const pcl::visualization::MouseEvent& event) {
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	if (index.row() == -1)
 		return;
-	bool b = GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE;
-	qDebug() << b;
 	if (general_data.nowLayerCloud->size() > 0 && GLOBAL_SELECTMODE == SelectMode::BRUSH_SELECT_MODE)
 	{
 		if (event.getType() == event.MouseMove)
@@ -360,7 +360,6 @@ void AUX_UI::Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent
 	}
 	general_data.SegClouds.clear();
 	object_work::ViewCloudUpdate(general_data.Selected_cloud, false);
-	qDebug() << map_redSelected->size();
 }
 //-------brush-----
 void  AUX_UI::Brush_SizeChange() {

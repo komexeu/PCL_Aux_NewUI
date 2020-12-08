@@ -268,6 +268,8 @@ void object_work::mergeLayer() {
 
 void object_work::voxelFilter() {
 	general_data.Voxel_cloud->clear();
+	if (GLOBAL_SELECTMODE != SelectMode::NO_SELECT_MODE)
+		SetNoneMode();
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
@@ -512,7 +514,7 @@ void object_work::Tree_UserSegmentation() {
 			if (index.parent().row() != -1)
 				Tree_deleteLayer();
 
-				ui.treeView->selectionModel()->clear();
+			ui.treeView->selectionModel()->clear();
 			RedSelectClear();
 		}
 	}
