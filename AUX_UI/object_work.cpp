@@ -10,7 +10,7 @@
 //-----tool----
 #include "QVTKWidget_controller/include/LayerControl.h"
 
-QModelIndex searchParent(QModelIndex index) {
+QModelIndex object_work::searchParent(QModelIndex index) {
 	if (index.parent().row() == -1) {
 		return index;
 	}
@@ -30,7 +30,7 @@ void object_work::ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool
 	ui.qvtkWidget->update();
 }
 void object_work::RedSelectClear() {
-	select_map.clear();
+	map_redSelected->clear();
 	general_data.Selected_cloud = general_data.nowLayerCloud->makeShared();
 }
 void object_work::reset_point_color() {
@@ -441,38 +441,46 @@ void object_work::Color_PreSegment() {
 	RedSelectClear();
 }
 
-void object_work::SetBrushMode() {
-	qt_data.brush_sliderAction->setVisible(true);
-	qt_data.brush_spinBoxAction->setVisible(true);
+//USER segment
+void object_work::Tree_UserSegmentation() {
+	qDebug() << "CLICKKKKKKKKKKKKKKKKKKKKKKKKK";
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	if (index.row() == -1)
+		return;
+	qDebug() << map_redSelected->size();
+	if (map_redSelected->size() > 0)
+	{
+		bool ok;
+		QString text = QInputDialog::getText(NULL, tr("QInputDialog::getText()"),
+			tr("Layer name:"), QLineEdit::Normal,
+			QDir::home().dirName(), &ok);
+		if (ok && !text.isEmpty())
+		{
+			PointCloud<PointXYZRGB>::Ptr newCloud(new PointCloud<PointXYZRGB>);
+			PointCloud<PointXYZRGB>::Ptr newCloud2(new PointCloud<PointXYZRGB>);
 
-	my_ui.brush_spinbox->setValue(general_data.brush_radius);
+			for (int i = 0; i < general_data.nowLayerCloud->size(); ++i)
+			{
+				if (map_redSelected->find(i) != map_redSelected->end())
+					newCloud->push_back(general_data.nowLayerCloud->points.at(i));
+				else
+					newCloud2->push_back(general_data.nowLayerCloud->points.at(i));
+			}
 
-	QIcon the_icon;
-	the_icon.addFile("./my_source/cursor1-2.png", QSize(), QIcon::Normal, QIcon::Off);
-	my_ui.Tool_Mode->setIcon(the_icon);
-	GLOBAL_SELECTMODE = SelectMode::BRUSH_SELECT_MODE;
-	pcl_data.my_interactorStyle->SetCurrentMode_AreaPick(0);
-	//WhiteCursorUpdate(false);
-}
-void object_work::SetAreaMode() {
-	qt_data.brush_sliderAction->setVisible(false);
-	qt_data.brush_spinBoxAction->setVisible(false);
+			//改為全部只有一層子類
+			if (!tree_layerController->AddLayer(text, newCloud->makeShared(), searchParent(index)))
+				return;
+			if (newCloud2->size() > 0)
+			{
+				if (!tree_layerController->AddLayer("base", newCloud2->makeShared(), searchParent(index)))
+					return;
+			}
 
-	QIcon the_icon;
-	the_icon.addFile("./my_source/AreaSelect.png", QSize(), QIcon::Normal, QIcon::Off);
-	my_ui.Tool_Mode->setIcon(the_icon);
-	GLOBAL_SELECTMODE = SelectMode::AREA_SELECT_MODE;
-	pcl_data.my_interactorStyle->SetCurrentMode_AreaPick(1);
-	//WhiteCursorUpdate(true);
-}
-void object_work::SetNoneMode() {
-	qt_data.brush_sliderAction->setVisible(false);
-	qt_data.brush_spinBoxAction->setVisible(false);
+			if (index.parent().row() != -1)
+				Tree_deleteLayer();
 
-	QIcon the_icon;
-	the_icon.addFile("./my_source/NonMode.png", QSize(), QIcon::Normal, QIcon::Off);
-	my_ui.Tool_Mode->setIcon(the_icon);
-	GLOBAL_SELECTMODE = SelectMode::NO_SELECT_MODE;
-	pcl_data.my_interactorStyle->SetCurrentMode_AreaPick(0);
-	//WhiteCursorUpdate(true);
+				ui.treeView->selectionModel()->clear();
+			RedSelectClear();
+		}
+	}
 }

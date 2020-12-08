@@ -13,7 +13,7 @@ using namespace pcl;
 class AUX_UI : public QMainWindow
 {
 	Q_OBJECT
-	//features for control UI
+		//features for control UI
 public 	Q_SLOTS:
 	void changeWindowsColor(const QColor& c);
 	void SegMode_Change();
@@ -25,21 +25,20 @@ public:
 	static void cursor_BrushSelector(const pcl::visualization::MouseEvent& event);
 	static void Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent& event);
 
-private:	
+private:
 
 public Q_SLOTS:
-	void Tree_UserSegmentation();
 	void changeViewerColor(const QColor& c);
-	void Brush_SizeChange();	
+	void Brush_SizeChange();
 
+	static void SetBrushMode();
+	static void SetAreaMode();
+	static void SetNoneMode();
 public:
 	//if true only delete white cursor,false for update position of white cursor.
 	static void WhiteCursorUpdate(bool whiteCursor_clear);
-	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
-	void RedSelectClear();
 	static void initModes();
 
 	void Init_Basedata();
 	void Set_ToolConnect();
-	QModelIndex  searchParent(QModelIndex index);
 };

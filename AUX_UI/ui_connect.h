@@ -35,13 +35,9 @@ public:
 		//--------point density -----------
 		QObject::connect(my_ui.leaf_slider, SIGNAL(valueChanged(int)), my_ui.leaf_spinbox, SLOT(setValue(int)));
 		QObject::connect(my_ui.leaf_spinbox, SIGNAL(valueChanged(int)), my_ui.leaf_slider, SLOT(setValue(int)));
-		//----------Mode Change------
-		object_work* obw = new object_work();
-		QObject::connect(my_ui.Brush, SIGNAL(clicked()), obw, SLOT(SetBrushMode()));
-		QObject::connect(my_ui.Area, SIGNAL(clicked()), obw, SLOT(SetAreaMode()));
-		QObject::connect(my_ui.Default, SIGNAL(clicked()), obw, SLOT(SetNoneMode()));
 		//------------^UI^------------
 
+		object_work* obw = new object_work();
 		//----------IO pointcloud-----
 		QObject::connect(my_ui.New_Pointcloud, SIGNAL(clicked()), obw, SLOT(ImportCloud()));
 		QObject::connect(my_ui.Exprot_Pointcloud, SIGNAL(clicked()), obw, SLOT(ExportCloud()));
@@ -68,7 +64,9 @@ public:
 		//-------delete layer------
 		QObject::connect(my_ui.TrashCan, SIGNAL(clicked()), obw, SLOT(Tree_deleteLayer()));
 		//-------layer merge------
-		connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), obw, SLOT(onCustomContextMenu(const QPoint&)));
+		QObject::connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), obw, SLOT(onCustomContextMenu(const QPoint&)));
+		//USER confirm
+		QObject::connect(my_ui.confirm_userSeg, SIGNAL(clicked()), obw, SLOT(Tree_UserSegmentation()));
 	}
 };
 
