@@ -30,6 +30,11 @@ public Q_SLOTS:
 	void ImportCloud();
 	void ExportCloud();
 
+	void Tree_deleteLayer();
+
+	void onCustomContextMenu(const QPoint& point);
+	void mergeLayer();
+
 	void voxelFilter();
 	void VoxelWork();
 

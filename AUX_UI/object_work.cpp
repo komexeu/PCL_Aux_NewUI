@@ -177,6 +177,62 @@ void object_work::ExportCloud() {
 	}
 }
 
+void object_work::Tree_deleteLayer() {
+	QModelIndexList indexes = ui.treeView->selectionModel()->selectedIndexes();
+	RedSelectClear();
+	if (indexes.size() <= 0)
+		return;
+	qSort(indexes.begin(), indexes.end(), qGreater<QModelIndex>());
+	vector<QModelIndex> parent_index;
+	for (int i = 0; i < indexes.size(); ++i) {
+		if (qt_data.standardModel->itemFromIndex(indexes[i])->parent() == NULL) {
+			parent_index.push_back(indexes[i]);
+		}
+		else {
+			qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
+		}
+	}
+	for (int i = 0; i < parent_index.size(); ++i)
+		qt_data.standardModel->removeRow(parent_index[i].row());
+
+	ui.treeView->selectionModel()->clearCurrentIndex();
+	my_ui.message->setText("");
+	PointCloud<PointXYZRGB>::Ptr null(new PointCloud<PointXYZRGB>);
+	ViewCloudUpdate(null, false);
+}
+
+void object_work::onCustomContextMenu(const QPoint& point)
+{
+	QModelIndex index = ui.treeView->indexAt(point);
+	QMenu menu;
+	menu.addAction(QStringLiteral("merge"), this, SLOT(mergeLayer()));
+	menu.addSeparator();
+	menu.exec(ui.treeView->viewport()->mapToGlobal(point));
+}
+void object_work::mergeLayer() {
+	QModelIndexList indexes = ui.treeView->selectionModel()->selectedIndexes();
+	if (indexes.size() <= 0)
+		return;
+	for (int i = 0; i < indexes.size(); ++i)
+		if (qt_data.standardModel->itemFromIndex(indexes[i])->parent() == NULL)
+			return;
+
+	qSort(indexes.begin(), indexes.end(), qGreater<QModelIndex>());
+	PointCloud<PointXYZRGB>::Ptr mergedCloud(new PointCloud<PointXYZRGB>);
+	for (int i = 0; i < indexes.size(); ++i)
+		*mergedCloud += *qt_data.standardModel->itemFromIndex(indexes[i])->data().value<PointCloud<PointXYZRGB>::Ptr>();
+
+	if (!tree_layerController->AddLayer("merge_layer", mergedCloud, searchParent(ui.treeView->selectionModel()->currentIndex().parent())))
+		return;
+	for (int i = 0; i < indexes.size(); ++i)
+		qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
+
+	ui.treeView->selectionModel()->clearCurrentIndex();
+	my_ui.message->setText("");
+	PointCloud<PointXYZRGB>::Ptr nullcloud(new PointCloud<PointXYZRGB>);
+	ViewCloudUpdate(nullcloud, false);
+}
+
 void object_work::voxelFilter() {
 	general_data.Voxel_cloud->clear();
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)

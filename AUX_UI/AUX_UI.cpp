@@ -137,8 +137,7 @@ void AUX_UI::Init_Basedata() {
 void AUX_UI::Set_ToolConnect() {	
 	//USER confirm
 	QObject::connect(my_ui.confirm_userSeg, SIGNAL(clicked()), this, SLOT(Tree_UserSegmentation()));
-	//-------delete layer------
-	QObject::connect(my_ui.TrashCan, SIGNAL(clicked()), this, SLOT(Tree_deleteLayer()));
+	
 	//---------slider/spinbox set brush size----
 	QObject::connect(my_ui.brush_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Brush_SizeChange()));
 	//------segmode change-------
@@ -147,41 +146,6 @@ void AUX_UI::Set_ToolConnect() {
 	QColorDialog* Viewer_Qcolordia = new QColorDialog();
 	connect(my_ui.Viewer_Color_Style, SIGNAL(clicked()), Viewer_Qcolordia, SLOT(open()));
 	connect(Viewer_Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeViewerColor(const QColor&)));
-	//-------layer merge------
-	connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onCustomContextMenu(const QPoint&)));
-}
-
-void AUX_UI::onCustomContextMenu(const QPoint& point)
-{
-	QModelIndex index = ui.treeView->indexAt(point);
-	QMenu menu;
-	menu.addAction(QStringLiteral("merge"), this, SLOT(mergeLayer()));
-	menu.addSeparator();
-	menu.exec(ui.treeView->viewport()->mapToGlobal(point));
-}
-
-void AUX_UI::mergeLayer() {
-	QModelIndexList indexes = ui.treeView->selectionModel()->selectedIndexes();
-	if (indexes.size() <= 0)
-		return;
-	for (int i = 0; i < indexes.size(); ++i)
-		if (qt_data.standardModel->itemFromIndex(indexes[i])->parent() == NULL)
-			return;
-
-	qSort(indexes.begin(), indexes.end(), qGreater<QModelIndex>());
-	PointCloud<PointXYZRGB>::Ptr mergedCloud(new PointCloud<PointXYZRGB>);
-	for (int i = 0; i < indexes.size(); ++i)
-		*mergedCloud += *qt_data.standardModel->itemFromIndex(indexes[i])->data().value<PointCloud<PointXYZRGB>::Ptr>();
-	
-	if (!tree_layerController->AddLayer("merge_layer", mergedCloud, searchParent(ui.treeView->selectionModel()->currentIndex().parent())))
-		return;
-	for (int i = 0; i < indexes.size(); ++i)
-		qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
-
-	ui.treeView->selectionModel()->clearCurrentIndex();
-	my_ui.message->setText("");
-	PointCloud<PointXYZRGB>::Ptr nullcloud(new PointCloud<PointXYZRGB>);
-	ViewCloudUpdate(nullcloud, false);
 }
 
 void AUX_UI::changeViewerColor(const QColor& c) {
@@ -272,39 +236,12 @@ void AUX_UI::Tree_UserSegmentation() {
 			}
 
 			if (index.parent().row() != -1)
-				Tree_deleteLayer();
+				//Tree_deleteLayer();
 
 			ui.treeView->selectionModel()->clear();
 			RedSelectClear();
 		}
 	}
-}
-
-void AUX_UI::Tree_deleteLayer() {
-	QModelIndexList indexes = ui.treeView->selectionModel()->selectedIndexes();
-	RedSelectClear();
-	if (indexes.size() <= 0)
-		return;
-	qSort(indexes.begin(), indexes.end(), qGreater<QModelIndex>());
-	vector<QModelIndex> parent_index;
-	for (int i = 0; i < indexes.size(); ++i) {
-		qDebug() << i;
-		if (qt_data.standardModel->itemFromIndex(indexes[i])->parent() == NULL) {
-			qDebug() << "PARENT";
-			parent_index.push_back(indexes[i]);
-		}
-		else {
-			qDebug() << "CHILD";
-			qt_data.standardModel->itemFromIndex(indexes[i])->parent()->removeRow(indexes[i].row());
-		}
-	}
-	for (int i = 0; i < parent_index.size(); ++i)
-		qt_data.standardModel->removeRow(parent_index[i].row());
-
-	ui.treeView->selectionModel()->clearCurrentIndex();
-	my_ui.message->setText("");
-	PointCloud<PointXYZRGB>::Ptr null(new PointCloud<PointXYZRGB>);
-	ViewCloudUpdate(null, false);
 }
 
 //key

@@ -65,6 +65,10 @@ public:
 		QObject::connect(my_ui.color_widget, SIGNAL(clicked()), obw, SLOT(reset_point_color()));
 		QObject::connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(Color_PreSegment()));
 		QObject::connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(Color_PreSegment()));
+		//-------delete layer------
+		QObject::connect(my_ui.TrashCan, SIGNAL(clicked()), obw, SLOT(Tree_deleteLayer()));
+		//-------layer merge------
+		connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), obw, SLOT(onCustomContextMenu(const QPoint&)));
 	}
 };
 
