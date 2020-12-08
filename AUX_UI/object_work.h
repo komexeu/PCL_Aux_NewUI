@@ -32,6 +32,9 @@ public Q_SLOTS:
 	void voxelFilter();
 	void VoxelWork();
 
+	void Tree_Smooth();
+	void Slider_PreSegCloud();
+	void confirm_colors_segment();
 
 	void SetBrushMode();
 	void SetAreaMode();

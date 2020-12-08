@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "QVTKWidget_controller/include/LayerControl.h"
 #include "common_data.h"
 
 #include <QtWidgets/QMainWindow>
@@ -14,7 +13,7 @@ using namespace pcl;
 class AUX_UI : public QMainWindow
 {
 	Q_OBJECT
-		//features for control UI
+	//features for control UI
 public 	Q_SLOTS:
 	void changeWindowsColor(const QColor& c);
 	void SegMode_Change();
@@ -26,13 +25,9 @@ public:
 	static void cursor_BrushSelector(const pcl::visualization::MouseEvent& event);
 	static void Area_PointCloud_Selector(const pcl::visualization::AreaPickingEvent& event);
 
-private:
-	
+private:	
 
-public Q_SLOTS:
-	void Tree_Smooth();
-	void Slider_PreSegCloud();
-	void confirm_colors_segment();
+public Q_SLOTS:	
 	void Tree_UserSegmentation();
 	void Tree_deleteLayer();
 	void changeViewerColor(const QColor& c);
@@ -55,6 +50,3 @@ public:
 	void Set_ToolConnect();
 	QModelIndex  searchParent(QModelIndex index);
 };
-
-//static std::map<int, PointXYZRGB> select_map;
-/*static TreeLayerController* tree_layerController;*/

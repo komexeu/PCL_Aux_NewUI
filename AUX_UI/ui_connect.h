@@ -49,6 +49,12 @@ public:
 		//---------point density--------
 		QObject::connect(my_ui.leaf_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(voxelFilter()));
 		QObject::connect(my_ui.pointDensity_start_button, SIGNAL(clicked()), obw, SLOT(VoxelWork()));
+		//---------smooth---------------
+		QObject::connect(my_ui.smooth_confirm, SIGNAL(clicked()), obw, SLOT(Tree_Smooth()));
+		//------slider pre segmentation----
+		QObject::connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(Slider_PreSegCloud()));
+		//confirm
+		QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), obw, SLOT(confirm_colors_segment()));
 	}
 };
 

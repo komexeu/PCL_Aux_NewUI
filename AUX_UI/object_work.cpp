@@ -7,7 +7,7 @@
 #include <qfiledialog.h>
 #include <fstream>
 #include <typeinfo>
-	//-----tool----
+//-----tool----
 #include "QVTKWidget_controller/include/LayerControl.h"
 
 QModelIndex searchParent(QModelIndex index) {
@@ -30,7 +30,7 @@ void object_work::ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool
 	ui.qvtkWidget->update();
 }
 void object_work::RedSelectClear() {
-	//select_map.clear();
+	select_map.clear();
 	general_data.Selected_cloud = general_data.nowLayerCloud->makeShared();
 }
 #include <pcl/kdtree/kdtree_flann.h>
@@ -133,7 +133,6 @@ void object_work::ImportCloud() {
 	}
 	ui.treeView->selectionModel()->clear();
 }
-
 void object_work::ExportCloud() {
 	if (tree_layerController == NULL)
 		tree_layerController = new TreeLayerController(qt_data.standardModel);
@@ -198,6 +197,105 @@ void object_work::VoxelWork() {
 	general_data.Voxel_cloud->clear();
 
 	my_ui.message->setText("Filter Finish.");
+}
+
+void object_work::Tree_Smooth() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	RedSelectClear();
+	CloudPoints_Tools cpTools;
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	PointCloud<PointXYZRGB>::Ptr cld = qt_data.standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>();
+
+	//30¬°·j´M½d³ò¡A*0.5·j´M¥b®|
+	PointCloud<PointXYZRGB>::Ptr smooth_cld = cpTools.CloudSmooth(cld, general_data.nowCloud_avg_distance * my_ui.smooth_spinbox->value() * 0.5);
+
+	if (smooth_cld->size() > 0)
+	{
+		//data update
+		QVariant itemCloud;
+		itemCloud.setValue(smooth_cld);
+		qt_data.standardModel->itemFromIndex(index)->setData(itemCloud);
+
+		general_data.nowLayerCloud = smooth_cld;
+		general_data.Selected_cloud->clear();
+		general_data.Selected_cloud = general_data.nowLayerCloud->makeShared();
+		//view update
+		ViewCloudUpdate(smooth_cld, false);
+	}
+	else
+	{
+		my_ui.message->setText("NO DATA AFTER SMOOTH,Please set a bigger value.");
+	}
+
+	ui.treeView->selectionModel()->clear();
+}
+//segment
+void object_work::Slider_PreSegCloud() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	general_data.SegClouds.clear();
+	CloudPoints_Tools cpTools;
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+
+	PointCloud<PointXYZRGB>::Ptr database_cloud(new PointCloud<PointXYZRGB>);
+	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
+	copyPointCloud(*general_data.nowLayerCloud, *database_cloud);
+	copyPointCloud(*general_data.nowLayerCloud, *cld);
+
+	std::vector<PointIndices> seg_cloud_2;
+	if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION)
+		seg_cloud_2 = cpTools.CloudSegmentation(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
+	else if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING)
+		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowing(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
+
+	for (int i = 0; i < cld->size(); i++)
+	{
+		cld->points[i].r = 255;
+		cld->points[i].g = 255;
+		cld->points[i].b = 255;
+	}
+	for (vector<PointIndices>::const_iterator i = seg_cloud_2.begin(); i < seg_cloud_2.end(); i++)
+	{
+		int color_R = rand() % 250;
+		int color_G = rand() % 250;
+		int color_B = rand() % 250;
+		PointCloud<PointXYZRGB>::Ptr tmp(new PointCloud<PointXYZRGB>);
+		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
+		{
+			tmp->push_back(database_cloud->points[*j]);
+			cld->points[*j].r = color_R;
+			cld->points[*j].g = color_G;
+			cld->points[*j].b = color_B;
+		}
+		general_data.SegClouds.push_back(tmp);
+	}
+	ViewCloudUpdate(cld, false);
+	RedSelectClear();
+}
+void object_work::confirm_colors_segment() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	if (general_data.SegClouds.size() == 0)
+		return;
+
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	for (int i = 0; i < general_data.SegClouds.size(); ++i)
+	{
+		QString segLayer = QString::fromStdString(std::to_string(i));
+		if (!tree_layerController->AddLayer(segLayer, general_data.SegClouds[i], searchParent(index)))
+			return;
+	}
+	/*if (index.parent().row() != -1)
+		Tree_deleteLayer();*/
+
+	QString children_message = general_data.SegClouds.size() <= 1 ?
+		QString::fromStdString("Segment " + std::to_string(general_data.SegClouds.size()) + " child") :
+		QString::fromStdString("Segment " + std::to_string(general_data.SegClouds.size()) + " children");
+	my_ui.message->setText(children_message);
+	general_data.SegClouds.clear();
+
+	ui.treeView->selectionModel()->clear();
 }
 
 void object_work::SetBrushMode() {
