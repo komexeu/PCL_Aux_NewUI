@@ -7,7 +7,7 @@
 //-----tool----
 #include "QVTKWidget_controller/include/LayerControl.h"
 TreeLayerController* tree_layerController;
-std::map<int, PointXYZRGB>* map_redSelected=new std::map<int, PointXYZRGB>();
+std::map<int, PointXYZRGB>* map_redSelected = new std::map<int, PointXYZRGB>();
 
 Data_Class::General_Data general_data;
 Data_Class::Key_Data key_data;
@@ -18,6 +18,7 @@ extern my_UI::Obj_UIClass my_ui;
 extern Data_Class::QT_Data qt_data;
 
 #include <qdebug.h>
+
 class object_work :public QObject
 {
 	Q_OBJECT
@@ -27,10 +28,11 @@ public:
 	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
 	static void RedSelectClear();
 
+public Q_SLOTS:
 	static void SetBrushMode();
 	static void SetAreaMode();
 	static void SetNoneMode();
-public Q_SLOTS:
+
 	void reset_point_color();
 	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
 
