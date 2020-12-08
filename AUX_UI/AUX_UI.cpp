@@ -175,7 +175,6 @@ void AUX_UI::SegMode_Change() {
 		my_ui.preSeg_spinbox->setValue(0);
 	}
 }
-
 //key
 #include <vtkInteractorStyleRubberBandPick.h>
 void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& event)
@@ -187,6 +186,9 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 		key_data.keyBoard_alt = true;
 	else if (event.isShiftPressed()) {
 
+	}
+	if ((event.getKeySym() == "Return") && event.keyDown()) {
+		
 	}
 
 	if (event.keyUp()) {
@@ -222,7 +224,8 @@ void AUX_UI::KeyBoard_eventController(const pcl::visualization::KeyboardEvent& e
 		}
 		else
 		{
-			//SetNoneMode();
+			object_work::SetNoneMode();
+			WhiteCursorUpdate(true);
 		}
 	}
 

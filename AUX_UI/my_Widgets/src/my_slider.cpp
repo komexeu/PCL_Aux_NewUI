@@ -4,6 +4,7 @@ my_slider::my_slider(QWidget *parent) :QSlider(parent)
 {
 	this->setOrientation(Qt::Orientation::Horizontal);
 	this->setRange(1, 400);
+	this->setFocusPolicy(Qt::NoFocus);
 }
 
 void my_slider::SetSliderStylesheet_default(const QColor &sub_pageColor, const QColor &add_pageColor, const QColor &handlerColor) {

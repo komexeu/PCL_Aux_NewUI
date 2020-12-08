@@ -8,4 +8,3 @@ public:
 	~my_spinBox() {}
 	void SetSliderStylesheet_default(const QColor &c);
 };
-

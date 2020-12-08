@@ -4,7 +4,7 @@
 my_spinBox::my_spinBox(QWidget *parent, QString name) :QSpinBox(parent)
 {
 	this->setObjectName(name);
-	this->setFocusPolicy(Qt::NoFocus);
+	//this->setFocusPolicy(Qt::NoFocus);
 	this->setRange(1, 400);
 }
 
