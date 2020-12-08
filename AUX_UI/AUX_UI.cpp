@@ -135,14 +135,6 @@ void AUX_UI::Init_Basedata() {
 }
 
 void AUX_UI::Set_ToolConnect() {	
-	//--------color segment--------
-	QColorDialog* Qcolordia_SegColor = new QColorDialog();
-	connect(Qcolordia_SegColor, SIGNAL(colorSelected(const QColor&)), this, SLOT(Set_lightRange(const QColor&)));
-	connect(my_ui.color_widget, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
-	connect(my_ui.color_widget, SIGNAL(clicked()), this, SLOT(reset_point_color()));
-	connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
-	connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), this, SLOT(Color_PreSegment()));
-	connect(my_ui.color_filter_start_button, SIGNAL(clicked()), this, SLOT(confirm_colors_segment()));
 	//USER confirm
 	QObject::connect(my_ui.confirm_userSeg, SIGNAL(clicked()), this, SLOT(Tree_UserSegmentation()));
 	//-------delete layer------
@@ -157,18 +149,6 @@ void AUX_UI::Set_ToolConnect() {
 	connect(Viewer_Qcolordia, SIGNAL(colorSelected(const QColor&)), this, SLOT(changeViewerColor(const QColor&)));
 	//-------layer merge------
 	connect(ui.treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onCustomContextMenu(const QPoint&)));
-}
-
-void AUX_UI::reset_point_color() {
-	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
-		return;
-	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
-	cld = qt_data.standardModel->itemFromIndex(index)->data().
-		value<PointCloud<PointXYZRGB>::Ptr>()->makeShared();
-
-	ViewCloudUpdate(cld, false);
-	RedSelectClear();
 }
 
 void AUX_UI::onCustomContextMenu(const QPoint& point)
@@ -255,152 +235,6 @@ QModelIndex AUX_UI::searchParent(QModelIndex index) {
 
 		return parentItem;
 	}
-}
-////segment
-//void AUX_UI::Slider_PreSegCloud() {
-//	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
-//		return;
-//	general_data.SegClouds.clear();
-//	CloudPoints_Tools cpTools;
-//	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-//
-//	PointCloud<PointXYZRGB>::Ptr database_cloud(new PointCloud<PointXYZRGB>);
-//	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
-//	copyPointCloud(*general_data.nowLayerCloud, *database_cloud);
-//	copyPointCloud(*general_data.nowLayerCloud, *cld);
-//
-//	std::vector<PointIndices> seg_cloud_2;
-//	if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION)
-//		seg_cloud_2 = cpTools.CloudSegmentation(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
-//	else if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING)
-//		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowing(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
-//
-//	for (int i = 0; i < cld->size(); i++)
-//	{
-//		cld->points[i].r = 255;
-//		cld->points[i].g = 255;
-//		cld->points[i].b = 255;
-//	}
-//	for (vector<PointIndices>::const_iterator i = seg_cloud_2.begin(); i < seg_cloud_2.end(); i++)
-//	{
-//		int color_R = rand() % 250;
-//		int color_G = rand() % 250;
-//		int color_B = rand() % 250;
-//		PointCloud<PointXYZRGB>::Ptr tmp(new PointCloud<PointXYZRGB>);
-//		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
-//		{
-//			tmp->push_back(database_cloud->points[*j]);
-//			cld->points[*j].r = color_R;
-//			cld->points[*j].g = color_G;
-//			cld->points[*j].b = color_B;
-//		}
-//		general_data.SegClouds.push_back(tmp);
-//	}
-//	ViewCloudUpdate(cld, false);
-//	RedSelectClear();
-//}
-//void AUX_UI::confirm_colors_segment() {
-//	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
-//		return;
-//	if (general_data.SegClouds.size() == 0)
-//		return;
-//
-//	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-//	for (int i = 0; i < general_data.SegClouds.size(); ++i)
-//	{
-//		QString segLayer = QString::fromStdString(std::to_string(i));
-//		if (!tree_layerController->AddLayer(segLayer, general_data.SegClouds[i], searchParent(index)))
-//			return;
-//	}
-//	/*if (index.parent().row() != -1)
-//		Tree_deleteLayer();*/
-//
-//	QString children_message = general_data.SegClouds.size() <= 1 ?
-//		QString::fromStdString("Segment " + std::to_string(general_data.SegClouds.size()) + " child") :
-//		QString::fromStdString("Segment " + std::to_string(general_data.SegClouds.size()) + " children");
-//	my_ui.message->setText(children_message);
-//	general_data.SegClouds.clear();
-//
-//	ui.treeView->selectionModel()->clear();
-//}
-
-void AUX_UI::Set_lightRange(const QColor& c) {
-	general_data.rgb_data = QColor{ c.red(), c.green(), c.blue() };
-	Color_PreSegment();
-}
-void AUX_UI::Color_PreSegment() {
-	int dark_color_h = (general_data.rgb_data.hue() - my_ui.H_range_spinbox->value()) < 0 ?
-		(general_data.rgb_data.hue() - my_ui.H_range_spinbox->value()) + 360 :
-		general_data.rgb_data.hue() - my_ui.H_range_spinbox->value();
-	int light_color_h = (general_data.rgb_data.hue() + my_ui.H_range_spinbox->value()) >= 360 ?
-		(general_data.rgb_data.hue() + my_ui.H_range_spinbox->value()) % 360 :
-		general_data.rgb_data.hue() + my_ui.H_range_spinbox->value();
-
-	int dark_color_v = (general_data.rgb_data.value() - my_ui.V_range_spinbox->value()) <= 0 ?
-		0 : general_data.rgb_data.value() - my_ui.V_range_spinbox->value();
-	int light_color_v = (general_data.rgb_data.value() + my_ui.V_range_spinbox->value()) >= 255 ?
-		255 : general_data.rgb_data.value() + my_ui.V_range_spinbox->value();
-
-	QColor rgb_dark_data;
-	rgb_dark_data.setHsv(dark_color_h, general_data.rgb_data.saturation(), dark_color_v);
-	QColor rgb_light_data;
-	rgb_light_data.setHsv(light_color_h, general_data.rgb_data.saturation(), light_color_v);
-
-	my_ui.color_widget->setStyleSheet(QString("background-color:"
-		"qlineargradient("
-		"spread:"
-		"pad, x1:0, y1:0.5,x2:1, y2:0.5,"
-		"stop:0 rgb(%1, %2, %3),"
-		"stop:0.5 rgb(%4, %5, %6),"
-		"stop:1 rgb(%7, %8, %9));")
-		.arg(
-			QString::number(rgb_dark_data.red()),
-			QString::number(rgb_dark_data.green()),
-			QString::number(rgb_dark_data.blue()),
-			QString::number(general_data.rgb_data.red()),
-			QString::number(general_data.rgb_data.green()),
-			QString::number(general_data.rgb_data.blue()),
-			QString::number(rgb_light_data.red()),
-			QString::number(rgb_light_data.green()),
-			QString::number(rgb_light_data.blue())));
-	//-----------
-	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
-		return;
-	general_data.SegClouds.clear();
-	CloudPoints_Tools cpTools;
-	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
-
-	PointCloud<PointXYZRGB>::Ptr database_cloud(new PointCloud<PointXYZRGB>);
-	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
-	copyPointCloud(*general_data.nowLayerCloud, *database_cloud);
-	copyPointCloud(*general_data.nowLayerCloud, *cld);
-
-	std::vector<PointIndices> seg_cloud_2;
-	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
-		general_data.rgb_data, my_ui.H_range_spinbox->value(), my_ui.V_range_spinbox->value());
-	for (int i = 0; i < cld->size(); i++)
-	{
-		cld->points[i].r = 255;
-		cld->points[i].g = 255;
-		cld->points[i].b = 255;
-	}
-	for (vector<PointIndices>::const_iterator i = seg_cloud_2.begin(); i < seg_cloud_2.end(); i++)
-	{
-		PointCloud<PointXYZRGB>::Ptr tmp(new PointCloud<PointXYZRGB>);
-		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
-		{
-			tmp->push_back(database_cloud->points[*j]);
-			cld->points[*j].r = general_data.rgb_data.red();
-			cld->points[*j].g = general_data.rgb_data.green();
-			cld->points[*j].b = general_data.rgb_data.blue();
-		}
-		general_data.SegClouds.push_back(tmp);
-	}
-	ViewCloudUpdate(cld, false);
-	RedSelectClear();
-}
-void AUX_UI::Color_Segment() {
-
 }
 
 //USER segment

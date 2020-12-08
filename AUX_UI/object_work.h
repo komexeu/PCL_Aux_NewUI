@@ -24,6 +24,7 @@ class object_work :public QObject
 public Q_SLOTS:
 	void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
 	void RedSelectClear();
+	void reset_point_color();
 	void Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&);
 
 	void ImportCloud();
@@ -35,6 +36,9 @@ public Q_SLOTS:
 	void Tree_Smooth();
 	void Slider_PreSegCloud();
 	void confirm_colors_segment();
+
+	void Set_lightRange(const QColor& c);
+	void Color_PreSegment();
 
 	void SetBrushMode();
 	void SetAreaMode();

@@ -27,15 +27,11 @@ public:
 
 private:	
 
-public Q_SLOTS:	
+public Q_SLOTS:
 	void Tree_UserSegmentation();
 	void Tree_deleteLayer();
 	void changeViewerColor(const QColor& c);
-	void Brush_SizeChange();
-	void Set_lightRange(const QColor& c);
-	void Color_PreSegment();
-	void Color_Segment();
-	void reset_point_color();
+	void Brush_SizeChange();	
 
 	void onCustomContextMenu(const QPoint& point);
 	void mergeLayer();

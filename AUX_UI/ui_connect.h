@@ -4,6 +4,7 @@
 #include "object_work.h"
 #include "ui_work.h"
 #include <qobject.h>
+#include <qcolordialog.h>
 
 extern Ui::AUX_UIClass ui;
 extern my_UI::Obj_UIClass my_ui;
@@ -55,6 +56,15 @@ public:
 		QObject::connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(Slider_PreSegCloud()));
 		//confirm
 		QObject::connect(my_ui.preSeg_confirm, SIGNAL(clicked()), obw, SLOT(confirm_colors_segment()));
+		//--------color segment--------
+		QColorDialog* Qcolordia_SegColor = new QColorDialog();
+		QObject::connect(Qcolordia_SegColor, SIGNAL(colorSelected(const QColor&)), obw, SLOT(Set_lightRange(const QColor&)));
+		QObject::connect(my_ui.color_widget, SIGNAL(clicked()), Qcolordia_SegColor, SLOT(open()));
+		QObject::connect(my_ui.color_filter_start_button, SIGNAL(clicked()), obw, SLOT(confirm_colors_segment()));
+
+		QObject::connect(my_ui.color_widget, SIGNAL(clicked()), obw, SLOT(reset_point_color()));
+		QObject::connect(my_ui.V_range_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(Color_PreSegment()));
+		QObject::connect(my_ui.H_range_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(Color_PreSegment()));
 	}
 };
 

@@ -33,6 +33,17 @@ void object_work::RedSelectClear() {
 	select_map.clear();
 	general_data.Selected_cloud = general_data.nowLayerCloud->makeShared();
 }
+void object_work::reset_point_color() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
+	cld = qt_data.standardModel->itemFromIndex(index)->data().
+		value<PointCloud<PointXYZRGB>::Ptr>()->makeShared();
+
+	ViewCloudUpdate(cld, false);
+	RedSelectClear();
+}
 #include <pcl/kdtree/kdtree_flann.h>
 void object_work::Tree_selectionChangedSlot(const QItemSelection&, const QItemSelection&) {
 	RedSelectClear();
@@ -296,6 +307,82 @@ void object_work::confirm_colors_segment() {
 	general_data.SegClouds.clear();
 
 	ui.treeView->selectionModel()->clear();
+}
+
+void object_work::Set_lightRange(const QColor& c) {
+	general_data.rgb_data = QColor{ c.red(), c.green(), c.blue() };
+	Color_PreSegment();
+}
+void object_work::Color_PreSegment() {
+	int dark_color_h = (general_data.rgb_data.hue() - my_ui.H_range_spinbox->value()) < 0 ?
+		(general_data.rgb_data.hue() - my_ui.H_range_spinbox->value()) + 360 :
+		general_data.rgb_data.hue() - my_ui.H_range_spinbox->value();
+	int light_color_h = (general_data.rgb_data.hue() + my_ui.H_range_spinbox->value()) >= 360 ?
+		(general_data.rgb_data.hue() + my_ui.H_range_spinbox->value()) % 360 :
+		general_data.rgb_data.hue() + my_ui.H_range_spinbox->value();
+
+	int dark_color_v = (general_data.rgb_data.value() - my_ui.V_range_spinbox->value()) <= 0 ?
+		0 : general_data.rgb_data.value() - my_ui.V_range_spinbox->value();
+	int light_color_v = (general_data.rgb_data.value() + my_ui.V_range_spinbox->value()) >= 255 ?
+		255 : general_data.rgb_data.value() + my_ui.V_range_spinbox->value();
+
+	QColor rgb_dark_data;
+	rgb_dark_data.setHsv(dark_color_h, general_data.rgb_data.saturation(), dark_color_v);
+	QColor rgb_light_data;
+	rgb_light_data.setHsv(light_color_h, general_data.rgb_data.saturation(), light_color_v);
+
+	my_ui.color_widget->setStyleSheet(QString("background-color:"
+		"qlineargradient("
+		"spread:"
+		"pad, x1:0, y1:0.5,x2:1, y2:0.5,"
+		"stop:0 rgb(%1, %2, %3),"
+		"stop:0.5 rgb(%4, %5, %6),"
+		"stop:1 rgb(%7, %8, %9));")
+		.arg(
+			QString::number(rgb_dark_data.red()),
+			QString::number(rgb_dark_data.green()),
+			QString::number(rgb_dark_data.blue()),
+			QString::number(general_data.rgb_data.red()),
+			QString::number(general_data.rgb_data.green()),
+			QString::number(general_data.rgb_data.blue()),
+			QString::number(rgb_light_data.red()),
+			QString::number(rgb_light_data.green()),
+			QString::number(rgb_light_data.blue())));
+	//-----------
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	general_data.SegClouds.clear();
+	CloudPoints_Tools cpTools;
+	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
+
+	PointCloud<PointXYZRGB>::Ptr database_cloud(new PointCloud<PointXYZRGB>);
+	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
+	copyPointCloud(*general_data.nowLayerCloud, *database_cloud);
+	copyPointCloud(*general_data.nowLayerCloud, *cld);
+
+	std::vector<PointIndices> seg_cloud_2;
+	seg_cloud_2 = cpTools.CloudSegmentation_RGB(cld,
+		general_data.rgb_data, my_ui.H_range_spinbox->value(), my_ui.V_range_spinbox->value());
+	for (int i = 0; i < cld->size(); i++)
+	{
+		cld->points[i].r = 255;
+		cld->points[i].g = 255;
+		cld->points[i].b = 255;
+	}
+	for (vector<PointIndices>::const_iterator i = seg_cloud_2.begin(); i < seg_cloud_2.end(); i++)
+	{
+		PointCloud<PointXYZRGB>::Ptr tmp(new PointCloud<PointXYZRGB>);
+		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
+		{
+			tmp->push_back(database_cloud->points[*j]);
+			cld->points[*j].r = general_data.rgb_data.red();
+			cld->points[*j].g = general_data.rgb_data.green();
+			cld->points[*j].b = general_data.rgb_data.blue();
+		}
+		general_data.SegClouds.push_back(tmp);
+	}
+	ViewCloudUpdate(cld, false);
+	RedSelectClear();
 }
 
 void object_work::SetBrushMode() {
