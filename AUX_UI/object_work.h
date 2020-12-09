@@ -27,6 +27,7 @@ class object_work :public QObject
 
 public:
 	bool smoothing = false;
+	bool preseg_working = false;
 
 public:
 	QModelIndex  searchParent(QModelIndex index);

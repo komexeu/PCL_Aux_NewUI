@@ -350,46 +350,53 @@ void object_work::Tree_Smooth() {
 }
 //segment
 void object_work::Slider_PreSegCloud() {
+	if (preseg_working)
+		return;
+
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	general_data.SegClouds.clear();
-	CloudPoints_Tools cpTools;
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 
-	PointCloud<PointXYZRGB>::Ptr database_cloud(new PointCloud<PointXYZRGB>);
-	PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
-	copyPointCloud(*general_data.nowLayerCloud, *database_cloud);
-	copyPointCloud(*general_data.nowLayerCloud, *cld);
+	QtConcurrent::run([=]() {
+		preseg_working = true;
+		PointCloud<PointXYZRGB>::Ptr database_cloud(new PointCloud<PointXYZRGB>);
+		PointCloud<PointXYZRGB>::Ptr cld(new PointCloud<PointXYZRGB>);
+		copyPointCloud(*general_data.nowLayerCloud, *database_cloud);
+		copyPointCloud(*general_data.nowLayerCloud, *cld);
 
-	std::vector<PointIndices> seg_cloud_2;
-	if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION)
-		seg_cloud_2 = cpTools.CloudSegmentation(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
-	else if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING)
-		seg_cloud_2 = cpTools.CloudSegmentation_regionGrowing(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
+		CloudPoints_Tools cpTools;
+		std::vector<PointIndices> seg_cloud_2;
+		if (GLOBAL_SEGMENTMODE == SegmentMode::EUCLIDEAN_CLUSTER_EXTRACTION)
+			seg_cloud_2 = cpTools.CloudSegmentation(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
+		else if (GLOBAL_SEGMENTMODE == SegmentMode::REGION_GROWING)
+			seg_cloud_2 = cpTools.CloudSegmentation_regionGrowing(cld, my_ui.preSeg_spinbox->value(), general_data.nowCloud_avg_distance);
 
-	for (int i = 0; i < cld->size(); i++)
-	{
-		cld->points[i].r = 255;
-		cld->points[i].g = 255;
-		cld->points[i].b = 255;
-	}
-	for (vector<PointIndices>::const_iterator i = seg_cloud_2.begin(); i < seg_cloud_2.end(); i++)
-	{
-		int color_R = rand() % 250;
-		int color_G = rand() % 250;
-		int color_B = rand() % 250;
-		PointCloud<PointXYZRGB>::Ptr tmp(new PointCloud<PointXYZRGB>);
-		for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
+		for (int i = 0; i < cld->size(); i++)
 		{
-			tmp->push_back(database_cloud->points[*j]);
-			cld->points[*j].r = color_R;
-			cld->points[*j].g = color_G;
-			cld->points[*j].b = color_B;
+			cld->points[i].r = 255;
+			cld->points[i].g = 255;
+			cld->points[i].b = 255;
 		}
-		general_data.SegClouds.push_back(tmp);
-	}
-	ViewCloudUpdate(cld, false);
-	RedSelectClear();
+		for (vector<PointIndices>::const_iterator i = seg_cloud_2.begin(); i < seg_cloud_2.end(); i++)
+		{
+			int color_R = rand() % 250;
+			int color_G = rand() % 250;
+			int color_B = rand() % 250;
+			PointCloud<PointXYZRGB>::Ptr tmp(new PointCloud<PointXYZRGB>);
+			for (std::vector<int>::const_iterator j = i->indices.begin(); j < i->indices.end(); j++)
+			{
+				tmp->push_back(database_cloud->points[*j]);
+				cld->points[*j].r = color_R;
+				cld->points[*j].g = color_G;
+				cld->points[*j].b = color_B;
+			}
+			general_data.SegClouds.push_back(tmp);
+		}
+		ViewCloudUpdate(cld, false);
+		RedSelectClear();
+		preseg_working = false;
+	});
 }
 void object_work::confirm_colors_segment() {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
