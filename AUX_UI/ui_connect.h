@@ -37,7 +37,7 @@ public:
 		QObject::connect(my_ui.leaf_spinbox, SIGNAL(valueChanged(int)), my_ui.leaf_slider, SLOT(setValue(int)));
 		//------------^UI^------------
 
-		object_work* obw = new object_work();
+		object_work* obw = new object_work();		
 		//----------Mode Change------
 		QObject::connect(my_ui.Brush, SIGNAL(clicked()), obw, SLOT(SetBrushMode()));
 		QObject::connect(my_ui.Area, SIGNAL(clicked()), obw, SLOT(SetAreaMode()));
@@ -52,6 +52,7 @@ public:
 		QObject::connect(my_ui.pointDensity_start_button, SIGNAL(clicked()), obw, SLOT(VoxelWork()));
 		//---------smooth---------------
 		QObject::connect(my_ui.smooth_confirm, SIGNAL(clicked()), obw, SLOT(Tree_Smooth()));
+		QObject::connect(my_ui.smooth_confirm, SIGNAL(clicked()), obw, SLOT(progressWork()));
 		//------slider pre segmentation----
 		QObject::connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(Slider_PreSegCloud()));
 		//confirm

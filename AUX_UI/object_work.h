@@ -18,17 +18,23 @@ extern my_UI::Obj_UIClass my_ui;
 extern Data_Class::QT_Data qt_data;
 
 #include <qdebug.h>
+#include<qprogressbar.h>
 
+#include "CycleProgress.h"
 class object_work :public QObject
 {
 	Q_OBJECT
 
 public:
+	CycleProgress* c_progress = new CycleProgress();
+
 	QModelIndex  searchParent(QModelIndex index);
 	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
 	static void RedSelectClear();
 
 public Q_SLOTS:
+	void progressWork();
+
 	static void SetBrushMode();
 	static void SetAreaMode();
 	static void SetNoneMode();

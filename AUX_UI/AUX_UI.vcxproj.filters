@@ -77,6 +77,9 @@
     <ClCompile Include="ui_connect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CycleProgress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_data.h">
@@ -132,6 +135,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ui_connect.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CycleProgress.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

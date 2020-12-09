@@ -10,6 +10,8 @@
 //-----tool----
 #include "QVTKWidget_controller/include/LayerControl.h"
 
+#include <QtConcurrent/qtconcurrentrun.h>
+
 void object_work::SetBrushMode() {
 	qt_data.brush_sliderAction->setVisible(true);
 	qt_data.brush_spinBoxAction->setVisible(true);
@@ -302,36 +304,46 @@ void object_work::VoxelWork() {
 	my_ui.message->setText("Filter Finish.");
 }
 
+void object_work::progressWork() {
+	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
+		return;
+	c_progress->show();
+	c_progress->Start(10, 100);
+}
 void object_work::Tree_Smooth() {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	RedSelectClear();
-	CloudPoints_Tools cpTools;
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	PointCloud<PointXYZRGB>::Ptr cld = qt_data.standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>();
 
-	//30¬°·j´M½d³ò¡A*0.5·j´M¥b®|
-	PointCloud<PointXYZRGB>::Ptr smooth_cld = cpTools.CloudSmooth(cld, general_data.nowCloud_avg_distance * my_ui.smooth_spinbox->value() * 0.5);
+	QtConcurrent::run([=]() {
+		CloudPoints_Tools cpTools;
+		//30¬°·j´M½d³ò¡A*0.5·j´M¥b®|
+		PointCloud<PointXYZRGB>::Ptr smooth_cld = cpTools.CloudSmooth(cld, general_data.nowCloud_avg_distance * my_ui.smooth_spinbox->value() * 0.5);
 
-	if (smooth_cld->size() > 0)
-	{
-		//data update
-		QVariant itemCloud;
-		itemCloud.setValue(smooth_cld);
-		qt_data.standardModel->itemFromIndex(index)->setData(itemCloud);
+		if (smooth_cld->size() > 0)
+		{
+			//data update
+			QVariant itemCloud;
+			itemCloud.setValue(smooth_cld);
+			qt_data.standardModel->itemFromIndex(index)->setData(itemCloud);
 
-		general_data.nowLayerCloud = smooth_cld;
-		general_data.Selected_cloud->clear();
-		general_data.Selected_cloud = general_data.nowLayerCloud->makeShared();
-		//view update
-		ViewCloudUpdate(smooth_cld, false);
-	}
-	else
-	{
-		my_ui.message->setText("NO DATA AFTER SMOOTH,Please set a bigger value.");
-	}
+			general_data.nowLayerCloud = smooth_cld;
+			general_data.Selected_cloud->clear();
+			general_data.Selected_cloud = general_data.nowLayerCloud->makeShared();
+			//view update
+			ViewCloudUpdate(smooth_cld, false);
+			my_ui.message->setText("Smooth finish.");
+		}
+		else
+		{
+			my_ui.message->setText("NO DATA AFTER SMOOTH,Please set a bigger value.");
+		}
 
-	ui.treeView->selectionModel()->clear();
+		ui.treeView->selectionModel()->clear();
+		c_progress->Stop();
+	});
 }
 //segment
 void object_work::Slider_PreSegCloud() {
@@ -479,7 +491,6 @@ void object_work::Color_PreSegment() {
 
 //USER segment
 void object_work::Tree_UserSegmentation() {
-	qDebug() << "CLICKKKKKKKKKKKKKKKKKKKKKKKKK";
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	if (index.row() == -1)
 		return;
