@@ -305,6 +305,11 @@ void object_work::VoxelWork() {
 }
 
 void object_work::Tree_Smooth() {
+	if (smoothing)
+	{
+		my_ui.message->setText("You have to wait until smooth done.");
+		return;
+	}
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
 	RedSelectClear();
@@ -315,6 +320,7 @@ void object_work::Tree_Smooth() {
 	c_progress->show();
 	c_progress->Start(10, 100);
 	QtConcurrent::run([=]() {
+		smoothing = true;
 		CloudPoints_Tools cpTools;
 		//30¬°·j´M½d³ò¡A*0.5·j´M¥b®|
 		PointCloud<PointXYZRGB>::Ptr smooth_cld = cpTools.CloudSmooth(cld, general_data.nowCloud_avg_distance * my_ui.smooth_spinbox->value() * 0.5);
@@ -337,9 +343,9 @@ void object_work::Tree_Smooth() {
 		{
 			my_ui.message->setText("NO DATA AFTER SMOOTH,Please set a bigger value.");
 		}
-
 		ui.treeView->selectionModel()->clear();
 		c_progress->Stop();
+		smoothing = false;
 	});
 }
 //segment

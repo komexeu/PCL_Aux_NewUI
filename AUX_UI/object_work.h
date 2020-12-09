@@ -26,6 +26,9 @@ class object_work :public QObject
 	Q_OBJECT
 
 public:
+	bool smoothing = false;
+
+public:
 	QModelIndex  searchParent(QModelIndex index);
 	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
 	static void RedSelectClear();
