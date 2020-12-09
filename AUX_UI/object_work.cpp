@@ -304,12 +304,6 @@ void object_work::VoxelWork() {
 	my_ui.message->setText("Filter Finish.");
 }
 
-void object_work::progressWork() {
-	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
-		return;
-	c_progress->show();
-	c_progress->Start(10, 100);
-}
 void object_work::Tree_Smooth() {
 	if (ui.treeView->selectionModel()->currentIndex().row() == -1)
 		return;
@@ -317,6 +311,9 @@ void object_work::Tree_Smooth() {
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	PointCloud<PointXYZRGB>::Ptr cld = qt_data.standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>();
 
+	CycleProgress* c_progress = new CycleProgress(QString("Smoothing"));
+	c_progress->show();
+	c_progress->Start(10, 100);
 	QtConcurrent::run([=]() {
 		CloudPoints_Tools cpTools;
 		//30¬°·j´M½d³ò¡A*0.5·j´M¥b®|

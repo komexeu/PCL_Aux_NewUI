@@ -52,7 +52,6 @@ public:
 		QObject::connect(my_ui.pointDensity_start_button, SIGNAL(clicked()), obw, SLOT(VoxelWork()));
 		//---------smooth---------------
 		QObject::connect(my_ui.smooth_confirm, SIGNAL(clicked()), obw, SLOT(Tree_Smooth()));
-		QObject::connect(my_ui.smooth_confirm, SIGNAL(clicked()), obw, SLOT(progressWork()));
 		//------slider pre segmentation----
 		QObject::connect(my_ui.preSeg_spinbox, SIGNAL(valueChanged(int)), obw, SLOT(Slider_PreSegCloud()));
 		//confirm

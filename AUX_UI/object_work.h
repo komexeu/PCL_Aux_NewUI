@@ -26,15 +26,11 @@ class object_work :public QObject
 	Q_OBJECT
 
 public:
-	CycleProgress* c_progress = new CycleProgress();
-
 	QModelIndex  searchParent(QModelIndex index);
 	static void ViewCloudUpdate(PointCloud<PointXYZRGB>::Ptr updateCloud, bool resetCamera);
 	static void RedSelectClear();
 
 public Q_SLOTS:
-	void progressWork();
-
 	static void SetBrushMode();
 	static void SetAreaMode();
 	static void SetNoneMode();
