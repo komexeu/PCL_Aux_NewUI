@@ -4,6 +4,7 @@
 #include "my_Widgets/include/my_toolButton.h"
 #include "my_Widgets/include/my_slider.h"
 #include "my_Widgets/include/my_spinBox.h"
+#include "CycleProgram.h"
 
 class Obj_UI_Class {
 public:
@@ -47,6 +48,8 @@ public:
 	my_spinBox* leaf_spinbox;
 	my_slider* leaf_slider;
 	my_button* pointDensity_start_button;
+
+	CycleProgram* cy_program;
 };
 
 namespace my_UI {

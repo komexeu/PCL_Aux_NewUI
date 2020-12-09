@@ -316,9 +316,7 @@ void object_work::Tree_Smooth() {
 	QModelIndex index = ui.treeView->selectionModel()->currentIndex();
 	PointCloud<PointXYZRGB>::Ptr cld = qt_data.standardModel->itemFromIndex(index)->data().value<PointCloud<PointXYZRGB>::Ptr>();
 
-	CycleProgress* c_progress = new CycleProgress(QString("Smoothing"));
-	c_progress->show();
-	c_progress->Start(10, 100);
+	my_ui.cy_program->Start(10, 100);
 	QtConcurrent::run([=]() {
 		smoothing = true;
 		CloudPoints_Tools cpTools;
@@ -344,7 +342,7 @@ void object_work::Tree_Smooth() {
 			my_ui.message->setText("NO DATA AFTER SMOOTH,Please set a bigger value.");
 		}
 		ui.treeView->selectionModel()->clear();
-		c_progress->Stop();
+		my_ui.cy_program->Stop();
 		smoothing = false;
 	});
 }

@@ -2,12 +2,14 @@
 
 #include "ui_AUX_UI.h" 
 #include "Obj_UI.h"
+#include "CycleProgram.h"
 
 #include "InteractorStyle_override.h"
 #include <vtkRenderWindow.h>
 #include <vtkSmartPointer.h>
 
 #include <QtWidgets/QMainWindow>
+#include <qlayout.h>
 
 Ui::AUX_UIClass ui;
 my_UI::Obj_UIClass my_ui;
@@ -21,12 +23,14 @@ public:
 		qt_data.standardModel = new QStandardItemModel(ui.treeView);
 		ui.treeView->setModel(qt_data.standardModel);
 		qt_data.selectionModel = ui.treeView->selectionModel();
+		//------init progressbar---
+		my_ui.cy_program = new CycleProgram(ui.dockWidgetContents_2);
 		//------init tree view------
 		ui.treeView->setFocusPolicy(Qt::NoFocus);
-		ui.treeView->setContextMenuPolicy(Qt::CustomContextMenu);		
+		ui.treeView->setContextMenuPolicy(Qt::CustomContextMenu);
 		ui.treeView->setHeaderHidden(true);
 		ui.treeView->expandAll();
-		ui.treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);		
+		ui.treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 		//---------------------------------
 		ColorScale::SetBaseColor(QColor(100, 100, 100));
 		my_ui.message = new QLabel(ui.statusBar);

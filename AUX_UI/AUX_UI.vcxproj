@@ -88,7 +88,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CycleProgress.cpp" />
     <ClCompile Include="my_Widgets\src\my_button.cpp" />
     <ClCompile Include="my_Widgets\src\my_foldGroupBox.cpp" />
     <ClCompile Include="my_Widgets\src\my_slider.cpp" />
@@ -98,8 +97,6 @@
     <ClCompile Include="QVTKWidget_controller\src\CloudPoints_IO.cpp" />
     <ClCompile Include="QVTKWidget_controller\src\CloudPoints_Tools.cpp" />
     <ClCompile Include="QVTKWidget_controller\src\LayerControl.cpp" />
-    <ClCompile Include="ui_connect.cpp" />
-    <ClCompile Include="ui_work.cpp" />
     <QtRcc Include="AUX_UI.qrc" />
     <QtUic Include="AUX_UI.ui" />
     <QtMoc Include="AUX_UI.h" />
@@ -109,7 +106,7 @@
   <ItemGroup>
     <ClInclude Include="common_data.h" />
     <QtMoc Include="ui_connect.h" />
-    <QtMoc Include="CycleProgress.h" />
+    <QtMoc Include="CycleProgram.h" />
     <ClInclude Include="ui_work.h" />
     <QtMoc Include="my_Widgets\include\my_button.h" />
     <QtMoc Include="my_Widgets\include\my_foldGroupBox.h" />

@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>AUX_UI</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="autoFillBackground">
     <bool>true</bool>
@@ -31,7 +34,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="QVTKWidget" name="qvtkWidget" native="true">
+     <widget class="QVTKWidget" name="qvtkWidget">
       <property name="mouseTracking">
        <bool>true</bool>
       </property>
@@ -112,6 +115,9 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>1</number>
+     </property>
      <property name="leftMargin">
       <number>0</number>
      </property>

@@ -20,7 +20,6 @@ extern Data_Class::QT_Data qt_data;
 #include <qdebug.h>
 #include<qprogressbar.h>
 
-#include "CycleProgress.h"
 class object_work :public QObject
 {
 	Q_OBJECT

@@ -4,7 +4,7 @@
 #include<qprogressbar.h>
 #include <qlayout.h>
 
-class CycleProgress : public QDialog
+class CycleProgram : public QProgressBar
 {
 	Q_OBJECT
 private:
@@ -12,33 +12,39 @@ private:
 	int updateInterval;
 	int MaxValue;
 	bool Inverted = false;
+	bool Work_done = true;
 	QTimer Timer;
-	QProgressBar* progressbar;
 public:
-	CycleProgress(QString title) {
-		this->setWindowTitle(title);
-		progressbar = new QProgressBar(this);
+	CycleProgram(QWidget* parent) {
 		currentValue = MaxValue = updateInterval = 0;
-		progressbar->setRange(0, 100);
+		this->setRange(0, 100);
 		connect(&Timer, SIGNAL(timeout()), this, SLOT(UpdateSlot()));
-		progressbar->setTextVisible(false);
-		QHBoxLayout* layout = new QHBoxLayout;
-		layout->addWidget(progressbar);
-		setLayout(layout);
+		this->setTextVisible(false);
+		parent->layout()->addWidget(this);
 	}
 	void Start(int interval = 30, int maxValue = 100) {
+		Work_done = false;
 		updateInterval = interval;
 		MaxValue = maxValue;
 		Timer.start(updateInterval);
-		progressbar->setRange(0, MaxValue);
-		progressbar->setValue(0);
+		this->setRange(0, MaxValue);
+		this->setValue(0);
 	}
 	void Stop() {
-		Timer.stop();
-		this->hide();
+		Work_done = true;
 	}
 private slots:
 	void UpdateSlot() {
+		if (Work_done)
+		{
+			Inverted = false;
+			currentValue = 0;
+			this->setValue(currentValue);
+			this->setInvertedAppearance(Inverted);
+			Timer.stop();
+			return;
+		}
+
 		if (!Inverted)
 			currentValue++;
 		else
@@ -46,8 +52,8 @@ private slots:
 
 		if (currentValue == MaxValue || currentValue == 0) {
 			Inverted = !Inverted;
-			progressbar->setInvertedAppearance(Inverted);
+			this->setInvertedAppearance(Inverted);
 		}
-		progressbar->setValue(currentValue);
+		this->setValue(currentValue);
 	}
 };
