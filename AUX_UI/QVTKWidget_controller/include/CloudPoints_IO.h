@@ -72,6 +72,8 @@ public:
 				vox.filter(*cloud);
 				import_cloud_.push_back(*cloud);
 			}
+			else
+				return(false);
 		}
 		else
 			return(false);

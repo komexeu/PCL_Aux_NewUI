@@ -158,7 +158,7 @@ void object_work::ImportCloud() {
 		if (!IO_Tool.CloudImport(filelist[i])) {
 			QString selectedText = "Import fail.";
 			my_ui.message->setText(selectedText);
-			return;
+			continue;
 		}
 
 		for (int i = 0; i < IO_Tool.file_name_.size(); i++)
